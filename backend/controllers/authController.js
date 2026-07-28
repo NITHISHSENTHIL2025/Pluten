@@ -74,20 +74,16 @@ const loginUser = async (req, res) => {
 
         const user = await prisma.user.findUnique({ where: { email } });
         
-        // THE FIX (Item #15): Login Enumeration Prevention
-        // If the user doesn't exist, throw a generic 401 instead of a 404
         if (!user) {
             return res.status(401).json({ error: "Invalid authorization credentials." });
         }
 
-        // Prevent crash if Google user tries manual login
         if (!user.passwordHash && user.authProvider === 'GOOGLE') {
             return res.status(401).json({ error: "This identity is secured via Google SSO. Please use 'Continue with Google'." });
         }
 
         const validPassword = await bcrypt.compare(password, user.passwordHash);
         
-        // THE FIX (Item #15): Exact same generic error as the "user not found" scenario
         if (!validPassword) {
             return res.status(401).json({ error: "Invalid authorization credentials." });
         }
@@ -115,7 +111,8 @@ const loginUser = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName }
+            user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName },
+            token // Token included for frontend storage
         });
     } catch (error) {
         console.error("Authentication Fault:", error);
@@ -167,7 +164,8 @@ const googleLogin = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName }
+            user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName },
+            token: jwtToken // Token included for frontend storage
         });
 
     } catch (error) {

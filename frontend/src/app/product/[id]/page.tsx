@@ -4,6 +4,7 @@
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft, ShieldCheck, User, Check, AlertCircle, Phone, X } from 'lucide-react';
+// @ts-ignore
 import { load } from '@cashfreepayments/cashfree-js';
 import { useActiveOffer } from "@/hooks/useActiveOffer";
 import { calculateDiscount } from "@/utils/price";

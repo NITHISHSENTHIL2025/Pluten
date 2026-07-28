@@ -1,12 +1,12 @@
 // frontend/src/app/payment-success/page.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, Package, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const orderId = searchParams.get('order_id') || 'TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -157,5 +157,18 @@ export default function PaymentSuccessPage() {
                 }
             `}</style>
         </div>
+    );
+}
+
+// THIS IS THE FIX: Next.js requires useSearchParams to be wrapped in Suspense for production builds
+export default function PaymentSuccessPage() {
+    return (
+        <Suspense fallback={
+            <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Loader2 className="animate-spin" size={48} color="#22c55e" />
+            </div>
+        }>
+            <PaymentSuccessContent />
+        </Suspense>
     );
 }

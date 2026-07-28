@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-// THE FIX: Import the centralized enterprise API client
 import apiClient from '@/lib/apiClient';
 import { 
     User, Mail, Heart, Bookmark, LifeBuoy, Bug, 
@@ -28,13 +27,16 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // THE FIX: The apiClient automatically attaches the secure HttpOnly cookie
                 const response = await apiClient.get('/user/profile');
                 setProfile(response.data);
             } catch (error) {
                 console.error("Failed to load secure profile", error);
-                // If the backend rejects us (e.g., cookie expired), clear frontend state and route to login
-                localStorage.removeItem('role');
+                
+                // THE FIX: Wipe unified keys and cookie
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                document.cookie = "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                
                 router.push('/login');
             } finally {
                 setLoading(false);
@@ -44,17 +46,15 @@ export default function ProfilePage() {
         fetchProfile();
     }, [router]);
 
-    // THE FIX: The Secure Backend Logout Sequence (Step 3)
     const handleLogout = async () => {
         try {
-            // 1. Tell the backend to cryptographically destroy the HttpOnly cookie
             await apiClient.post('/auth/logout');
         } catch (error) {
             console.error("Secure logout network fault:", error);
         } finally {
-            // 2. Erase the frontend clearance level regardless of network success
-            localStorage.removeItem('role');
-            // 3. Force a hard reload to clear React state and the Next.js cache
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.cookie = "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             window.location.href = '/';
         }
     };

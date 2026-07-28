@@ -104,15 +104,15 @@ const loginUser = async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: true, 
+            sameSite: 'none', 
             maxAge: 24 * 60 * 60 * 1000 
         });
 
         res.status(200).json({
             success: true,
             user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName },
-            token // Token included for frontend storage
+            token 
         });
     } catch (error) {
         console.error("Authentication Fault:", error);
@@ -157,15 +157,15 @@ const googleLogin = async (req, res) => {
 
         res.cookie('token', jwtToken, {
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: true, 
+            sameSite: 'none', 
             maxAge: 24 * 60 * 60 * 1000 
         });
 
         res.status(200).json({
             success: true,
             user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName },
-            token: jwtToken // Token included for frontend storage
+            token: jwtToken 
         });
 
     } catch (error) {
@@ -303,6 +303,8 @@ const getMe = async (req, res) => {
 const logoutUser = (req, res) => {
     res.cookie('token', '', {
         httpOnly: true,
+        secure: true,
+        sameSite: 'none',
         expires: new Date(0)
     });
     res.status(200).json({ success: true, message: "Secure session terminated." });

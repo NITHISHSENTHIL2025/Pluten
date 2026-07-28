@@ -3,7 +3,6 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-// 1. THE FIX: Import your enterprise client instead of raw axios
 import apiClient from '@/lib/apiClient'; 
 import { Search, Star, User, Check, Package, ArrowRight, LifeBuoy } from 'lucide-react';
 import ProductCard from '@/components/ProductCard'; 
@@ -31,13 +30,12 @@ export default function StorefrontPage() {
     const [activeSort, setActiveSort] = useState<'latest' | 'trending'>('latest');
 
     useEffect(() => {
-        // THE FIX: We now check for the clearance 'role' since we eradicated raw tokens from storage
-        const userRole = localStorage.getItem('role');
-        if (userRole) setIsLoggedIn(true);
+        // THE FIX: Check for the unified 'user' key
+        const userData = localStorage.getItem('user');
+        if (userData) setIsLoggedIn(true);
 
         const fetchPublicAssets = async () => {
             try {
-                // THE FIX: Use the apiClient. No more hardcoded localhost!
                 const response = await apiClient.get('/products');
                 setProducts(response.data);
             } catch (error) {
@@ -128,18 +126,17 @@ export default function StorefrontPage() {
                     </div>
 
                     {loading ? (
-                        <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
+                        <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', color: '#666' }}>
                             Syncing database...
                         </div>
                     ) : displayedProducts.length === 0 ? (
-                        <div style={{ height: '30vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#444' }}>
+                        <div style={{ height: '30vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', color: '#444' }}>
                             <Search size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
                             <p>No telemetry matches current parameters.</p>
                         </div>
                     ) : (
                         <div className={styles.productGrid}>
                             {displayedProducts.map((product, index) => (
-                                /* WRAPPER TO PRESERVE YOUR ROUTING AND CSS ANIMATIONS */
                                 <div 
                                     key={product.id} 
                                     onClick={() => router.push(`/product/${product.id}`)}

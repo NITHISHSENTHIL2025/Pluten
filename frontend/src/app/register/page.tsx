@@ -32,7 +32,6 @@ function RegisterEngine() {
                 password
             });
             
-            // Route directly to the OTP verification screen
             window.location.href = `/verify?email=${encodeURIComponent(email)}`;
             
         } catch (err: any) {
@@ -56,10 +55,10 @@ function RegisterEngine() {
             
             const userRole = response.data.user?.role || 'CUSTOMER';
             
-            // THE FIX: Save the token and user to localStorage so the frontend remembers the session
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
+                document.cookie = "client_auth=true; path=/; max-age=86400; SameSite=Lax";
             }
             
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {

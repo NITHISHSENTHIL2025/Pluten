@@ -28,16 +28,19 @@ function LoginEngine() {
             const response = await apiClient.post('/auth/login', { email, password });
             const userRole = response.data.user?.role || 'CUSTOMER';
 
-            // THE REAL FIX: Save the token and user to localStorage so the frontend remembers the session across domains
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
+                document.cookie = "client_auth=true; path=/; max-age=86400; SameSite=Lax";
             }
 
-            if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                window.location.href = '/admin/products';
-            } else if (redirectUrl && redirectUrl !== '/dashboard') {
+            // THE SECURE ROUTING FIX: Prevent Open Redirect Attacks
+            const isSafeRedirect = redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//');
+
+            if (isSafeRedirect && redirectUrl !== '/dashboard') {
                 window.location.href = redirectUrl;
+            } else if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
+                window.location.href = '/admin/products';
             } else {
                 window.location.href = '/';
             }
@@ -67,16 +70,19 @@ function LoginEngine() {
             
             const userRole = response.data.user?.role || 'CUSTOMER';
             
-            // THE REAL FIX: Save the token and user for Google SSO as well
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
+                document.cookie = "client_auth=true; path=/; max-age=86400; SameSite=Lax";
             }
             
-            if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                window.location.href = '/admin/products';
-            } else if (redirectUrl && redirectUrl !== '/dashboard') {
+            // THE SECURE ROUTING FIX
+            const isSafeRedirect = redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//');
+
+            if (isSafeRedirect && redirectUrl !== '/dashboard') {
                 window.location.href = redirectUrl;
+            } else if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
+                window.location.href = '/admin/products';
             } else {
                 window.location.href = '/';
             }
@@ -131,7 +137,7 @@ function LoginEngine() {
                             onError={() => setError('Google Authentication Failed')}
                             theme="filled_black"
                             shape="rectangular"
-                            width={280}
+                            width={280} 
                         />
                     </div>
 

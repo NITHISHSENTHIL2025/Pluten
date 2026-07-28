@@ -2,8 +2,9 @@
 const multer = require("multer");
 const crypto = require("crypto");
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
 const cloudinary = require("../config/cloudinary");
-
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const s3 = new S3Client({
@@ -15,9 +16,16 @@ const s3 = new S3Client({
     },
 });
 
-const storage = multer.memoryStorage();
+// PRODUCTION UPGRADE: Use Ephemeral Disk Storage instead of RAM to prevent OOM crashes
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, os.tmpdir()); // Temporarily hold in the server's temp directory
+    },
+    filename: (req, file, cb) => {
+        cb(null, crypto.randomUUID() + "-" + file.originalname.replace(/\s+/g, "-"));
+    }
+});
 
-// THE UPGRADE: Added DOCX support to match your frontend Template categories
 const ALLOWED_MIME_TYPES = {
     'image/jpeg': ['.jpg', '.jpeg'],
     'image/png': ['.png'],
@@ -57,39 +65,45 @@ const upload = {
                     // ---------- THUMBNAIL -> CLOUDINARY ----------
                     if (req.files.thumbnail) {
                         for (const file of req.files.thumbnail) {
-                            const uploadResult = await new Promise((resolve, reject) => {
-                                cloudinary.uploader.upload_stream(
-                                    { folder: "isevens/thumbnails", resource_type: "image" },
-                                    (err, result) => {
-                                        if (err) reject(err);
-                                        else resolve(result);
-                                    }
-                                ).end(file.buffer);
+                            const uploadResult = await cloudinary.uploader.upload(file.path, {
+                                folder: "isevens/thumbnails", 
+                                resource_type: "image"
                             });
                             file.location = uploadResult.secure_url;
+                            
+                            // Clean up disk space immediately
+                            fs.unlinkSync(file.path);
                         }
                     }
 
                     // ---------- PDF/ZIP/DOCX -> BACKBLAZE S3 ----------
                     if (req.files.assetFile) {
                         for (const file of req.files.assetFile) {
-                            const filename = crypto.randomUUID() + "-" + file.originalname.replace(/\s+/g, "-");
-                            const key = `assets/${filename}`;
+                            const fileStream = fs.createReadStream(file.path);
+                            const key = `assets/${file.filename}`;
 
                             await s3.send(
                                 new PutObjectCommand({
                                     Bucket: process.env.CLOUD_BUCKET_NAME,
                                     Key: key,
-                                    Body: file.buffer,
+                                    Body: fileStream,
                                     ContentType: file.mimetype,
                                 })
                             );
                             file.key = key;
+                            
+                            // Clean up disk space immediately
+                            fs.unlinkSync(file.path);
                         }
                     }
                     next();
                 } catch (e) {
                     console.error("Cloud Upload Fault:", e);
+                    
+                    // Fallback cleanup in case of a crash mid-upload
+                    if (req.files.thumbnail) req.files.thumbnail.forEach(f => { if(fs.existsSync(f.path)) fs.unlinkSync(f.path); });
+                    if (req.files.assetFile) req.files.assetFile.forEach(f => { if(fs.existsSync(f.path)) fs.unlinkSync(f.path); });
+                    
                     return res.status(500).json({ error: "Failed to transfer assets to cloud storage." });
                 }
             });

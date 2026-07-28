@@ -28,8 +28,11 @@ function LoginEngine() {
             const response = await apiClient.post('/auth/login', { email, password });
             const userRole = response.data.user?.role || 'CUSTOMER';
 
-            // THE FIX (Item #8): Removed localStorage.setItem('role', userRole). 
-            // We now rely purely on the secure HttpOnly cookie set by the backend.
+            // THE REAL FIX: Save the token and user to localStorage so the frontend remembers the session across domains
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+            }
 
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
                 window.location.href = '/admin/products';
@@ -64,7 +67,11 @@ function LoginEngine() {
             
             const userRole = response.data.user?.role || 'CUSTOMER';
             
-            // THE FIX (Item #8): Eradicated localStorage usage for Google SSO as well.
+            // THE REAL FIX: Save the token and user for Google SSO as well
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+            }
             
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
                 window.location.href = '/admin/products';

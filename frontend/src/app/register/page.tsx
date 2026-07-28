@@ -55,7 +55,12 @@ function RegisterEngine() {
             });
             
             const userRole = response.data.user?.role || 'CUSTOMER';
-            localStorage.setItem('role', userRole);
+            
+            // THE FIX: Save the token and user to localStorage so the frontend remembers the session
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+            }
             
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
                 window.location.href = '/admin/products';
@@ -128,12 +133,12 @@ function RegisterEngine() {
 
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', width: '100%' }}>
                         <GoogleLogin 
-    onSuccess={handleGoogleSuccess}
-    onError={() => setError('Google Authentication Failed')}
-    theme="filled_black"
-    shape="rectangular"
-    width={280} /* CHANGED from 320 to 280 so it perfectly fits mobile screens */
-/>
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => setError('Google Authentication Failed')}
+                            theme="filled_black"
+                            shape="rectangular"
+                            width={280} 
+                        />
                     </div>
 
                     <Link href="/login" className={styles.linkText}>

@@ -10,10 +10,11 @@ import styles from '../admin.module.css';
 interface Product {
     id: string;
     title: string;
-    category: string;
+    description?: string | null; // <-- ADD THIS LINE
     price: number;
-    thumbnail: string | null;
-    createdAt: string;
+    category: string;
+    thumbnail?: string | null;
+    isArchived?: boolean;
 }
 
 const CATEGORY_OPTIONS = ["E-Books", "Video Courses", "Templates", "Software", "Consulting", "Other"];

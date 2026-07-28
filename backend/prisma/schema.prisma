@@ -1,0 +1,159 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------
+// iSevens Core Schema - Mission Control Upgraded
+// ------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  PRODUCT_MANAGER
+  FINANCE_MANAGER
+  CUSTOMER_SUPPORT
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  passwordHash   String?   // UPDATED: Now optional for Google SSO users
+  firstName      String?
+  lastName       String?
+  role           Role      @default(CUSTOMER)
+  isPremium      Boolean   @default(false)
+
+  // ENTERPRISE OTP SYSTEM
+  isVerified     Boolean   @default(false)
+  otp            String?
+  otpExpires     DateTime?
+  otpAttempts    Int       @default(0) // Tracks failed brute-force attempts
+
+  // NEW: Enterprise SSO Tracking
+  authProvider   String    @default("LOCAL") // Can be "LOCAL" or "GOOGLE"
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  orders         Order[]
+  auditLogs      AuditLog[] 
+  downloadLogs   DownloadLog[]
+
+  @@index([role])
+  @@index([email])
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  price       Decimal     
+  isDigital   Boolean     @default(true)
+  category    String      @default("Uncategorized") 
+  
+  thumbnail   String?     
+  assetUrl    String?     
+  
+  // THE FIX: Soft Deletion Switch
+  isArchived  Boolean     @default(false)
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  orders      Order[]     
+  offers      Offer[]
+  downloadLogs DownloadLog[] // <-- Link to the new tracking table
+
+  @@index([category])
+  @@index([createdAt])
+  @@index([isArchived]) // Added index for faster filtering
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  userId        String
+  productId     String
+  totalAmount   Decimal  @default(0) 
+  status        String   @default("PENDING") 
+  transactionId String?  
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Offer {
+  id             String    @id @default(uuid())
+  name           String
+  type           String    
+  value          Decimal   
+  applyTo        String    
+  minOrderAmount Decimal?  
+  couponCode     String?   @unique
+  autoApply      Boolean   @default(true)
+  status         String    @default("DRAFT") 
+  startAt        DateTime
+  endAt          DateTime
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  products       Product[] 
+
+  @@index([status, autoApply])
+  @@index([startAt, endAt])
+}
+
+// ------------------------------------------------------
+// Enterprise Compliance
+// ------------------------------------------------------
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String   
+  action      String   
+  entity      String   
+  entityId    String   
+  details     String?  
+  ipAddress   String?  
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// Anti-Piracy Tracking
+model DownloadLog {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+  @@index([createdAt])
+}

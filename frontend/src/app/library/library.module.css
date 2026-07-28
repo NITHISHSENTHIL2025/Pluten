@@ -1,0 +1,226 @@
+/* frontend/src/app/library/library.module.css */
+
+.pageContainer {
+    min-height: 100vh;
+    background-color: #0d0d0d; /* Deep machined black */
+    color: #e0e0e0;
+    padding: 3rem 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.contentWrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* --- Tactile Header --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    transition: color 0.2s;
+}
+
+.backBtn:hover {
+    color: #fff;
+}
+
+.pageTitle {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #fff;
+    margin: 0;
+}
+
+.subtitle {
+    color: #666;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Inset Security Badge */
+.vaultBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background-color: #0a0a0a;
+    color: #22c55e; /* Cyber Green */
+    font-size: 0.85rem;
+    font-weight: 600;
+    /* Physically carved into the dash */
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
+                inset -1px -1px 2px rgba(255,255,255,0.03);
+    border: 1px solid #111;
+}
+
+/* --- Digital Asset Grid --- */
+.assetGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+/* Raised Carbon-Fiber Card */
+.assetCard {
+    background: #141414;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Heavy physical elevation */
+    box-shadow: 6px 6px 14px rgba(0,0,0,0.7), 
+               -2px -2px 8px rgba(255,255,255,0.03),
+               inset 1px 1px 1px rgba(255,255,255,0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.assetCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.9), 
+               -3px -3px 10px rgba(255,255,255,0.04),
+               inset 1px 1px 2px rgba(255,255,255,0.08);
+}
+
+/* Perfect 1:1 Aspect Ratio Cover */
+.cardImage {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background-color: #050505;
+    border-bottom: 1px solid #000;
+}
+
+.cardContent {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #141414 0%, #0f0f0f 100%);
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 1.5rem 0;
+}
+
+/* Premium Machined Button */
+.downloadBtn {
+    margin-top: auto;
+    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    color: #e0e0e0;
+    border: 1px solid #222;
+    padding: 0.9rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    /* Raised physical button */
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.6), 
+               -2px -2px 5px rgba(255,255,255,0.03),
+               inset 1px 1px 2px rgba(255,255,255,0.08);
+    transition: all 0.15s ease;
+}
+
+.downloadBtn:hover {
+    background: linear-gradient(145deg, #222, #111);
+    color: #fff;
+}
+
+.downloadBtn:active {
+    /* Physically pressed down */
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
+                inset -2px -2px 4px rgba(255,255,255,0.02);
+    transform: translateY(2px);
+    color: #8b0000; /* Glows red when pressed */
+    border-color: #333;
+}
+
+.loader {
+    min-height: 100vh;
+    background-color: #0d0d0d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE ENGINE (Compact Library)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Tighten page padding so content reaches the edges */
+    .pageContainer {
+        padding: 1.5rem 1rem;
+    }
+
+    /* 2. Re-stack the header for vertical screens */
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    /* 3. Force the tight 2-Column Grid */
+    .assetGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    /* 4. Scale down card contents proportionally */
+    .cardContent {
+        padding: 0.75rem;
+    }
+
+    .cardTitle {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Prevents long titles from breaking the card */
+    }
+
+    /* 5. Compact the Download Button */
+    .downloadBtn {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}

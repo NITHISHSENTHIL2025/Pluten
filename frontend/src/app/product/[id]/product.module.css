@@ -1,0 +1,143 @@
+/* frontend/src/app/product/[id]/product.module.css */
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #111;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: 5rem;
+}
+
+.topNav {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0a0a0a;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  cursor: pointer;
+}
+
+.productLayout {
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+
+@media (min-width: 1024px) {
+  .productLayout {
+    grid-template-columns: 1fr 400px;
+  }
+}
+
+.imageContainer {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #222;
+  background-color: #000;
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  display: block;
+}
+
+.noImage {
+  width: 100%;
+  aspect-ratio: 16/10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-family: monospace;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.vendorInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  color: #aaa;
+  font-size: 1rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #ccc;
+  white-space: pre-wrap;
+  margin-bottom: 3rem;
+}
+
+/* The Checkout Sidebar */
+.checkoutCard {
+  background-color: #151515;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #ff90e8;
+}
+
+.buyBtn {
+  width: 100%;
+  background-color: #ff90e8;
+  color: #000;
+  border: none;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buyBtn:hover {
+  opacity: 0.9;
+}
+
+.buyBtn:active {
+  transform: scale(0.98);
+}
+
+.guarantee {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #888;
+  font-size: 0.85rem;
+}

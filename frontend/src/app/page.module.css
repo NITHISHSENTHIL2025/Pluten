@@ -1,0 +1,501 @@
+/* frontend/src/app/page.module.css */
+
+/* --- The Canvas --- */
+.storeContainer {
+    min-height: 100vh;
+    background-color: #0d0d0d; 
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+}
+
+/* --- Tactile Navigation Bar --- */
+.publicNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background-color: #121212;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8), 
+                inset 0 -1px 1px rgba(255,255,255,0.03);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    flex-wrap: wrap; /* Added for mobile stacking */
+}
+
+.brand {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: linear-gradient(to bottom, #ffffff 0%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8));
+    cursor: pointer;
+}
+
+/* --- Carved Search Bar (Inset Skeuomorphism) --- */
+.searchBar {
+    flex: 1;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    background-color: #080808;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    gap: 0.75rem;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
+                inset -2px -2px 4px rgba(255,255,255,0.03),
+                0 1px 0 rgba(255,255,255,0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.searchBar:focus-within {
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.9), 
+                inset -2px -2px 4px rgba(255,255,255,0.02),
+                0 0 0 1px #8b0000; 
+}
+
+.searchInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: #444;
+}
+
+/* --- Physical Buttons --- */
+.navActions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.authContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* The Primary Red Button (Orders / Login) */
+.btnPrimary {
+    background: linear-gradient(145deg, #990000, #700000); 
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.6), 
+               -2px -2px 5px rgba(255,255,255,0.1),
+               inset 1px 1px 2px rgba(255,255,255,0.2);
+    transition: all 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: linear-gradient(145deg, #aa0000, #8b0000);
+}
+
+.btnPrimary:active {
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), 
+                inset -2px -2px 4px rgba(255,255,255,0.1);
+    transform: translateY(2px);
+}
+
+/* Circular Profile Button */
+.profileBtn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #151515;
+    border: none;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.6), 
+               -2px -2px 5px rgba(255,255,255,0.03),
+               inset 1px 1px 1px rgba(255,255,255,0.05);
+    transition: all 0.2s;
+}
+
+.profileBtn:hover {
+    color: #fff;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.8), 
+               -2px -2px 6px rgba(255,255,255,0.05),
+               inset 1px 1px 1px rgba(255,255,255,0.08);
+}
+
+.profileBtn:active {
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.8), 
+                inset -2px -2px 5px rgba(255,255,255,0.02);
+    transform: translateY(2px);
+    color: #8b0000;
+}
+
+/* --- Control Panel (Sub-Nav) --- */
+.subNavbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 3rem;
+    background-color: #0d0d0d;
+}
+
+.categorySelect {
+    background-color: #121212;
+    color: #aaa;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    min-width: 160px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 
+                inset -1px -1px 3px rgba(255,255,255,0.02);
+    appearance: none; 
+}
+
+.filterPill {
+    background: #121212;
+    color: #666;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.6), 
+               -1px -1px 4px rgba(255,255,255,0.03);
+    transition: all 0.2s;
+}
+
+.filterPill.active {
+    background: #0a0a0a;
+    color: #8b0000;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
+                inset -1px -1px 3px rgba(255,255,255,0.02);
+    text-shadow: 0 0 8px rgba(139,0,0,0.5);
+}
+
+/* --- Main Asset Grid --- */
+.mainLayout {
+    padding: 2rem 3rem;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 1rem;
+}
+
+.sectionTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+@keyframes elevateUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+}
+
+.productCard {
+    background: #141414;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    animation: elevateUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-shadow: 6px 6px 14px rgba(0,0,0,0.7), 
+               -2px -2px 8px rgba(255,255,255,0.03),
+               inset 1px 1px 1px rgba(255,255,255,0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.productCard:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 12px 12px 24px rgba(0,0,0,0.9), 
+               -3px -3px 10px rgba(255,255,255,0.04),
+               inset 1px 1px 2px rgba(255,255,255,0.08);
+}
+
+.cardImage {
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+    object-fit: cover;  
+    background-color: #050505;
+    border-bottom: 1px solid #000;
+}
+
+.cardContent {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #141414 0%, #0f0f0f 100%);
+}
+
+.cardTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+}
+
+.cardVendor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.cardBottom {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.priceTag {
+    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    color: #8b0000;
+    font-weight: 700;
+    font-family: monospace;
+    font-size: 1.1rem;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.9), 
+                inset -1px -1px 2px rgba(255,255,255,0.05);
+    border: 1px solid #222;
+}
+
+/* --- The Minimalist Premium Footer --- */
+.grandFooter {
+    background: #050505;
+    padding: 5rem 2rem 3rem;
+    margin-top: 6rem;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,1);
+    border-top: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.thankYouText {
+    font-size: 1.3rem;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.02em;
+}
+
+.thankYouText span {
+    color: #fff;
+    font-weight: 700;
+}
+
+.footerButtons {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.footerBtn {
+    background: #111;
+    color: #aaa;
+    text-decoration: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid #1a1a1a;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.6), 
+               -2px -2px 5px rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+}
+
+.footerBtn:hover {
+    background: #151515;
+    color: #fff;
+    border-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 12px rgba(0,0,0,0.8), 
+               -2px -2px 6px rgba(255,255,255,0.05);
+}
+
+.footerBtn:active {
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
+                inset -1px -1px 3px rgba(255,255,255,0.02);
+    transform: translateY(1px);
+    color: #8b0000;
+}
+
+.footerBottomText {
+    color: #444;
+    font-size: 0.85rem;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE ENGINE (Refined & Centered)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Tighten the Navigation Stack & Fix Search Bar Alignment */
+    .publicNav {
+        padding: 0.8rem 1rem;
+        gap: 0.8rem;
+        flex-wrap: wrap; 
+    }
+    
+    .brand {
+        font-size: 1.3rem; 
+    }
+
+    .searchBar {
+        order: 3;
+        flex: 1 1 100%; /* THE FIX: Forces it to perfectly fill the new row */
+        max-width: 100%; /* THE FIX: Resets the 500px desktop limit */
+        margin: 0; 
+        padding: 0.6rem 1rem; 
+    }
+
+    /* 2. Compact Primary Buttons */
+    .btnPrimary {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .profileBtn {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* 3. Tighter Horizontal Swipe for Sub-Nav */
+    .subNavbar {
+        padding: 0.6rem 1rem;
+        gap: 0.5rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        -ms-overflow-style: none;  
+        scrollbar-width: none;  
+    }
+    
+    .subNavbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .categorySelect, .filterPill {
+        font-size: 0.75rem;
+        padding: 0.4rem 1rem;
+    }
+
+    /* 4. Compact Two-Column Asset Grid */
+    .mainLayout {
+        padding: 1rem;
+    }
+
+    .sectionHeader {
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.4rem;
+    }
+
+    .productGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    /* 5. Scale down the Card Components for 2-columns */
+    .cardContent {
+        padding: 0.75rem;
+    }
+
+    .cardTitle {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+
+    .cardVendor {
+        font-size: 0.65rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .priceTag {
+        font-size: 0.85rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    /* 6. Fix Footer Button Centering */
+    .grandFooter {
+        padding: 3rem 1.5rem 2rem;
+        margin-top: 3rem;
+    }
+    
+    .thankYouText {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .footerButtons {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* THE FIX: Perfectly centers the buttons in the stack */
+        width: 100%;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .footerBtn {
+        justify-content: center;
+        width: 85%; /* THE FIX: Prevents edge-to-edge stretching for a cleaner look */
+        max-width: 260px; /* Caps the size so they look premium */
+        font-size: 0.85rem;
+        padding: 0.7rem;
+    }
+}

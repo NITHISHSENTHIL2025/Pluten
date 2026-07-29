@@ -75,10 +75,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         setCheckoutError(null);
         
         try {
-            const cashfreeMode = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
-            const cashfree = await load({
-                mode: cashfreeMode, 
-            });
+            // Force Sandbox mode until you are ready to accept real money
+// THE FIX: Force the frontend SDK into sandbox mode to match your backend
+const cashfree = await load({
+    mode: 'sandbox', 
+});
 
             const response = await apiClient.post(
                 "/payments/create", 

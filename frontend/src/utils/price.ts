@@ -14,8 +14,9 @@ export const calculateDiscount = (originalPrice: number, offer: any) => {
 
     const finalPrice = Math.max(0, originalPrice - discountAmount);
 
+    // THE FIX: Use precise 2-decimal formatting instead of Math.round()
     return { 
-        finalPrice: Math.round(finalPrice), 
-        discountAmount: Math.round(discountAmount) 
+        finalPrice: Number(finalPrice.toFixed(2)), 
+        discountAmount: Number(discountAmount.toFixed(2)) 
     };
 };

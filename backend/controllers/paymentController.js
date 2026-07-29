@@ -1,19 +1,13 @@
 // backend/controllers/paymentController.js
 const { PrismaClient } = require('@prisma/client');
-const { Cashfree } = require('../utils/cashfree');
+const { Cashfree } = require('../utils/cashfree'); // This already has the correct environment!
 const crypto = require('crypto');
 const prisma = new PrismaClient();
-
-// THE FIX (Item #5): Dynamically configure Cashfree SDK for Production vs Sandbox
-if (process.env.NODE_ENV === 'production') {
-    Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
-} else {
-    Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
-}
 
 // 1. Initialize the Transaction
 const createOrder = async (req, res) => {
     let internalOrderId = null; 
+// ... rest of your code stays exactly the same
 
     try {
         const { amount, productId, customerPhone } = req.body;

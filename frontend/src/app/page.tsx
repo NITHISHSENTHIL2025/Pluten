@@ -4,7 +4,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/apiClient'; 
-import { Search, User, Package, LifeBuoy } from 'lucide-react';
+import { Search, User, Check, Package, ArrowRight, LifeBuoy } from 'lucide-react';
 import ProductCard from '@/components/ProductCard'; 
 import styles from './page.module.css';
 
@@ -30,7 +30,6 @@ export default function StorefrontPage() {
     const [activeSort, setActiveSort] = useState<'latest' | 'trending'>('latest');
 
     useEffect(() => {
-        // Correctly checks if the user is logged in
         const userData = localStorage.getItem('user');
         if (userData) setIsLoggedIn(true);
 

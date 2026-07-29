@@ -29,7 +29,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-    // THE FIX: State for the Phone Number Prompt Modal
     const [showPhonePrompt, setShowPhonePrompt] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [phoneError, setPhoneError] = useState('');
@@ -62,7 +61,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const executeCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Validate Phone Number
         const cleanedPhone = phoneNumber.replace(/\D/g, '');
         if (cleanedPhone.length !== 10) {
             setPhoneError("Please enter a valid 10-digit phone number.");
@@ -75,18 +73,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         setCheckoutError(null);
         
         try {
-            // Force Sandbox mode until you are ready to accept real money
-// THE FIX: Force the frontend SDK into sandbox mode to match your backend
-const cashfree = await load({
-    mode: 'sandbox', 
-});
+            // THE FIX: Switch to production logic. If deployed to Vercel, it uses Production keys.
+            const cashfreeMode = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
+            const cashfree = await load({
+                mode: cashfreeMode, 
+            });
 
             const response = await apiClient.post(
                 "/payments/create", 
                 {
                     productId: product!.id,
                     amount: finalPrice, 
-                    customerPhone: cleanedPhone // THE FIX: Dynamically injects the user's input
+                    customerPhone: cleanedPhone 
                 }
             );
 
@@ -239,7 +237,7 @@ const cashfree = await load({
                 </div>
             </main>
 
-            {/* THE FIX: Pre-Checkout Security Modal for Phone Verification */}
+            {/* Premium Phone Input Modal */}
             {showPhonePrompt && (
                 <div style={{ position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                     <div style={{ background: 'linear-gradient(180deg, #161616 0%, #0a0a0a 100%)', width: '100%', maxWidth: '400px', borderRadius: '16px', border: '1px solid #2a2a2a', boxShadow: '0 30px 60px -12px rgba(0,0,0,1), inset 0 1px 2px rgba(255,255,255,0.08)', padding: '2.5rem', position: 'relative' }}>
@@ -263,20 +261,26 @@ const cashfree = await load({
 
                         <form onSubmit={executeCheckout}>
                             <div style={{ position: 'relative', marginBottom: '24px' }}>
-                                <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', fontWeight: 'bold', fontSize: '16px' }}>+91</span>
+                                <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', fontWeight: 'bold', fontSize: '16px', pointerEvents: 'none' }}>+91</span>
                                 <input 
-                                    type="text" 
+                                    type="tel"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
                                     maxLength={10}
-                                    placeholder="Enter 10-digit number" 
+                                    placeholder="00000 00000" 
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                                    style={{ width: '100%', padding: '16px 16px 16px 56px', background: '#000', border: '1px solid #333', borderRadius: '10px', color: '#fff', fontSize: '16px', fontWeight: 'bold', outline: 'none', letterSpacing: '2px', fontFamily: 'monospace' }}
+                                    style={{ width: '100%', padding: '16px 16px 16px 56px', background: '#000', border: '1px solid #333', borderRadius: '10px', color: '#fff', fontSize: '16px', fontWeight: 'bold', outline: 'none', letterSpacing: '2px', fontFamily: 'monospace', transition: 'border-color 0.2s ease' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                                    onBlur={(e) => e.target.style.borderColor = '#333'}
                                 />
                             </div>
 
                             <button 
                                 type="submit" 
-                                style={{ width: '100%', padding: '16px', background: '#dc2626', borderRadius: '10px', color: '#fff', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer' }}
+                                style={{ width: '100%', padding: '16px', background: '#dc2626', borderRadius: '10px', color: '#fff', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
                             >
                                 Proceed to Payment
                             </button>

@@ -57,13 +57,13 @@ export default function ProductCard({ product }: { product: Product }) {
                     src={product.thumbnail} 
                     alt={product.title} 
                     width={400}
-                    height={225}
+                    height={400}
                     unoptimized={true} 
-                    style={{ objectFit: 'cover', width: '100%', height: '200px', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}
+                    style={{ objectFit: 'cover', width: '100%', aspectRatio: '1 / 1', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}
                     className={styles.cardImage} 
                 />
             ) : (
-                <div className={styles.cardImage} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#222', height: '200px' }}>
+                <div className={styles.cardImage} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#222', aspectRatio: '1 / 1', width: '100%' }}>
                     NO PREVIEW
                 </div>
             )}

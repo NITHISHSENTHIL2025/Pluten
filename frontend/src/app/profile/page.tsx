@@ -4,10 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/apiClient';
-import { 
-    User, Mail, Heart, Bookmark, LifeBuoy, Bug, 
-    LogOut, ArrowLeft, Loader2, ShieldCheck, Crown, ChevronRight 
-} from 'lucide-react';
+import { User, Mail, LogOut, ArrowLeft, Loader2, ShieldCheck, Crown } from 'lucide-react';
 import styles from './profile.module.css';
 
 interface UserProfile {
@@ -31,12 +28,9 @@ export default function ProfilePage() {
                 setProfile(response.data);
             } catch (error) {
                 console.error("Failed to load secure profile", error);
-                
-                // THE FIX: Wipe unified keys and cookie
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 document.cookie = "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                
                 router.push('/login');
             } finally {
                 setLoading(false);
@@ -73,7 +67,6 @@ export default function ProfilePage() {
         <div className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
                 
-                {/* --- Header --- */}
                 <header className={styles.header}>
                     <button onClick={() => router.push('/')} className={styles.backBtn}>
                         <ArrowLeft size={16} /> Back to Storefront
@@ -83,8 +76,7 @@ export default function ProfilePage() {
                     </div>
                 </header>
 
-                {/* --- Identity Card --- */}
-                <div className={styles.identityCard}>
+                <div className={styles.identityCard} style={{ marginBottom: '2rem' }}>
                     <div className={styles.avatar}>
                         <User size={40} />
                     </div>
@@ -108,54 +100,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* --- Action Menu --- */}
-                <div className={styles.menuCard}>
-                    <button className={styles.menuItem}>
-                        <div className={styles.menuItemLeft}>
-                            <div className={styles.iconWrapper} style={{ color: '#f472b6' }}><Heart size={18} /></div>
-                            <div>
-                                <div className={styles.menuTitle}>My Favorites</div>
-                                <div className={styles.menuDesc}>View assets you've liked</div>
-                            </div>
-                        </div>
-                        <ChevronRight size={18} color="#555" />
-                    </button>
-
-                    <button className={styles.menuItem}>
-                        <div className={styles.menuItemLeft}>
-                            <div className={styles.iconWrapper} style={{ color: '#60a5fa' }}><Bookmark size={18} /></div>
-                            <div>
-                                <div className={styles.menuTitle}>Saved for Later</div>
-                                <div className={styles.menuDesc}>Assets bookmarked for future purchase</div>
-                            </div>
-                        </div>
-                        <ChevronRight size={18} color="#555" />
-                    </button>
-
-                    <button className={styles.menuItem}>
-                        <div className={styles.menuItemLeft}>
-                            <div className={styles.iconWrapper} style={{ color: '#4ade80' }}><LifeBuoy size={18} /></div>
-                            <div>
-                                <div className={styles.menuTitle}>Help & Support</div>
-                                <div className={styles.menuDesc}>Contact the iSevens team</div>
-                            </div>
-                        </div>
-                        <ChevronRight size={18} color="#555" />
-                    </button>
-
-                    <button className={styles.menuItem}>
-                        <div className={styles.menuItemLeft}>
-                            <div className={styles.iconWrapper} style={{ color: '#fb923c' }}><Bug size={18} /></div>
-                            <div>
-                                <div className={styles.menuTitle}>Report a Bug</div>
-                                <div className={styles.menuDesc}>Help us improve the ecosystem</div>
-                            </div>
-                        </div>
-                        <ChevronRight size={18} color="#555" />
-                    </button>
-                </div>
-
-                {/* --- Danger Zone --- */}
                 <button onClick={handleLogout} className={styles.logoutBtn}>
                     <LogOut size={18} /> Secure Logout
                 </button>

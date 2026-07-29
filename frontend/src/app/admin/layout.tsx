@@ -77,9 +77,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 <nav className={styles.navGroup} style={{ marginTop: 'auto' }}>
                     <span className={styles.navLabel}>System</span>
-                    <Link href="/admin/settings" className={styles.navItem}>
-                        <Settings size={18} /> Settings
-                    </Link>
+                    <Link href="/admin/settings" className={styles.navItem} prefetch={false}>
+    <Settings size={18} /> Settings
+</Link>
                 </nav>
             </aside>
 

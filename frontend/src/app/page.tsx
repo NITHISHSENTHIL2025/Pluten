@@ -3,9 +3,9 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import apiClient from '@/lib/apiClient'; 
+import apiClient from '@/lib/apiClient';
 import { Search, User, Check, Package, ArrowRight, LifeBuoy } from 'lucide-react';
-import ProductCard from '@/components/ProductCard'; 
+import ProductCard from '@/components/ProductCard';
 import styles from './page.module.css';
 
 interface Product {
@@ -20,7 +20,7 @@ interface Product {
 
 export default function StorefrontPage() {
     const router = useRouter();
-    
+
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,8 +30,15 @@ export default function StorefrontPage() {
     const [activeSort, setActiveSort] = useState<'latest' | 'trending'>('latest');
 
     useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (userData) setIsLoggedIn(true);
+        // THE FIX: Check for the auth token directly to ensure UI updates after login
+        const checkAuth = () => {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('user');
+            if (token || userData) {
+                setIsLoggedIn(true);
+            }
+        };
+        checkAuth();
 
         const fetchPublicAssets = async () => {
             try {
@@ -62,7 +69,7 @@ export default function StorefrontPage() {
         }
         filtered.sort((a, b) => {
             if (activeSort === 'latest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            if (activeSort === 'trending') return b.price - a.price; 
+            if (activeSort === 'trending') return b.price - a.price;
             return 0;
         });
         return filtered;
@@ -70,16 +77,16 @@ export default function StorefrontPage() {
 
     return (
         <div className={styles.storeContainer}>
-            
+
             {/* TACTILE NAVBAR */}
             <nav className={styles.publicNav}>
                 <div className={styles.brand} onClick={() => router.push('/')}>iSevens</div>
-                
+
                 <div className={styles.searchBar}>
                     <Search size={18} color="#666" />
-                    <input 
-                        type="text" 
-                        placeholder="Search the ecosystem..." 
+                    <input
+                        type="text"
+                        placeholder="Search the ecosystem..."
                         className={styles.searchInput}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -136,8 +143,8 @@ export default function StorefrontPage() {
                     ) : (
                         <div className={styles.productGrid}>
                             {displayedProducts.map((product, index) => (
-                                <div 
-                                    key={product.id} 
+                                <div
+                                    key={product.id}
                                     onClick={() => router.push(`/product/${product.id}`)}
                                     style={{ animationDelay: `${index * 0.05}s`, cursor: 'pointer', height: '100%' }}
                                     className="transition-transform hover:scale-[1.02]"
@@ -157,9 +164,9 @@ export default function StorefrontPage() {
                 </div>
 
                 <div className={styles.footerButtons}>
-                    <a 
-                        href="https://www.instagram.com/i.sevens?igsh=MTZ6eWY2cm04MDF5dQ==" 
-                        target="_blank" 
+                    <a
+                        href="https://www.instagram.com/i.sevens?igsh=MTZ6eWY2cm04MDF5dQ=="
+                        target="_blank"
                         rel="noopener noreferrer"
                         className={styles.footerBtn}
                     >
@@ -170,9 +177,9 @@ export default function StorefrontPage() {
                         </svg>
                         Instagram
                     </a>
-                    
-                    <a 
-                        href="mailto:support@isevens.com" 
+
+                    <a
+                        href="mailto:support@isevens.com"
                         className={styles.footerBtn}
                     >
                         <LifeBuoy size={18} /> Support

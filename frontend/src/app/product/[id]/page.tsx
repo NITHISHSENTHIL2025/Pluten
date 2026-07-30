@@ -33,7 +33,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const [phoneError, setPhoneError] = useState('');
 
     const { offer } = useActiveOffer();
-    
+
     const currentPrice = product ? product.price : 0;
     const { finalPrice, discountAmount } = calculateDiscount(currentPrice, offer);
     const hasDiscount = discountAmount > 0;
@@ -59,7 +59,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
     const executeCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const cleanedPhone = phoneNumber.replace(/\D/g, '');
         if (cleanedPhone.length !== 10) {
             setPhoneError("Please enter a valid 10-digit phone number.");
@@ -70,19 +70,19 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         setShowPhonePrompt(false);
         setIsCheckingOut(true);
         setCheckoutError(null);
-        
+
         try {
             const cashfreeMode = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
             const cashfree = await load({
-                mode: cashfreeMode, 
+                mode: cashfreeMode,
             });
 
             const response = await apiClient.post(
-                "/payments/create", 
+                "/payments/create",
                 {
                     productId: product!.id,
-                    amount: finalPrice, 
-                    customerPhone: cleanedPhone 
+                    amount: finalPrice,
+                    customerPhone: cleanedPhone
                 }
             );
 
@@ -90,7 +90,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             const checkoutOptions = {
                 paymentSessionId: payment_session_id,
-                redirectTarget: "_modal", 
+                redirectTarget: "_modal",
             };
 
             const result = await cashfree.checkout(checkoutOptions);
@@ -99,7 +99,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 console.error("Transaction Error:", result.error);
                 setCheckoutError("Transaction interrupted. If funds were deducted, our secure webhook will automatically deliver the asset to your Digital Library within 5 minutes.");
             }
-            
+
             if (result.paymentDetails) {
                 console.log("Cashfree Success! Securing asset...");
                 try {
@@ -107,8 +107,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         "/payments/verify",
                         { orderId: order_id }
                     );
-                    
-                    router.push(`/payment-success?order_id=${order_id}`); 
+
+                    router.push(`/payment-success?order_id=${order_id}`);
                 } catch (verifyError) {
                     console.error("Fulfillment Error:", verifyError);
                     setCheckoutError("Payment succeeded, but asset fulfillment delayed. Check your Digital Library shortly or contact support.");
@@ -117,7 +117,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
         } catch (error: any) {
             console.error("Gateway Initialization Error:", error);
-            
+
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                 router.push(`/login?redirect=/product/${id}`);
             } else {
@@ -147,7 +147,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
     return (
         <div className={styles.pageContainer}>
-            
+
             <nav className={styles.topNav}>
                 <div className={styles.brand} onClick={() => router.push('/')}>iSevens</div>
                 <button onClick={() => router.push('/')} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
@@ -168,10 +168,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             <div className={styles.noImage}>No Preview Available</div>
                         )}
                     </div>
-                    
+
                     <div className="mt-8">
                         <h1 className={styles.title}>{product.title}</h1>
-                        
+
                         <div className={styles.vendorInfo}>
                             <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center">
                                 <User size={16} />
@@ -190,7 +190,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 <div>
                     <div className={styles.checkoutCard}>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
                             {hasDiscount ? (
                                 <>
@@ -219,13 +219,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                 <span style={{ lineHeight: '1.4' }}>{checkoutError}</span>
                             </div>
                         )}
-                        
-                        <button 
-                            onClick={handleBuyClick} 
+
+                        <button
+                            onClick={handleBuyClick}
                             disabled={isCheckingOut}
                             className={styles.buyBtn}
                         >
-                            {isCheckingOut ? <Loader2 className="animate-spin mx-auto" /> : 'Buy this' }
+                            {isCheckingOut ? <Loader2 className="animate-spin mx-auto" /> : 'Buy this'}
                         </button>
 
                         <div className={styles.guarantee}>
@@ -239,11 +239,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             {showPhonePrompt && (
                 <div style={{ position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                     <div style={{ background: 'linear-gradient(180deg, #161616 0%, #0a0a0a 100%)', width: '100%', maxWidth: '400px', borderRadius: '16px', border: '1px solid #2a2a2a', boxShadow: '0 30px 60px -12px rgba(0,0,0,1), inset 0 1px 2px rgba(255,255,255,0.08)', padding: '2.5rem', position: 'relative' }}>
-                        
+
                         <button onClick={() => setShowPhonePrompt(false)} style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: '#050505', border: '1px solid #222', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', cursor: 'pointer', boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.8)' }}>
                             <X size={16} />
                         </button>
-                        
+
                         <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(37, 99, 235, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
                             <Phone size={28} color="#3b82f6" />
                         </div>
@@ -260,22 +260,36 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         <form onSubmit={executeCheckout}>
                             <div style={{ position: 'relative', marginBottom: '24px' }}>
                                 <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', fontWeight: 'bold', fontSize: '16px', pointerEvents: 'none' }}>+91</span>
-                                <input 
+                                <input
                                     type="tel"
                                     inputMode="numeric"
                                     pattern="[0-9]*"
                                     maxLength={10}
-                                    placeholder="00000 00000" 
+                                    placeholder="00000 00000"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                                    style={{ width: '100%', padding: '16px 16px 16px 56px', background: '#000', border: '1px solid #333', borderRadius: '10px', color: '#fff', fontSize: '16px', fontWeight: 'bold', outline: 'none', letterSpacing: '2px', fontFamily: 'monospace', transition: 'border-color 0.2s ease' }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px 16px 16px 56px',
+                                        background: '#000',
+                                        border: '1px solid #333',
+                                        borderRadius: '10px',
+                                        color: '#fff',
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        outline: 'none',
+                                        letterSpacing: '2px',
+                                        fontFamily: 'monospace',
+                                        transition: 'border-color 0.2s ease',
+                                        boxSizing: 'border-box' /* THE FIX: Keeps the input perfectly inside the container */
+                                    }}
                                     onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
                                     onBlur={(e) => e.target.style.borderColor = '#333'}
                                 />
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 style={{ width: '100%', padding: '16px', background: '#dc2626', borderRadius: '10px', color: '#fff', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
                                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
                                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}

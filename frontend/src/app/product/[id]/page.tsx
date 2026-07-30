@@ -1,4 +1,3 @@
-// frontend/src/app/product/[id]/page.tsx
 "use client";
 
 import { useEffect, useState, use } from 'react';
@@ -73,7 +72,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         setCheckoutError(null);
         
         try {
-            // THE FIX: Switch to production logic. If deployed to Vercel, it uses Production keys.
             const cashfreeMode = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
             const cashfree = await load({
                 mode: cashfreeMode, 

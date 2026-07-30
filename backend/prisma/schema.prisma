@@ -31,19 +31,13 @@ enum OrderStatus {
 model User {
   id             String    @id @default(uuid())
   email          String    @unique
-  passwordHash   String?   // UPDATED: Now optional for Google SSO users
+  
   firstName      String?
   lastName       String?
   role           Role      @default(CUSTOMER)
   isPremium      Boolean   @default(false)
 
-  // ENTERPRISE OTP SYSTEM
-  isVerified     Boolean   @default(false)
-  otp            String?
-  otpExpires     DateTime?
-  otpAttempts    Int       @default(0) // Tracks failed brute-force attempts
-
-  // NEW: Enterprise SSO Tracking
+ 
   authProvider   String    @default("LOCAL") // Can be "LOCAL" or "GOOGLE"
 
   createdAt      DateTime  @default(now())

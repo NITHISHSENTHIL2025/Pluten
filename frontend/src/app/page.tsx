@@ -30,15 +30,19 @@ export default function StorefrontPage() {
     const [activeSort, setActiveSort] = useState<'latest' | 'trending'>('latest');
 
     useEffect(() => {
-        // THE FIX: Check for the auth token directly to ensure UI updates after login
+        // THE FIX: Aggressive auth checking that triggers even when navigating back
         const checkAuth = () => {
             const token = localStorage.getItem('token');
             const userData = localStorage.getItem('user');
             if (token || userData) {
                 setIsLoggedIn(true);
+            } else {
+                setIsLoggedIn(false);
             }
         };
-        checkAuth();
+        
+        checkAuth(); // Check immediately on mount
+        window.addEventListener('focus', checkAuth); // Check again if user switches tabs or navigates back
 
         const fetchPublicAssets = async () => {
             try {
@@ -51,6 +55,8 @@ export default function StorefrontPage() {
             }
         };
         fetchPublicAssets();
+
+        return () => window.removeEventListener('focus', checkAuth);
     }, []);
 
     const availableCategories = useMemo(() => {

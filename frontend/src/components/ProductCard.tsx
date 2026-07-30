@@ -40,14 +40,10 @@ export default function ProductCard({ product }: { product: Product }) {
     const hasDiscount = activeOffer && finalPrice < Number(product.price);
 
     return (
-        <div className={styles.productCard} style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div className={styles.productCard}>
             
             {hasDiscount && activeOffer && (
-                <div style={{
-                    position: 'absolute', top: '10px', right: '10px', backgroundColor: '#dc2626', 
-                    color: 'white', fontSize: '0.75rem', fontWeight: 'bold', padding: '4px 8px', 
-                    borderRadius: '4px', zIndex: 10
-                }}>
+                <div className={styles.discountBadge}>
                     {activeOffer.type === 'PERCENTAGE' ? `${activeOffer.value}% OFF` : `₹${activeOffer.value} OFF`}
                 </div>
             )}
@@ -59,44 +55,39 @@ export default function ProductCard({ product }: { product: Product }) {
                     width={400}
                     height={400}
                     unoptimized={true} 
-                    style={{ objectFit: 'cover', width: '100%', aspectRatio: '1 / 1', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}
                     className={styles.cardImage} 
                 />
             ) : (
-                <div className={styles.cardImage} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#222', aspectRatio: '1 / 1', width: '100%' }}>
+                <div className={styles.noImage}>
                     NO PREVIEW
                 </div>
             )}
 
-            <div className={styles.cardContent} style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>{product.title}</h3>
                 
                 <div className={styles.cardVendor}>
                     <div className={styles.vendorAvatar}>
-                        <User size={10} style={{ margin: 'auto', marginTop: '3px' }} color="#555" />
+                        <User size={10} color="#555" />
                     </div>
-                    <span>iSevens Core</span><Check size={10} color="#8b0000" style={{ marginLeft: '-2px' }} />
+                    <span>iSevens Core</span><Check size={10} color="#dc2626" />
                 </div>
                 
                 <div className={styles.cardRating}>
-                    <Star size={12} fill="#666" color="#666" /><span>5.0</span>
+                    <Star size={12} fill="#737373" color="#737373" /><span>5.0</span>
                 </div>
                 
-                <div className={styles.cardBottom} style={{ marginTop: 'auto', paddingTop: '15px' }}>
+                <div className={styles.cardBottom}>
                     {loadingOffers ? (
                         <div style={{ height: '24px', width: '80px', backgroundColor: '#333', borderRadius: '4px', opacity: 0.5 }}></div>
                     ) : hasDiscount ? (
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ color: '#666', textDecoration: 'line-through', fontSize: '0.875rem' }}>
-                                ₹{Number(product.price).toLocaleString('en-IN')}
-                            </span>
-                            <div className={styles.priceTag}>
-                                ₹{finalPrice.toLocaleString('en-IN')}
-                            </div>
+                        <div className={styles.priceContainer}>
+                            <span className={styles.currentPrice}>₹{finalPrice.toLocaleString('en-IN')}</span>
+                            <span className={styles.oldPrice}>₹{Number(product.price).toLocaleString('en-IN')}</span>
                         </div>
                     ) : (
-                        <div className={styles.priceTag}>
-                            ₹{Number(product.price).toLocaleString('en-IN')}
+                        <div className={styles.priceContainer}>
+                            <span className={styles.currentPrice}>₹{Number(product.price).toLocaleString('en-IN')}</span>
                         </div>
                     )}
                 </div>

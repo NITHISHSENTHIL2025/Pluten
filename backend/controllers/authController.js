@@ -97,10 +97,29 @@ const getMe = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-    res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
-    res.cookie('client_auth', '', { expires: new Date(0) });
-    res.cookie('user_role', '', { expires: new Date(0) });
-    res.status(200).json({ success: true, message: "Secure session terminated." });
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+    });
+
+    res.clearCookie("client_auth", {
+        secure: true,
+        sameSite: "none",
+        path: "/",
+    });
+
+    res.clearCookie("user_role", {
+        secure: true,
+        sameSite: "none",
+        path: "/",
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Secure session terminated."
+    });
 };
 
 module.exports = { googleLogin, getMe, logoutUser };

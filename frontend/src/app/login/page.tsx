@@ -8,8 +8,10 @@ import styles from './login.module.css';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 function LoginEngine() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('redirect');
+    const isExpired = searchParams.get('expired');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -21,18 +23,24 @@ function LoginEngine() {
                 token: credentialResponse.credential
             });
             
-            // THE FIX: Store the token and user data in local storage so the storefront updates
             const userRole = response.data.user?.role || 'CUSTOMER';
-            localStorage.setItem('token', response.data.token);
+            const secureToken = response.data.token;
+            
+            localStorage.setItem('token', secureToken);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('role', userRole);
             
+            // Backup stamp for instant middleware read
+            document.cookie = `client_auth=true; path=/; max-age=86400; samesite=lax`;
+            document.cookie = `user_role=${userRole}; path=/; max-age=86400; samesite=lax`;
+            
+            // Native React routing preserves state and stops screen flashing
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                window.location.href = '/admin/products';
+                router.push('/admin/products');
             } else if (redirectUrl && redirectUrl !== '/dashboard') {
-                window.location.href = redirectUrl;
+                router.push(redirectUrl);
             } else {
-                window.location.href = '/';
+                router.push('/');
             }
         } catch (err: any) {
             setError(err.response?.data?.error || 'Google SSO failed.');
@@ -54,6 +62,7 @@ function LoginEngine() {
                         Authenticate with Google to access your Digital Library and complete purchases.
                     </p>
 
+                    {isExpired === 'true' && <p className="text-yellow-500 text-sm mb-4 text-center bg-yellow-950/30 p-2 rounded border border-yellow-900 w-full">Secure session expired. Please authenticate again.</p>}
                     {error && <p className="text-red-500 text-sm mb-6 text-center bg-red-950/30 p-3 rounded border border-red-900 w-full">{error}</p>}
 
                     {loading ? (

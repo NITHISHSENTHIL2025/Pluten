@@ -40,17 +40,31 @@ const googleLogin = async (req, res) => {
             { expiresIn: '1d' }
         );
 
-        // THE FIX 1: Allow cross-domain cookies from Render to Vercel
+        // 1. Encrypted secure token for API calls
         res.cookie('token', jwtToken, {
             httpOnly: true, 
-            secure: true, // Must strictly be true in production
-            sameSite: 'none', // Crucial for cross-origin APIs
+            secure: true, 
+            sameSite: 'none', 
+            maxAge: 24 * 60 * 60 * 1000 
+        });
+
+        // 2. Visual flag so Next.js Middleware knows the session is active
+        res.cookie('client_auth', 'true', {
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
+
+        // 3. Role flag so Next.js Middleware can enforce RBAC instantly
+        res.cookie('user_role', user.role, {
+            secure: true,
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 
         });
 
         res.status(200).json({
             success: true,
-            token: jwtToken, // THE FIX 2: Send the token in the JSON body
+            token: jwtToken, 
             user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName }
         });
 
@@ -77,12 +91,10 @@ const getMe = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-    res.cookie('token', '', {
-        httpOnly: true,
-        expires: new Date(0)
-    });
+    res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
+    res.cookie('client_auth', '', { expires: new Date(0) });
+    res.cookie('user_role', '', { expires: new Date(0) });
     res.status(200).json({ success: true, message: "Secure session terminated." });
 };
 
-// Export only the routes we need
 module.exports = { googleLogin, getMe, logoutUser };

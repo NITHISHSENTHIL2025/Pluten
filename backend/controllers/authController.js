@@ -14,7 +14,7 @@ const googleLogin = async (req, res) => {
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
-        
+
         const payload = ticket.getPayload();
         const { email, given_name, family_name, email_verified } = payload;
 
@@ -28,7 +28,6 @@ const googleLogin = async (req, res) => {
                     email,
                     firstName: given_name,
                     lastName: family_name,
-                    isVerified: true, 
                     authProvider: 'GOOGLE'
                 }
             });
@@ -42,29 +41,29 @@ const googleLogin = async (req, res) => {
 
         // 1. Encrypted secure token for API calls
         res.cookie('token', jwtToken, {
-            httpOnly: true, 
-            secure: true, 
-            sameSite: 'none', 
-            maxAge: 24 * 60 * 60 * 1000 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         // 2. Visual flag so Next.js Middleware knows the session is active
         res.cookie('client_auth', 'true', {
             secure: true,
             sameSite: 'none',
-            maxAge: 24 * 60 * 60 * 1000 
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         // 3. Role flag so Next.js Middleware can enforce RBAC instantly
         res.cookie('user_role', user.role, {
             secure: true,
             sameSite: 'none',
-            maxAge: 24 * 60 * 60 * 1000 
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         res.status(200).json({
             success: true,
-            token: jwtToken, 
+            token: jwtToken,
             user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName }
         });
 
@@ -78,7 +77,14 @@ const getMe = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.user.id },
-            select: { id: true, email: true, role: true, firstName: true, lastName: true, isPremium: true, isVerified: true }
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                isPremium: true
+            }
         });
 
         if (!user) return res.status(404).json({ error: "Identity not found." });

@@ -1,3 +1,4 @@
+// frontend/src/app/login/page.tsx
 "use client";
 
 import { useState, Suspense } from 'react';
@@ -29,19 +30,23 @@ function LoginEngine() {
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('role', userRole);
             
-            // Backup stamp for instant middleware read
+            // Stamp the cookies for the Vercel Middleware
             document.cookie = `client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax`;
             document.cookie = `user_role=${userRole}; path=/; max-age=86400; Secure; SameSite=Lax`;
             
-            // THE FIX: Hard Browser Redirect
-            // This physically reloads the window, forcing the Navbar to sync with your new role
-            if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                window.location.href = '/admin/products';
-            } else if (redirectUrl && redirectUrl !== '/dashboard') {
-                window.location.href = redirectUrl;
-            } else {
-                window.location.href = '/';
-            }
+            // THE FIX: The Cookie Race Condition
+            // Pause for 300 milliseconds to guarantee the browser saves the cookies to disk
+            // before redirecting. This ensures the Middleware reads your SUPER_ADMIN status.
+            setTimeout(() => {
+                if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
+                    window.location.href = '/admin/products';
+                } else if (redirectUrl && redirectUrl !== '/dashboard') {
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = '/';
+                }
+            }, 300);
+
         } catch (err: any) {
             setError(err.response?.data?.error || 'Google SSO failed.');
             setLoading(false);

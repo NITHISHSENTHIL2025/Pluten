@@ -1,8 +1,7 @@
-// frontend/src/components/ProductCard.tsx
 "use client";
 
 import { useMemo } from 'react';
-import Image from 'next/image';
+// THE FIX: Do NOT import 'next/image' here. We are using standard HTML img.
 import { Star, User, Check } from 'lucide-react';
 import { useOffers } from '@/context/OfferContext';
 import styles from '../app/page.module.css'; 
@@ -20,7 +19,6 @@ export default function ProductCard({ product }: { product: Product }) {
 
     const { finalPrice, activeOffer } = useMemo(() => {
         let price = Number(product.price);
-        
         const offer = activeOffers.find((o: any) => o.autoApply);
 
         if (offer) {
@@ -48,13 +46,11 @@ export default function ProductCard({ product }: { product: Product }) {
                 </div>
             )}
 
+            {/* THE FIX: Standard HTML img tag guarantees perfect 1:1 squares */}
             {product.thumbnail ? (
-                <Image 
+                <img 
                     src={product.thumbnail} 
                     alt={product.title} 
-                    width={400}
-                    height={400}
-                    unoptimized={true} 
                     className={styles.cardImage} 
                 />
             ) : (

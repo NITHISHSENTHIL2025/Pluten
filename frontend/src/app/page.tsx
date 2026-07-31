@@ -30,19 +30,17 @@ export default function StorefrontPage() {
     const [activeSort, setActiveSort] = useState<'latest' | 'trending'>('latest');
 
     useEffect(() => {
-        // THE FIX: Aggressive auth checking that triggers even when navigating back
+        // THE FIX: Aggressive background check that defeats Next.js soft routing
         const checkAuth = () => {
             const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('user');
-            if (token || userData) {
-                setIsLoggedIn(true);
-            } else {
-                setIsLoggedIn(false);
-            }
+            setIsLoggedIn(!!token);
         };
         
-        checkAuth(); // Check immediately on mount
-        window.addEventListener('focus', checkAuth); // Check again if user switches tabs or navigates back
+        checkAuth(); // Check immediately
+        window.addEventListener('storage', checkAuth); // Cross-tab sync
+        
+        // This forces the UI to update if the user clicked "login" and routed back
+        const authInterval = setInterval(checkAuth, 1000); 
 
         const fetchPublicAssets = async () => {
             try {
@@ -56,7 +54,10 @@ export default function StorefrontPage() {
         };
         fetchPublicAssets();
 
-        return () => window.removeEventListener('focus', checkAuth);
+        return () => {
+            window.removeEventListener('storage', checkAuth);
+            clearInterval(authInterval); // Clean up the interval
+        };
     }, []);
 
     const availableCategories = useMemo(() => {

@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import apiClient from '@/lib/apiClient'; // THE FIX: Authenticate via HttpOnly Cookie
+import axios from 'axios'; // THE FIX: Import raw axios to bypass the aggressive interceptor
 import {
     LayoutDashboard, ShoppingCart, Users, Package,
     Settings, ShieldAlert, Search, Loader2
@@ -17,20 +17,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [authorized, setAuthorized] = useState(false);
 
     useEffect(() => {
-        // THE FIX: Strict backend validation, eliminating localStorage token loop
         const verifyClearance = async () => {
             try {
-                const res = await apiClient.get('/auth/me');
+                // THE FIX: Grab the token manually
+                const token = localStorage.getItem('token');
+                
+                if (!token || token === 'undefined' || token === 'null') {
+                    throw new Error("No valid token found.");
+                }
+
+                // THE FIX: Use raw axios so a 401 doesn't trigger the global interceptor's logout loop
+                const res = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL || 'https://iseven.onrender.com/api/v1'}/auth/me`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                
                 const role = res.data.user.role;
                 
-                // THE FIX (Item #11): Unified RBAC Policy. Added PRODUCT_MANAGER to allowed roles.
+                // Unified RBAC Policy
                 if (role !== 'SUPER_ADMIN' && role !== 'FINANCE_MANAGER' && role !== 'PRODUCT_MANAGER') {
                     throw new Error("Insufficient Clearance");
                 }
                 
                 setAuthorized(true);
             } catch (err) {
-                console.error("Dashboard clearance rejected.");
+                console.error("Dashboard clearance rejected.", err);
                 router.push('/login');
             }
         };
@@ -78,8 +93,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <nav className={styles.navGroup} style={{ marginTop: 'auto' }}>
                     <span className={styles.navLabel}>System</span>
                     <Link href="/admin/settings" className={styles.navItem} prefetch={false}>
-    <Settings size={18} /> Settings
-</Link>
+                        <Settings size={18} /> Settings
+                    </Link>
                 </nav>
             </aside>
 

@@ -30,7 +30,8 @@ const getUserLibrary = async (req, res) => {
         // Deduplicate products so multiple test purchases don't break the React UI
         const uniqueAssetsMap = new Map();
         orders.forEach(order => {
-            if (!uniqueAssetsMap.has(order.product.id)) {
+            // THE FIX: Check if order.product actually exists before reading its ID!
+            if (order.product && !uniqueAssetsMap.has(order.product.id)) {
                 uniqueAssetsMap.set(order.product.id, order.product);
             }
         });

@@ -21,7 +21,10 @@ function LoginEngine() {
                 token: credentialResponse.credential
             });
             
+            // THE FIX: Store the token and user data in local storage so the storefront updates
             const userRole = response.data.user?.role || 'CUSTOMER';
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('role', userRole);
             
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {

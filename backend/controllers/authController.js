@@ -40,15 +40,17 @@ const googleLogin = async (req, res) => {
             { expiresIn: '1d' }
         );
 
+        // THE FIX 1: Allow cross-domain cookies from Render to Vercel
         res.cookie('token', jwtToken, {
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: true, // Must strictly be true in production
+            sameSite: 'none', // Crucial for cross-origin APIs
             maxAge: 24 * 60 * 60 * 1000 
         });
 
         res.status(200).json({
             success: true,
+            token: jwtToken, // THE FIX 2: Send the token in the JSON body
             user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName }
         });
 

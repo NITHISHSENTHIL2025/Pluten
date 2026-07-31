@@ -19,14 +19,18 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', 1);
 
 // --- Enterprise Security Middleware ---
-app.use(helmet()); 
+// THE FIX: Override Helmet's default policy so the Google OAuth popup doesn't crash
+app.use(helmet({
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+})); 
 
 // 1. MUST BE FIRST: Parse cookies before anything else tries to read them
 app.use(cookieParser());
 
 // 2. MUST BE SECOND: Allow cross-origin credentials (HttpOnly cookies)
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    // THE FIX: Explicitly whitelist Vercel to guarantee the popup token isn't blocked by CORS
+    origin: ['http://localhost:3000', 'https://i-seven-xi.vercel.app'],
     credentials: true // Crucial for passing the secure token from Next.js
 }));
 

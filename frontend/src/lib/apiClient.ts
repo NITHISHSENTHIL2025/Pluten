@@ -24,7 +24,9 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        // THE FIX: ONLY log the user out if the token is completely missing/dead (401)
+        // Do NOT log them out for a 403 (Insufficient Clearance). 
+        if (error.response?.status === 401) {
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');

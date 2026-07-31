@@ -20,18 +20,22 @@ app.set('trust proxy', 1);
 
 // --- Enterprise Security Middleware ---
 // THE FIX: Override Helmet's default policy so the Google OAuth popup doesn't crash
+// --- Enterprise Security Middleware ---
 app.use(helmet({
-    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+    // THE FIX: You MUST tell Helmet to allow your Vercel frontend to read the data
+    crossOriginResourcePolicy: { policy: "cross-origin" } 
 })); 
 
 // 1. MUST BE FIRST: Parse cookies before anything else tries to read them
 app.use(cookieParser());
 
-// 2. MUST BE SECOND: Allow cross-origin credentials (HttpOnly cookies)
+// 2. MUST BE SECOND: Allow cross-origin credentials
 app.use(cors({
-    // THE FIX: Explicitly whitelist Vercel to guarantee the popup token isn't blocked by CORS
     origin: ['http://localhost:3000', 'https://i-seven-xi.vercel.app'],
-    credentials: true // Crucial for passing the secure token from Next.js
+    credentials: true,
+    // THE FIX: Explicitly tell CORS to accept the Bearer token header from Vercel
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'] 
 }));
 
 // 3. MUST BE THIRD: Parse JSON bodies and capture raw buffers for Cashfree Webhooks

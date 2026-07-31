@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import apiClient from '@/lib/apiClient';
 import styles from './login.module.css'; 
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 function LoginEngine() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('redirect');
     const isExpired = searchParams.get('expired');
@@ -31,16 +30,17 @@ function LoginEngine() {
             localStorage.setItem('role', userRole);
             
             // Backup stamp for instant middleware read
-            document.cookie = `client_auth=true; path=/; max-age=86400; samesite=lax`;
-            document.cookie = `user_role=${userRole}; path=/; max-age=86400; samesite=lax`;
+            document.cookie = `client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax`;
+            document.cookie = `user_role=${userRole}; path=/; max-age=86400; Secure; SameSite=Lax`;
             
-            // Native React routing preserves state and stops screen flashing
+            // THE FIX: Hard Browser Redirect
+            // This physically reloads the window, forcing the Navbar to sync with your new role
             if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                router.push('/admin/products');
+                window.location.href = '/admin/products';
             } else if (redirectUrl && redirectUrl !== '/dashboard') {
-                router.push(redirectUrl);
+                window.location.href = redirectUrl;
             } else {
-                router.push('/');
+                window.location.href = '/';
             }
         } catch (err: any) {
             setError(err.response?.data?.error || 'Google SSO failed.');

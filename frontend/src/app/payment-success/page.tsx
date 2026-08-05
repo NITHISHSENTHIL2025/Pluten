@@ -3,23 +3,43 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle, Package, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
+import { CheckCircle, Package, ArrowRight, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import apiClient from '@/lib/apiClient'; // THE FIX: Imported the API client
 
 function PaymentSuccessContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const orderId = searchParams.get('order_id') || 'TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const orderId = searchParams.get('order_id');
     
     const [initializing, setInitializing] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Simulate a brief "Securing your asset" sequence for premium feel
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setInitializing(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
+        const verifyOrder = async () => {
+            if (!orderId) {
+                setError("Invalid order reference. Please contact support.");
+                setInitializing(false);
+                return;
+            }
+
+            try {
+                // THE FIX: Actively command the backend to verify the payment with Cashfree
+                // and unlock the digital asset in the database.
+                await apiClient.post('/payments/verify', { orderId });
+                
+                // If it succeeds (or returns 200 ALREADY_FULFILLED), we drop the loading screen
+                setInitializing(false);
+            } catch (err: any) {
+                console.error("Verification Fault:", err);
+                // If Cashfree says it's not paid yet, or there's a network glitch
+                setError(err.response?.data?.error || "We are waiting for Cashfree to confirm your transaction. If funds were deducted, your asset will be automatically unlocked shortly via our secure webhook.");
+                setInitializing(false);
+            }
+        };
+
+        verifyOrder();
+    }, [orderId]);
 
     return (
         <div style={{ 
@@ -47,33 +67,40 @@ function PaymentSuccessContent() {
                     <div style={{ padding: '40px 0' }}>
                         <Loader2 className="animate-spin" size={48} color="#22c55e" style={{ margin: '0 auto 24px auto' }} />
                         <h2 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 'bold', letterSpacing: '0.1em' }}>SECURING ASSET...</h2>
-                        <p style={{ color: '#666', marginTop: '12px' }}>Encrypting and transferring to your Digital Vault.</p>
+                        <p style={{ color: '#666', marginTop: '12px' }}>Verifying transaction and transferring to your Digital Vault.</p>
+                    </div>
+                ) : error ? (
+                    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                        <div style={{ 
+                            width: '80px', height: '80px', borderRadius: '50%', 
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)', border: '1px solid rgba(220, 38, 38, 0.3)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            margin: '0 auto 24px auto', boxShadow: '0 0 30px rgba(220, 38, 38, 0.2)'
+                        }}>
+                            <AlertCircle size={40} color="#dc2626" />
+                        </div>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', textTransform: 'uppercase', marginBottom: '8px' }}>
+                            Verification Pending
+                        </h1>
+                        <p style={{ color: '#a3a3a3', fontSize: '0.95rem', marginBottom: '32px', lineHeight: '1.6' }}>
+                            {error}
+                        </p>
+                        <button onClick={() => router.push('/library')} style={{ width: '100%', backgroundColor: '#333', color: '#fff', fontWeight: 'bold', padding: '16px', borderRadius: '8px', border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}>
+                            Go to Library
+                        </button>
                     </div>
                 ) : (
                     <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
                         <div style={{ 
-                            width: '80px', 
-                            height: '80px', 
-                            borderRadius: '50%', 
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)', 
-                            border: '1px solid rgba(34, 197, 94, 0.3)', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            margin: '0 auto 24px auto',
-                            boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
+                            width: '80px', height: '80px', borderRadius: '50%', 
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            margin: '0 auto 24px auto', boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
                         }}>
                             <CheckCircle size={40} color="#22c55e" />
                         </div>
 
-                        <h1 style={{ 
-                            fontSize: '1.75rem', 
-                            fontWeight: '900', 
-                            color: '#fff', 
-                            letterSpacing: '0.05em', 
-                            textTransform: 'uppercase',
-                            marginBottom: '8px' 
-                        }}>
+                        <h1 style={{ fontSize: '1.75rem', fontWeight: '900', color: '#fff', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '8px' }}>
                             Payment Successful
                         </h1>
 
@@ -81,16 +108,7 @@ function PaymentSuccessContent() {
                             Your transaction was approved and the asset has been successfully provisioned to your account.
                         </p>
 
-                        <div style={{ 
-                            backgroundColor: '#050505', 
-                            border: '1px solid #222', 
-                            borderRadius: '8px', 
-                            padding: '16px', 
-                            marginBottom: '32px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
+                        <div style={{ backgroundColor: '#050505', border: '1px solid #222', borderRadius: '8px', padding: '16px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ textAlign: 'left' }}>
                                 <div style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Transaction ID</div>
                                 <div style={{ fontFamily: 'monospace', color: '#fff', fontWeight: 'bold', letterSpacing: '1px' }}>{orderId}</div>
@@ -101,47 +119,13 @@ function PaymentSuccessContent() {
                         <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
                             <button 
                                 onClick={() => router.push('/library')}
-                                style={{ 
-                                    width: '100%', 
-                                    backgroundColor: '#22c55e', 
-                                    color: '#000', 
-                                    fontWeight: '800', 
-                                    padding: '16px', 
-                                    borderRadius: '8px', 
-                                    border: 'none', 
-                                    cursor: 'pointer', 
-                                    fontSize: '1rem', 
-                                    letterSpacing: '0.05em', 
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '8px',
-                                    boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)',
-                                    textTransform: 'uppercase'
-                                }}
+                                style={{ width: '100%', backgroundColor: '#22c55e', color: '#000', fontWeight: '800', padding: '16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '1rem', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)', textTransform: 'uppercase' }}
                             >
                                 <Package size={20} /> Access Digital Library
                             </button>
 
                             <Link href="/" style={{ textDecoration: 'none' }}>
-                                <button style={{ 
-                                    width: '100%', 
-                                    backgroundColor: 'transparent', 
-                                    color: '#888', 
-                                    fontWeight: '600', 
-                                    padding: '14px', 
-                                    borderRadius: '8px', 
-                                    border: '1px solid #333', 
-                                    cursor: 'pointer', 
-                                    fontSize: '0.9rem', 
-                                    letterSpacing: '0.05em', 
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '8px',
-                                    transition: 'all 0.2s',
-                                    textTransform: 'uppercase'
-                                }}>
+                                <button style={{ width: '100%', backgroundColor: 'transparent', color: '#888', fontWeight: '600', padding: '14px', borderRadius: '8px', border: '1px solid #333', cursor: 'pointer', fontSize: '0.9rem', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s', textTransform: 'uppercase' }}>
                                     Return to Storefront <ArrowRight size={16} />
                                 </button>
                             </Link>
@@ -160,7 +144,6 @@ function PaymentSuccessContent() {
     );
 }
 
-// THIS IS THE FIX: Next.js requires useSearchParams to be wrapped in Suspense for production builds
 export default function PaymentSuccessPage() {
     return (
         <Suspense fallback={

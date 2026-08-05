@@ -38,4 +38,4 @@ const requireAdmin = (allowedRoles = ['SUPER_ADMIN']) => {
     };
 };
 
-module.exports = { verifyToken, requireAdmin };
+module.exports = { verifyToken, requireAdmin }; 

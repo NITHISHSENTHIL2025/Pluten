@@ -1,13 +1,12 @@
 // backend/controllers/paymentController.js
 const { PrismaClient } = require('@prisma/client');
-const { Cashfree } = require('../utils/cashfree'); // This already has the correct environment!
+const { Cashfree } = require('../utils/cashfree'); 
 const crypto = require('crypto');
 const prisma = new PrismaClient();
 
 // 1. Initialize the Transaction
 const createOrder = async (req, res) => {
     let internalOrderId = null; 
-// ... rest of your code stays exactly the same
 
     try {
         const { amount, productId, customerPhone } = req.body;
@@ -60,9 +59,8 @@ const createOrder = async (req, res) => {
             }
         });
 
-        // THE FIX (Item #3): Dynamic Return URL for Payment Recovery
-        // When deployed, this ensures Cashfree redirects mobile/external users back to your actual domain.
-        const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        // THE FIX: Cashfree {order_id} template variable injection
+        const frontendBaseUrl = process.env.FRONTEND_URL || 'https://i-seven-xi.vercel.app';
 
         const request = {
             order_id: internalOrderId,
@@ -74,7 +72,7 @@ const createOrder = async (req, res) => {
                 customer_email: req.user.email
             },
             order_meta: { 
-                return_url: `${frontendBaseUrl}/payment-success?order_id=${internalOrderId}` 
+                return_url: `${frontendBaseUrl}/payment-success?order_id={order_id}` 
             }
         };
 
@@ -166,8 +164,6 @@ const webhookHandler = async (req, res) => {
 
         const dataToHash = timestamp + rawBody;
 
-        // THE FIX (Item #1): Foolproof Secret Key Extraction
-        // This checks both common naming conventions so your webhook verifies regardless of what you named it in .env
         const secretKey = process.env.CASHFREE_CLIENT_SECRET || process.env.CASHFREE_SECRET_KEY;
 
         const expectedSignature = crypto

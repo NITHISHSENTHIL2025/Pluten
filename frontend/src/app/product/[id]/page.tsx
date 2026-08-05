@@ -86,34 +86,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 }
             );
 
-            const { payment_session_id, order_id } = response.data;
+            const { payment_session_id } = response.data;
 
+            // THE FIX: Change "_modal" to "_self"
             const checkoutOptions = {
                 paymentSessionId: payment_session_id,
-                redirectTarget: "_modal",
+                redirectTarget: "_self", 
             };
 
-            const result = await cashfree.checkout(checkoutOptions);
-
-            if (result.error) {
-                console.error("Transaction Error:", result.error);
-                setCheckoutError("Transaction interrupted. If funds were deducted, our secure webhook will automatically deliver the asset to your Digital Library within 5 minutes.");
-            }
-
-            if (result.paymentDetails) {
-                console.log("Cashfree Success! Securing asset...");
-                try {
-                    await apiClient.post(
-                        "/payments/verify",
-                        { orderId: order_id }
-                    );
-
-                    router.push(`/payment-success?order_id=${order_id}`);
-                } catch (verifyError) {
-                    console.error("Fulfillment Error:", verifyError);
-                    setCheckoutError("Payment succeeded, but asset fulfillment delayed. Check your Digital Library shortly or contact support.");
-                }
-            }
+            // This will instantly navigate the user away from this page.
+            // When payment is done, Cashfree redirects them to the return_url defined in your backend.
+            await cashfree.checkout(checkoutOptions);
 
         } catch (error: any) {
             console.error("Gateway Initialization Error:", error);
@@ -123,7 +106,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             } else {
                 setCheckoutError(error.response?.data?.error || "Failed to connect to the payment gateway.");
             }
-        } finally {
             setIsCheckingOut(false);
         }
     };

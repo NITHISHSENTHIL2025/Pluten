@@ -3,8 +3,9 @@ import axios from 'axios';
 let isRedirecting = false;
 
 const apiClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://iseven.onrender.com/api/v1',
-    withCredentials: true, 
+    baseURL:
+        process.env.NEXT_PUBLIC_API_URL,
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -26,15 +27,15 @@ apiClient.interceptors.response.use(
         // Only trigger logout sequence on 401, and only if not already redirecting
         if (error.response?.status === 401 && !isRedirecting) {
             isRedirecting = true;
-            
+
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 localStorage.removeItem('role');
-                
+
                 document.cookie = "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
                 document.cookie = "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                
+
                 window.location.href = '/login?expired=true';
             }
         }

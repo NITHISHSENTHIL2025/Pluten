@@ -1,289 +1,1161 @@
-/* frontend/src/app/profile/profile.module.css */
+/* =========================================================
+   PLUTEN — PROFILE
+   frontend/src/app/profile/profile.module.css
+
+   Premium white / editorial account system
+   ========================================================= */
 
 .pageContainer {
-    min-height: 100vh;
-    background-color: #0d0d0d; 
-    color: #e0e0e0;
-    padding: 3rem 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+
+  width: 100%;
+
+  position: relative;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  background: #f7f7f5;
+
+  color: #111111;
+
+  padding:
+    34px
+    48px
+    80px;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
-.contentWrapper {
-    max-width: 800px;
-    margin: 0 auto;
+
+/* =========================================================
+   BACKGROUND GRID
+   ========================================================= */
+
+.backgroundGrid {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.2;
+
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size: 80px 80px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 20%,
+      black 80%,
+      transparent
+    );
 }
 
-/* --- Tactile Header --- */
+
+/* =========================================================
+   SOFT BACKGROUND GLOW
+   ========================================================= */
+
+.backgroundGlow {
+  position: absolute;
+
+  width: 700px;
+
+  height: 700px;
+
+  left: 50%;
+
+  top: 42%;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.6) 38%,
+      rgba(255, 255, 255, 0) 72%
+    );
+
+  filter: blur(14px);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #1a1a1a;
+  position: relative;
+
+  z-index: 3;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding-bottom: 24px;
+
+  border-bottom:
+    1px solid
+    rgba(0, 0, 0, 0.08);
 }
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
 
 .backBtn {
-    background: none;
-    border: none;
-    color: #888;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: color 0.2s;
+  appearance: none;
+
+  border: none;
+
+  background: transparent;
+
+  padding: 8px 0;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color: #555555;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .backBtn:hover {
-    color: #fff;
+  color: #111111;
+
+  transform:
+    translateX(-2px);
 }
 
-.version {
-    font-size: 0.75rem;
-    color: #444;
-    font-family: monospace;
-    letter-spacing: 0.05em;
+
+/* =========================================================
+   HEADER LABEL
+   ========================================================= */
+
+.headerLabel {
+  color: #8a8a8a;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
 }
 
-/* --- Raised Identity Card --- */
+
+/* =========================================================
+   CONTENT WRAPPER
+   ========================================================= */
+
+.contentWrapper {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+
+  max-width: 760px;
+
+  margin:
+    0 auto;
+
+  padding-top: 86px;
+}
+
+
+/* =========================================================
+   PAGE INTRO
+   ========================================================= */
+
+.pageIntro {
+  margin-bottom: 42px;
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 17px;
+
+  color: #777777;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+   ========================================================= */
+
+.pageTitle {
+  margin: 0;
+
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(
+    56px,
+    8vw,
+    92px
+  );
+
+  line-height: 0.88;
+
+  font-weight: 500;
+
+  letter-spacing: -0.065em;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.pageDescription {
+  max-width: 390px;
+
+  margin:
+    25px 0 0;
+
+  color: #6f6f6f;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   IDENTITY CARD
+   ========================================================= */
+
 .identityCard {
-    background: #141414;
-    border-radius: 12px;
-    padding: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 2.5rem;
-    box-shadow: 6px 6px 14px rgba(0,0,0,0.7), 
-               -2px -2px 8px rgba(255,255,255,0.03),
-               inset 1px 1px 1px rgba(255,255,255,0.05);
-    border: 1px solid #1a1a1a;
+  width: 100%;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 26px;
+
+  padding:
+    30px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.92
+    );
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.08);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 24px 60px
+      rgba(0, 0, 0, 0.075),
+    0 7px 20px
+      rgba(0, 0, 0, 0.035),
+    inset 0 1px 0
+      rgba(255, 255, 255, 1);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-/* Deep Inset Avatar Well */
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
 .avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background-color: #050505;
-    border: 1px solid #111;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-    flex-shrink: 0;
-    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.9), 
-                inset -2px -2px 4px rgba(255,255,255,0.05);
+  width: 82px;
+
+  height: 82px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #ededeb
+    );
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.1);
+
+  color: #111111;
+
+  box-shadow:
+    0 10px 25px
+      rgba(0, 0, 0, 0.08),
+    inset 0 1px 0
+      rgba(255, 255, 255, 1);
 }
 
-.userInfo h1 {
-    font-size: 2.2rem;
-    margin: 0 0 0.5rem 0;
-    letter-spacing: -0.02em;
-    color: #fff;
+
+/* =========================================================
+   USER INFORMATION
+   ========================================================= */
+
+.userInfo {
+  min-width: 0;
+
+  flex: 1;
 }
+
+
+/* =========================================================
+   USER NAME
+   ========================================================= */
+
+.userInfo h2 {
+  margin: 0 0 9px;
+
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 29px;
+
+  line-height: 1;
+
+  font-weight: 500;
+
+  letter-spacing: -0.035em;
+}
+
+
+/* =========================================================
+   EMAIL
+   ========================================================= */
 
 .userEmail {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #888;
-    margin-bottom: 1.25rem;
-    font-size: 0.95rem;
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 16px;
+
+  color: #777777;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+
+  overflow: hidden;
 }
 
-/* Inset Status Badge */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.2rem;
-    border-radius: 20px;
-    background-color: #080808;
-    border: 1px solid #111;
-    font-size: 0.85rem;
-    font-weight: 600;
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 
-                inset -1px -1px 2px rgba(255,255,255,0.03);
+
+.userEmail span {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
-.badgeSuper { color: #ef4444; }
-.badgePremium { color: #eab308; }
-.badgeStandard { color: #666; }
 
-/* --- Raised Action Menu --- */
-.menuCard {
-    background: #141414;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 2.5rem;
-    box-shadow: 6px 6px 14px rgba(0,0,0,0.7), 
-               -2px -2px 8px rgba(255,255,255,0.03),
-               inset 1px 1px 1px rgba(255,255,255,0.05);
-    border: 1px solid #1a1a1a;
+/* =========================================================
+   ACCOUNT BADGE
+   ========================================================= */
+
+.accountBadge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 30px;
+
+  box-sizing: border-box;
+
+  padding:
+    6px
+    11px;
+
+  border-radius: 999px;
+
+  background: #f3f3f1;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.08);
+
+  color: #555555;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.02em;
 }
 
-.menuItem {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #0a0a0a; 
-    color: #e0e0e0;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s ease;
-    box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02); 
+
+/* Super admin */
+
+.accountBadge svg {
+  color: #111111;
 }
 
-.menuItem:last-child {
-    border-bottom: none;
-    box-shadow: none;
+
+/* =========================================================
+   ACTIONS SECTION
+   ========================================================= */
+
+.actionsSection {
+  margin-top: 46px;
 }
 
-.menuItem:hover {
-    background-color: #1a1a1a;
-    padding-left: 1.8rem; 
+
+/* =========================================================
+   SECTION LABEL
+   ========================================================= */
+
+.sectionLabel {
+  display: block;
+
+  margin-bottom: 14px;
+
+  color: #888888;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
 }
 
-/* Inset Icon Dials */
-.iconWrapper {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background-color: #080808;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #111;
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 
-                inset -1px -1px 2px rgba(255,255,255,0.03);
+
+/* =========================================================
+   ACTION CARD
+   ========================================================= */
+
+.actionCard {
+  width: 100%;
+
+  min-height: 88px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 17px;
+
+  position: relative;
+
+  padding:
+    17px
+    19px;
+
+  margin-bottom: 10px;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.08);
+
+  border-radius: 17px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.9
+    );
+
+  color: #111111;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  box-shadow:
+    0 10px 28px
+      rgba(0, 0, 0, 0.045),
+    inset 0 1px 0
+      rgba(255, 255, 255, 1);
+
+  transition:
+    transform 0.25s
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      ),
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
-.menuTitle {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    font-size: 1rem;
+
+.actionCard:hover {
+  transform:
+    translateY(-2px);
+
+  background: #ffffff;
+
+  box-shadow:
+    0 18px 38px
+      rgba(0, 0, 0, 0.08),
+    inset 0 1px 0
+      rgba(255, 255, 255, 1);
 }
 
-.menuDesc {
-    font-size: 0.8rem;
-    color: #666;
+
+.actionCard:active {
+  transform:
+    translateY(0)
+    scale(0.995);
 }
 
-/* --- Mechanical Hazard Switch (Logout) --- */
+
+/* =========================================================
+   ACTION ICON
+   ========================================================= */
+
+.actionIcon {
+  width: 46px;
+
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    #f3f3f1;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.08);
+
+  color: #111111;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 1);
+}
+
+
+/* =========================================================
+   ACTION TEXT
+   ========================================================= */
+
+.actionText {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.actionText strong {
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  line-height: 1.1;
+
+  letter-spacing: -0.015em;
+}
+
+
+.actionText span {
+  color: #777777;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   ACTION ARROW
+   ========================================================= */
+
+.actionArrow {
+  flex-shrink: 0;
+
+  color: #777777;
+
+  font-size: 20px;
+
+  line-height: 1;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.actionCard:hover
+.actionArrow {
+  color: #111111;
+
+  transform:
+    translate(
+      2px,
+      -2px
+    );
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
 .logoutBtn {
-    width: 100%;
-    background: linear-gradient(145deg, #1f0505, #120202);
-    color: #ef4444;
-    border: 1px solid #3f0f0f;
-    padding: 1.25rem;
-    border-radius: 12px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.6), 
-               -2px -2px 5px rgba(255,255,255,0.03),
-               inset 1px 1px 2px rgba(255,255,255,0.08);
-    transition: all 0.15s ease;
-    font-size: 1rem;
+  width: 100%;
+
+  min-height: 54px;
+
+  margin-top: 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.1);
+
+  border-radius: 15px;
+
+  background: #111111;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 26px
+      rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 .logoutBtn:hover {
-    background: linear-gradient(145deg, #2a0808, #1a0404);
-    color: #f87171;
+  background: #222222;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 16px 30px
+      rgba(0, 0, 0, 0.16);
 }
+
 
 .logoutBtn:active {
-    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), 
-                inset -2px -2px 4px rgba(255,255,255,0.02);
-    transform: translateY(2px);
-    color: #dc2626;
-    border-color: #2a0808;
+  transform:
+    translateY(1px);
 }
+
+
+.logoutBtn:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   BOTTOM LABEL
+   ========================================================= */
+
+.bottomLabel {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 70px;
+
+  color: #9a9a9a;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   LOADER
+   ========================================================= */
 
 .loader {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #0d0d0d;
+  min-height: 100vh;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f7f7f5;
+
+  color: #777777;
 }
 
-/* ==========================================================================
-   MOBILE RESPONSIVE ENGINE (Profile Dashboard)
-   ========================================================================== */
+
+/* =========================================================
+   TABLET
+   ========================================================= */
 
 @media (max-width: 768px) {
-    .pageContainer {
-        padding: 1.5rem 1rem; /* Tighten container padding to edge */
-    }
+  .pageContainer {
+    padding:
+      24px
+      22px
+      60px;
+  }
 
-    .header {
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-    }
 
-    /* Stack the Identity Card Vertically */
-    .identityCard {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.5rem;
-        gap: 1.2rem;
-        border-radius: 16px;
-    }
+  .header {
+    padding-bottom: 18px;
+  }
 
-    .avatar {
-        width: 80px; /* Slightly smaller avatar */
-        height: 80px;
-    }
 
-    .userInfo h1 {
-        font-size: 1.6rem; /* Scale down name */
-    }
+  .contentWrapper {
+    padding-top: 60px;
+  }
 
-    .userEmail {
-        justify-content: center; /* Center the email icon and text */
-        font-size: 0.85rem;
-    }
 
-    .badge {
-        padding: 0.4rem 1rem;
-        font-size: 0.75rem;
-    }
+  .pageIntro {
+    margin-bottom: 32px;
+  }
 
-    .menuCard {
-        margin-bottom: 2rem;
-    }
 
-    .menuItem {
-        padding: 1rem 1.2rem; /* Tighter menu items */
-    }
+  .pageTitle {
+    font-size: 68px;
+  }
 
-    .menuItem:hover {
-        padding-left: 1.5rem; /* Reduce the slide-in distance on mobile */
-    }
 
-    .iconWrapper {
-        width: 36px;
-        height: 36px;
-    }
+  .identityCard {
+    padding: 24px;
 
-    .menuTitle {
-        font-size: 0.9rem;
-    }
+    border-radius: 20px;
+  }
 
-    .logoutBtn {
-        padding: 1rem;
-        font-size: 0.9rem;
-    }
+
+  .userInfo h2 {
+    font-size: 26px;
+  }
+
+
+  .actionsSection {
+    margin-top: 38px;
+  }
+
+
+  .bottomLabel {
+    margin-top: 50px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 560px) {
+  .pageContainer {
+    padding:
+      18px
+      15px
+      46px;
+  }
+
+
+  .backgroundGrid {
+    opacity: 0.13;
+
+    background-size: 55px 55px;
+  }
+
+
+  .backgroundGlow {
+    width: 430px;
+
+    height: 430px;
+  }
+
+
+  .header {
+    padding-bottom: 16px;
+  }
+
+
+  .backBtn {
+    font-size: 12px;
+  }
+
+
+  .headerLabel {
+    font-size: 8px;
+  }
+
+
+  .contentWrapper {
+    padding-top: 46px;
+  }
+
+
+  .eyebrow {
+    font-size: 9px;
+
+    margin-bottom: 14px;
+  }
+
+
+  .pageTitle {
+    font-size: 57px;
+  }
+
+
+  .pageDescription {
+    max-width: 300px;
+
+    margin-top: 20px;
+
+    font-size: 13px;
+  }
+
+
+  .identityCard {
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
+    gap: 17px;
+
+    padding:
+      28px
+      18px;
+
+    border-radius: 20px;
+  }
+
+
+  .avatar {
+    width: 74px;
+
+    height: 74px;
+  }
+
+
+  .userInfo {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+
+  .userInfo h2 {
+    font-size: 25px;
+
+    margin-bottom: 8px;
+  }
+
+
+  .userEmail {
+    justify-content: center;
+
+    max-width: 100%;
+
+    margin-bottom: 15px;
+
+    font-size: 12px;
+  }
+
+
+  .accountBadge {
+    font-size: 10px;
+  }
+
+
+  .actionsSection {
+    margin-top: 34px;
+  }
+
+
+  .actionCard {
+    min-height: 82px;
+
+    padding:
+      15px
+      14px;
+
+    gap: 13px;
+
+    border-radius: 15px;
+  }
+
+
+  .actionIcon {
+    width: 42px;
+
+    height: 42px;
+  }
+
+
+  .actionText strong {
+    font-size: 15px;
+  }
+
+
+  .actionText span {
+    font-size: 11px;
+  }
+
+
+  .actionArrow {
+    font-size: 18px;
+  }
+
+
+  .logoutBtn {
+    min-height: 52px;
+
+    margin-top: 24px;
+  }
+
+
+  .bottomLabel {
+    margin-top: 42px;
+
+    font-size: 8px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+  .pageContainer {
+    padding:
+      15px
+      12px
+      38px;
+  }
+
+
+  .headerLabel {
+    display: none;
+  }
+
+
+  .pageTitle {
+    font-size: 50px;
+  }
+
+
+  .identityCard {
+    padding:
+      24px
+      14px;
+  }
+
+
+  .actionText span {
+    display: none;
+  }
+
+
+  .actionCard {
+    min-height: 70px;
+  }
+
+
+  .bottomLabel {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+  .actionCard,
+  .logoutBtn,
+  .backBtn,
+  .actionArrow {
+    transition: none;
+  }
 }

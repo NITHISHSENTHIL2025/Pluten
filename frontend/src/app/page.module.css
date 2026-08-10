@@ -1573,3 +1573,97 @@
   }
 
 }
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.nav {
+  position: relative;
+  z-index: 100;
+  width: 100%;
+  height: 76px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e7e7e7;
+  display: flex;
+  align-items: center;
+}
+
+.navInner {
+  width: 100%;
+  height: 100%;
+  padding: 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* PLUTEN BRAND */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #111;
+  flex-shrink: 0;
+}
+
+.brandLogo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+.brand span {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+/* RIGHT NAVIGATION */
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 34px;
+  margin-left: auto;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #111;
+  text-decoration: none;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+
+  white-space: nowrap;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.navLink:hover {
+  opacity: 0.55;
+  transform: translateY(-1px);
+}
+
+.navLink svg {
+  flex-shrink: 0;
+}
+
+/* REMOVE OLD PRODUCTS NAV BUTTON */
+
+.navProducts,
+.navSpacer {
+  display: none;
+}

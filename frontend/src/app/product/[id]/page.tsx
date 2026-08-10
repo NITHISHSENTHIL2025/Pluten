@@ -131,7 +131,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <div className={styles.pageContainer}>
 
             <nav className={styles.topNav}>
-                <div className={styles.brand} onClick={() => router.push('/')}>iSevens</div>
+                <div className={styles.brand} onClick={() => router.push('/')}>pluten</div>
                 <button onClick={() => router.push('/')} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
                     <ArrowLeft size={18} /> Back to Market
                 </button>
@@ -158,7 +158,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center">
                                 <User size={16} />
                             </div>
-                            <span className="font-medium text-white">iSevens Network</span>
+                            <span className="font-medium text-white">Pluten Network</span>
                             <Check size={16} color="#00ff00" />
                             <span className="mx-2 text-neutral-600">•</span>
                             <span>{product.category}</span>

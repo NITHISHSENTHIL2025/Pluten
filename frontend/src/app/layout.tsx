@@ -85,7 +85,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="bg-[#0a0a0a] text-[#f5f5f5] antialiased">
+            <body>
                 <OfferProvider>
                     {/* This renders your page.tsx, login, profile, etc. */}
                     {children} 

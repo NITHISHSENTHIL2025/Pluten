@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, ArrowUpRight, Library, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import gsap from "gsap";
 
 import apiClient from "@/lib/apiClient";
@@ -41,15 +36,14 @@ export default function StorefrontPage() {
 
   /* =========================================================
      LOAD REAL PRODUCTS
-  ========================================================= */
+     ========================================================= */
 
   useEffect(() => {
     let mounted = true;
 
     const loadProducts = async () => {
       try {
-        const response =
-          await apiClient.get<Product[]>("/products");
+        const response = await apiClient.get<Product[]>("/products");
 
         if (!mounted) return;
 
@@ -59,10 +53,7 @@ export default function StorefrontPage() {
             : []
         );
       } catch (error) {
-        console.error(
-          "Failed to load Pluten products:",
-          error
-        );
+        console.error("Failed to load Pluten products:", error);
 
         if (mounted) {
           setProducts([]);
@@ -83,12 +74,7 @@ export default function StorefrontPage() {
 
   /* =========================================================
      REAL PRODUCTS ONLY
-
-     No fake products.
-     No fake categories.
-     No fake sorting.
-     No fake search.
-  ========================================================= */
+     ========================================================= */
 
   const displayedProducts = useMemo(() => {
     return [...products].sort(
@@ -100,7 +86,7 @@ export default function StorefrontPage() {
 
   /* =========================================================
      HERO LOGO PARALLAX
-  ========================================================= */
+     ========================================================= */
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -109,19 +95,14 @@ export default function StorefrontPage() {
     if (!hero || !logo) return;
 
     const move = (event: MouseEvent) => {
-      const rect =
-        hero.getBoundingClientRect();
+      const rect = hero.getBoundingClientRect();
 
       const x =
-        (event.clientX -
-          rect.left -
-          rect.width / 2) /
+        (event.clientX - rect.left - rect.width / 2) /
         rect.width;
 
       const y =
-        (event.clientY -
-          rect.top -
-          rect.height / 2) /
+        (event.clientY - rect.top - rect.height / 2) /
         rect.height;
 
       gsap.to(logo, {
@@ -147,46 +128,26 @@ export default function StorefrontPage() {
       });
     };
 
-    hero.addEventListener(
-      "mousemove",
-      move
-    );
-
-    hero.addEventListener(
-      "mouseleave",
-      leave
-    );
+    hero.addEventListener("mousemove", move);
+    hero.addEventListener("mouseleave", leave);
 
     return () => {
-      hero.removeEventListener(
-        "mousemove",
-        move
-      );
-
-      hero.removeEventListener(
-        "mouseleave",
-        leave
-      );
+      hero.removeEventListener("mousemove", move);
+      hero.removeEventListener("mouseleave", leave);
     };
   }, []);
 
   /* =========================================================
      HERO ENTRANCE
-  ========================================================= */
+     ========================================================= */
 
   useEffect(() => {
     const logo = heroLogoRef.current;
     const title = heroTitleRef.current;
-    const description =
-      heroDescriptionRef.current;
+    const description = heroDescriptionRef.current;
     const button = heroButtonRef.current;
 
-    if (
-      !logo ||
-      !title ||
-      !description ||
-      !button
-    ) {
+    if (!logo || !title || !description || !button) {
       return;
     }
 
@@ -259,8 +220,8 @@ export default function StorefrontPage() {
   }, []);
 
   /* =========================================================
-     SCROLL
-  ========================================================= */
+     SCROLL TO PRODUCTS
+     ========================================================= */
 
   const scrollToProducts = () => {
     productsRef.current?.scrollIntoView({
@@ -271,19 +232,23 @@ export default function StorefrontPage() {
 
   /* =========================================================
      RENDER
-  ========================================================= */
+     ========================================================= */
 
   return (
     <main className={styles.page}>
 
       {/* =====================================================
           NAVBAR
+          Only real navigation:
+          - Pluten
+          - Profile
+          - Digital Library
       ===================================================== */}
 
       <header className={styles.nav}>
         <div className={styles.navInner}>
 
-          <a
+          <Link
             href="/"
             className={styles.brand}
             aria-label="Pluten home"
@@ -295,17 +260,33 @@ export default function StorefrontPage() {
             />
 
             <span>PLUTEN</span>
-          </a>
+          </Link>
 
-          <button
-            type="button"
-            className={styles.navProducts}
-            onClick={scrollToProducts}
-          >
-            Products
-          </button>
+          <nav className={styles.navLinks}>
+            <Link
+              href="/profile"
+              className={styles.navLink}
+            >
+              <UserRound
+                size={17}
+                strokeWidth={2}
+              />
 
-          <div className={styles.navSpacer} />
+              <span>Profile</span>
+            </Link>
+
+            <Link
+              href="/library"
+              className={styles.navLink}
+            >
+              <Library
+                size={17}
+                strokeWidth={2}
+              />
+
+              <span>Digital Library</span>
+            </Link>
+          </nav>
 
         </div>
       </header>
@@ -339,9 +320,7 @@ export default function StorefrontPage() {
 
           <p
             ref={heroDescriptionRef}
-            className={
-              styles.heroDescription
-            }
+            className={styles.heroDescription}
           >
             Premium digital products
             built for people who refuse
@@ -357,7 +336,7 @@ export default function StorefrontPage() {
               className={styles.primaryButton}
               onClick={scrollToProducts}
             >
-              Explore products
+              <span>Explore products</span>
 
               <ArrowUpRight
                 size={18}
@@ -374,7 +353,7 @@ export default function StorefrontPage() {
         </div>
 
         {/* =================================================
-            REAL PLUTEN LOGO
+            PLUTEN LOGO
         ================================================= */}
 
         <div className={styles.logoArea}>
@@ -425,11 +404,7 @@ export default function StorefrontPage() {
         <div className={styles.productsHeader}>
 
           <div>
-            <span
-              className={
-                styles.sectionEyebrow
-              }
-            >
+            <span className={styles.sectionEyebrow}>
               01 / PRODUCTS
             </span>
 
@@ -461,9 +436,7 @@ export default function StorefrontPage() {
         {!loading &&
           displayedProducts.length === 0 && (
             <div className={styles.empty}>
-              <strong>
-                NO PRODUCTS YET.
-              </strong>
+              <strong>NO PRODUCTS YET.</strong>
 
               <p>
                 New products are coming soon.
@@ -475,21 +448,14 @@ export default function StorefrontPage() {
 
         {!loading &&
           displayedProducts.length > 0 && (
-            <div
-              className={
-                styles.productGrid
-              }
-            >
+            <div className={styles.productGrid}>
               {displayedProducts.map(
                 (product, index) => (
                   <div
                     key={product.id}
-                    className={
-                      styles.productItem
-                    }
+                    className={styles.productItem}
                     style={{
-                      animationDelay:
-                        `${index * 70}ms`,
+                      animationDelay: `${index * 70}ms`,
                     }}
                     onClick={() =>
                       router.push(
@@ -513,26 +479,16 @@ export default function StorefrontPage() {
           PHILOSOPHY
       ===================================================== */}
 
-      <section
-        className={styles.philosophy}
-      >
+      <section className={styles.philosophy}>
 
         <div className={styles.philosophyTop}>
           <span>02 / THE PLUTEN WAY</span>
           <span>BEYOND ORDINARY.</span>
         </div>
 
-        <div
-          className={
-            styles.philosophyContent
-          }
-        >
+        <div className={styles.philosophyContent}>
 
-          <span
-            className={
-              styles.philosophyLabel
-            }
-          >
+          <span className={styles.philosophyLabel}>
             OUR PRINCIPLE
           </span>
 
@@ -560,13 +516,14 @@ export default function StorefrontPage() {
 
       {/* =====================================================
           SMALL FOOTER
+          Only Instagram + Support
       ===================================================== */}
 
       <footer className={styles.footer}>
 
         <div className={styles.footerInner}>
 
-          <a
+          <Link
             href="/"
             className={styles.footerBrand}
           >
@@ -576,13 +533,10 @@ export default function StorefrontPage() {
             />
 
             <span>PLUTEN</span>
-          </a>
+          </Link>
 
-          <div
-            className={
-              styles.footerLinks
-            }
-          >
+          <div className={styles.footerLinks}>
+
             <a
               href="https://instagram.com/pluten"
               target="_blank"
@@ -594,13 +548,10 @@ export default function StorefrontPage() {
             <a href="mailto:support@pluten.site">
               Support
             </a>
+
           </div>
 
-          <span
-            className={
-              styles.footerCopyright
-            }
-          >
+          <span className={styles.footerCopyright}>
             © 2026 PLUTEN
           </span>
 

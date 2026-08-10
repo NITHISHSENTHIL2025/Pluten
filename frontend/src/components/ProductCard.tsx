@@ -1,13 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  Star,
-  Check,
-  ArrowUpRight,
-  Sparkles,
-} from "lucide-react";
-
+import { Star, User, Check, ArrowUpRight, Sparkles } from "lucide-react";
 import { useOffers } from "@/context/OfferContext";
 import styles from "../app/page.module.css";
 
@@ -65,78 +59,99 @@ export default function ProductCard({
   const originalPrice = Number(product.price);
 
   const hasDiscount =
-    !!activeOffer && finalPrice < originalPrice;
+    !!activeOffer &&
+    finalPrice < originalPrice;
 
-  const discountPercentage =
-    hasDiscount && activeOffer?.type === "PERCENTAGE"
-      ? Number(activeOffer.value)
-      : Math.round(
-          ((originalPrice - finalPrice) / originalPrice) *
-            100
-        );
+  const discountPercent = hasDiscount
+    ? Math.round(
+        ((originalPrice - finalPrice) /
+          originalPrice) *
+          100
+      )
+    : 0;
 
   return (
     <article className={styles.productCard}>
-      {/* IMAGE AREA */}
+
+      {/* IMAGE */}
       <div className={styles.productVisual}>
 
+        {product.thumbnail ? (
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            className={styles.cardImage}
+          />
+        ) : (
+          <div className={styles.noImage}>
+            NO PREVIEW
+          </div>
+        )}
+
         {/* OFFER */}
-        {hasDiscount && (
-          <div className={styles.offerPill}>
-            <Sparkles size={11} strokeWidth={2} />
+        {hasDiscount && activeOffer && (
+          <div className={styles.offerBadge}>
+            <Sparkles size={12} strokeWidth={2.5} />
+
             <span>
-              {activeOffer?.type === "PERCENTAGE"
-                ? `${activeOffer.value}% OFF`
-                : `SAVE ₹${activeOffer?.value}`}
+              {activeOffer.type === "PERCENTAGE"
+                ? `${discountPercent}% OFF`
+                : `₹${Number(
+                    activeOffer.value
+                  ).toLocaleString("en-IN")} OFF`}
             </span>
           </div>
         )}
 
-        {/* IMAGE */}
-        <div className={styles.imageFrame}>
-          {product.thumbnail ? (
-            <img
-              src={product.thumbnail}
-              alt={product.title}
-              className={styles.cardImage}
-            />
-          ) : (
-            <div className={styles.noImage}>
-              <span>NO PREVIEW</span>
-            </div>
-          )}
-        </div>
-
-        {/* HOVER ARROW */}
+        {/* VIEW BUTTON */}
         <div className={styles.productArrow}>
           <ArrowUpRight
             size={18}
-            strokeWidth={1.6}
+            strokeWidth={1.8}
           />
         </div>
+
       </div>
 
-      {/* PRODUCT INFO */}
+      {/* CONTENT */}
       <div className={styles.cardContent}>
 
         <div className={styles.productMeta}>
           <span>
-            {product.category || "E-BOOKS"}
+            {product.category || "DIGITAL PRODUCT"}
           </span>
 
           {hasDiscount && (
             <span className={styles.saveText}>
-              SAVE {discountPercentage}%
+              SAVE {discountPercent}%
             </span>
           )}
         </div>
 
-        <h3 className={styles.cardTitle}>
-          {product.title}
-        </h3>
+        <div className={styles.titleRow}>
 
-        {/* BRAND */}
+          <h3 className={styles.cardTitle}>
+            {product.title}
+          </h3>
+
+          <ArrowUpRight
+            className={styles.titleArrow}
+            size={18}
+            strokeWidth={1.5}
+          />
+
+        </div>
+
+        {/* VENDOR */}
         <div className={styles.cardVendor}>
+
+          <div className={styles.vendorAvatar}>
+            <User
+              size={11}
+              strokeWidth={1.8}
+            />
+          </div>
+
           <span>PLUTEN</span>
 
           <span className={styles.verified}>
@@ -145,19 +160,29 @@ export default function ProductCard({
               strokeWidth={3}
             />
           </span>
+
         </div>
 
         {/* RATING */}
         <div className={styles.cardRating}>
+
           <Star
-            size={11}
+            size={12}
             fill="currentColor"
-            strokeWidth={1.5}
+            strokeWidth={0}
           />
+
           <span>5.0</span>
+
+          <span className={styles.ratingDivider}>
+            /
+          </span>
+
+          <span>PLUTEN VERIFIED</span>
+
         </div>
 
-        {/* PRICE */}
+        {/* BOTTOM */}
         <div className={styles.cardBottom}>
 
           {loadingOffers ? (
@@ -183,7 +208,9 @@ export default function ProductCard({
           </span>
 
         </div>
+
       </div>
+
     </article>
   );
 }

@@ -1,21 +1,35 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import { useRouter } from "next/navigation";
+
 import {
   ArrowDown,
   ArrowRight,
   ArrowUpRight,
   Search,
 } from "lucide-react";
+
 import gsap from "gsap";
 
 import apiClient from "@/lib/apiClient";
+
 import ProductCard from "@/components/ProductCard";
+
 import PlutenNav from "@/components/PlutenNav";
 
 import styles from "./page.module.css";
 
+
+/* =========================================================
+   PRODUCT TYPE
+========================================================= */
 
 interface Product {
   id: string;
@@ -28,9 +42,18 @@ interface Product {
 }
 
 
+/* =========================================================
+   STOREFRONT
+========================================================= */
+
 export default function StorefrontPage() {
 
   const router = useRouter();
+
+
+  /* =========================================================
+     STATE
+  ========================================================= */
 
   const [products, setProducts] =
     useState<Product[]>([]);
@@ -50,6 +73,10 @@ export default function StorefrontPage() {
     );
 
 
+  /* =========================================================
+     REFS
+  ========================================================= */
+
   const heroRef =
     useRef<HTMLDivElement>(null);
 
@@ -66,7 +93,7 @@ export default function StorefrontPage() {
     useRef<HTMLDivElement>(null);
 
   const featuredRef =
-    useRef<HTMLDivElement>(null);
+    useRef<HTMLElement>(null);
 
 
   /* =========================================================
@@ -75,16 +102,28 @@ export default function StorefrontPage() {
 
   useEffect(() => {
 
+    let mounted = true;
+
+
     const fetchProducts = async () => {
 
       try {
 
         const response =
-          await apiClient.get(
+          await apiClient.get<Product[]>(
             "/products"
           );
 
-        setProducts(response.data);
+
+        if (mounted) {
+
+          setProducts(
+            Array.isArray(response.data)
+              ? response.data
+              : []
+          );
+
+        }
 
       } catch (error) {
 
@@ -93,15 +132,29 @@ export default function StorefrontPage() {
           error
         );
 
+        if (mounted) {
+          setProducts([]);
+        }
+
       } finally {
 
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
 
       }
 
     };
 
+
     fetchProducts();
+
+
+    return () => {
+
+      mounted = false;
+
+    };
 
   }, []);
 
@@ -114,11 +167,14 @@ export default function StorefrontPage() {
     useMemo(() => {
 
       const categories =
-        products.map(
-          (product) =>
-            product.category ||
-            "Uncategorized"
-        );
+        products
+          .map(
+            (product) =>
+              product.category?.trim() ||
+              "Uncategorized"
+          )
+          .filter(Boolean);
+
 
       return [
         "All Categories",
@@ -131,7 +187,7 @@ export default function StorefrontPage() {
 
 
   /* =========================================================
-     FILTERING
+     FILTER + SORT
   ========================================================= */
 
   const displayedProducts =
@@ -140,6 +196,8 @@ export default function StorefrontPage() {
       let filtered =
         [...products];
 
+
+      /* CATEGORY */
 
       if (
         selectedCategory !==
@@ -150,7 +208,7 @@ export default function StorefrontPage() {
           filtered.filter(
             (product) =>
               (
-                product.category ||
+                product.category?.trim() ||
                 "Uncategorized"
               ) ===
               selectedCategory
@@ -159,33 +217,46 @@ export default function StorefrontPage() {
       }
 
 
-      if (
-        searchQuery.trim()
-      ) {
+      /* SEARCH */
 
-        const query =
-          searchQuery
-            .toLowerCase()
-            .trim();
+      const query =
+        searchQuery
+          .trim()
+          .toLowerCase();
+
+
+      if (query) {
 
         filtered =
           filtered.filter(
-            (product) =>
+            (product) => {
 
-              product.title
-                .toLowerCase()
-                .includes(query)
+              const title =
+                product.title
+                  ?.toLowerCase() || "";
 
-              ||
+              const description =
+                product.description
+                  ?.toLowerCase() || "";
 
-              product.description
-                .toLowerCase()
-                .includes(query)
+              const category =
+                product.category
+                  ?.toLowerCase() || "";
 
+
+              return (
+                title.includes(query) ||
+                description.includes(query) ||
+                category.includes(query)
+              );
+
+            }
           );
 
       }
 
+
+      /* SORT */
 
       filtered.sort(
         (a, b) => {
@@ -207,6 +278,13 @@ export default function StorefrontPage() {
 
           }
 
+
+          /*
+             Trending fallback.
+             Until a real popularity metric exists,
+             preserve the current product order.
+          */
+
           return 0;
 
         }
@@ -224,13 +302,15 @@ export default function StorefrontPage() {
 
 
   /* =========================================================
-     FEATURED
+     FEATURED PRODUCTS
+     
+     FOUR PRODUCTS ON DESKTOP
   ========================================================= */
 
   const featuredProducts =
     displayedProducts.slice(
       0,
-      3
+      4
     );
 
 
@@ -246,92 +326,87 @@ export default function StorefrontPage() {
     const planet =
       planetRef.current;
 
+
     if (
       !hero ||
       !planet
-    ) return;
+    ) {
+      return;
+    }
 
 
-    const move = (
-      event: MouseEvent
-    ) => {
+    const move =
+      (event: MouseEvent) => {
 
-      const rect =
-        hero.getBoundingClientRect();
-
-
-      const x =
-        (
-          event.clientX -
-          rect.left -
-          rect.width / 2
-        )
-        /
-        rect.width;
+        const rect =
+          hero.getBoundingClientRect();
 
 
-      const y =
-        (
-          event.clientY -
-          rect.top -
-          rect.height / 2
-        )
-        /
-        rect.height;
+        const x =
+          (
+            event.clientX -
+            rect.left -
+            rect.width / 2
+          )
+          /
+          rect.width;
 
 
-      gsap.to(
-        planet,
-        {
-
-          x:
-            x * 24,
-
-          y:
-            y * 18,
-
-          rotateY:
-            x * 5,
-
-          rotateX:
-            y * -5,
-
-          duration:
-            0.8,
-
-          ease:
-            "power3.out",
-
-        }
-      );
-
-    };
+        const y =
+          (
+            event.clientY -
+            rect.top -
+            rect.height / 2
+          )
+          /
+          rect.height;
 
 
-    const leave = () => {
+        gsap.to(
+          planet,
+          {
+            x: x * 24,
 
-      gsap.to(
-        planet,
-        {
+            y: y * 18,
 
-          x: 0,
+            rotateY: x * 5,
 
-          y: 0,
+            rotateX: y * -5,
 
-          rotateX: 0,
+            duration: .8,
 
-          rotateY: 0,
+            ease: "power3.out",
 
-          duration:
-            1,
+            overwrite: true,
+          }
+        );
 
-          ease:
-            "elastic.out(1,.45)",
+      };
 
-        }
-      );
 
-    };
+    const leave =
+      () => {
+
+        gsap.to(
+          planet,
+          {
+            x: 0,
+
+            y: 0,
+
+            rotateX: 0,
+
+            rotateY: 0,
+
+            duration: 1,
+
+            ease: "elastic.out(1,.45)",
+
+            overwrite: true,
+          }
+        );
+
+      };
 
 
     hero.addEventListener(
@@ -386,87 +461,103 @@ export default function StorefrontPage() {
       !sub ||
       !buttons ||
       !planet
-    ) return;
+    ) {
+      return;
+    }
 
 
-    const tl =
+    const timeline =
       gsap.timeline();
 
 
-    tl.fromTo(
+    timeline.fromTo(
       title,
 
       {
         y: 70,
+
         opacity: 0,
       },
 
       {
         y: 0,
+
         opacity: 1,
+
         duration: .9,
-        ease:
-          "power4.out",
+
+        ease: "power4.out",
       }
     );
 
 
-    tl.fromTo(
+    timeline.fromTo(
       sub,
 
       {
         y: 30,
+
         opacity: 0,
       },
 
       {
         y: 0,
+
         opacity: 1,
+
         duration: .65,
-        ease:
-          "power4.out",
+
+        ease: "power4.out",
       },
 
       "-=.55"
     );
 
 
-    tl.fromTo(
+    timeline.fromTo(
       buttons,
 
       {
         y: 25,
+
         opacity: 0,
       },
 
       {
         y: 0,
+
         opacity: 1,
+
         duration: .55,
-        ease:
-          "power4.out",
+
+        ease: "power4.out",
       },
 
       "-=.4"
     );
 
 
-    tl.fromTo(
+    timeline.fromTo(
       planet,
 
       {
         scale: .82,
+
         opacity: 0,
+
         rotate: -8,
       },
 
       {
         scale: 1,
+
         opacity: 1,
+
         rotate: 0,
+
         duration: 1.2,
-        ease:
-          "power4.out",
+
+        ease: "power4.out",
       },
 
       "-=.8"
@@ -475,7 +566,7 @@ export default function StorefrontPage() {
 
     return () => {
 
-      tl.kill();
+      timeline.kill();
 
     };
 
@@ -483,22 +574,34 @@ export default function StorefrontPage() {
 
 
   /* =========================================================
-     SMOOTH SCROLL
+     SCROLL TO PRODUCTS
   ========================================================= */
 
-  const scrollToProducts = () => {
+  const scrollToProducts =
+    () => {
 
-    featuredRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+      featuredRef.current?.scrollIntoView(
+        {
+          behavior: "smooth",
 
-  };
+          block: "start",
+        }
+      );
 
+    };
+
+
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
 
-    <main className={styles.page}>
+    <main
+      className={
+        styles.page
+      }
+    >
 
       <PlutenNav />
 
@@ -509,7 +612,9 @@ export default function StorefrontPage() {
 
       <section
         ref={heroRef}
-        className={styles.hero}
+        className={
+          styles.hero
+        }
       >
 
         <div
@@ -526,7 +631,7 @@ export default function StorefrontPage() {
         />
 
 
-        {/* LEFT */}
+        {/* HERO CONTENT */}
 
         <div
           className={
@@ -587,6 +692,7 @@ export default function StorefrontPage() {
           >
 
             <button
+              type="button"
               className={
                 styles.primaryButton
               }
@@ -599,12 +705,14 @@ export default function StorefrontPage() {
 
               <ArrowUpRight
                 size={17}
+                strokeWidth={2}
               />
 
             </button>
 
 
             <button
+              type="button"
               className={
                 styles.textButton
               }
@@ -617,6 +725,7 @@ export default function StorefrontPage() {
 
               <ArrowRight
                 size={15}
+                strokeWidth={2}
               />
 
             </button>
@@ -706,15 +815,17 @@ export default function StorefrontPage() {
         </div>
 
 
-        {/* BOTTOM */}
+        {/* SCROLL */}
 
         <button
+          type="button"
           className={
             styles.scrollIndicator
           }
           onClick={
             scrollToProducts
           }
+          aria-label="Scroll to products"
         >
 
           <span>
@@ -723,6 +834,7 @@ export default function StorefrontPage() {
 
           <ArrowDown
             size={15}
+            strokeWidth={2}
           />
 
         </button>
@@ -731,7 +843,7 @@ export default function StorefrontPage() {
 
 
       {/* =====================================================
-          FEATURED
+          FEATURED COLLECTION
       ===================================================== */}
 
       <section
@@ -740,6 +852,8 @@ export default function StorefrontPage() {
           styles.featured
         }
       >
+
+        {/* HEADER */}
 
         <div
           className={
@@ -758,9 +872,13 @@ export default function StorefrontPage() {
             </span>
 
             <h2>
+
               Selected
+
               <br />
+
               works.
+
             </h2>
 
           </div>
@@ -779,17 +897,23 @@ export default function StorefrontPage() {
               learn and move further.
             </p>
 
+
             <button
+              type="button"
               onClick={() =>
                 router.push(
                   "/products"
                 )
               }
             >
+
               View all
+
               <ArrowUpRight
                 size={15}
+                strokeWidth={2}
               />
+
             </button>
 
           </div>
@@ -797,7 +921,7 @@ export default function StorefrontPage() {
         </div>
 
 
-        {/* FILTER ROW */}
+        {/* FILTERS */}
 
         <div
           className={
@@ -818,6 +942,7 @@ export default function StorefrontPage() {
 
                   <button
                     key={category}
+                    type="button"
                     className={
                       selectedCategory ===
                       category
@@ -830,7 +955,9 @@ export default function StorefrontPage() {
                       )
                     }
                   >
+
                     {category}
+
                   </button>
 
                 )
@@ -846,6 +973,7 @@ export default function StorefrontPage() {
           >
 
             <button
+              type="button"
               className={
                 activeSort ===
                 "latest"
@@ -858,10 +986,14 @@ export default function StorefrontPage() {
                 )
               }
             >
+
               Latest
+
             </button>
 
+
             <button
+              type="button"
               className={
                 activeSort ===
                 "trending"
@@ -874,7 +1006,9 @@ export default function StorefrontPage() {
                 )
               }
             >
+
               Trending
+
             </button>
 
           </div>
@@ -891,25 +1025,21 @@ export default function StorefrontPage() {
         >
 
           <Search
-            size={16}
-            strokeWidth={1.5}
+            size={17}
+            strokeWidth={2}
           />
 
           <input
             value={
               searchQuery
             }
-            onChange={(e) =>
+            onChange={(event) =>
               setSearchQuery(
-                e.target.value
+                event.target.value
               )
             }
-            placeholder={
-              "Search products..."
-            }
-            aria-label={
-              "Search products"
-            }
+            placeholder="Search products..."
+            aria-label="Search products"
           />
 
         </div>
@@ -998,7 +1128,7 @@ export default function StorefrontPage() {
 
 
       {/* =====================================================
-          PLUTEN PHILOSOPHY
+          PHILOSOPHY
       ===================================================== */}
 
       <section
@@ -1035,7 +1165,9 @@ export default function StorefrontPage() {
               styles.philosophyLabel
             }
           >
+
             OUR PRINCIPLE
+
           </span>
 
 
@@ -1089,6 +1221,8 @@ export default function StorefrontPage() {
           }
         >
 
+          {/* BRAND */}
+
           <div>
 
             <div
@@ -1097,13 +1231,20 @@ export default function StorefrontPage() {
               }
             >
 
-              <span>
-                P
-              </span>
+              {/* REAL PLUTEN LOGO */}
+
+              <img
+                src="/favicon.ico"
+                alt="Pluten"
+                className={
+                  styles.footerLogo
+                }
+              />
 
               PLUTEN
 
             </div>
+
 
             <p>
               Beyond ordinary.
@@ -1111,6 +1252,8 @@ export default function StorefrontPage() {
 
           </div>
 
+
+          {/* LINKS */}
 
           <div
             className={
@@ -1124,7 +1267,9 @@ export default function StorefrontPage() {
                 EXPLORE
               </span>
 
+
               <button
+                type="button"
                 onClick={() =>
                   router.push(
                     "/products"
@@ -1134,7 +1279,9 @@ export default function StorefrontPage() {
                 Products
               </button>
 
+
               <button
+                type="button"
                 onClick={() =>
                   router.push(
                     "/offers"
@@ -1144,7 +1291,9 @@ export default function StorefrontPage() {
                 New
               </button>
 
+
               <button
+                type="button"
                 onClick={() =>
                   router.push(
                     "/library"
@@ -1163,7 +1312,9 @@ export default function StorefrontPage() {
                 ACCOUNT
               </span>
 
+
               <button
+                type="button"
                 onClick={() =>
                   router.push(
                     "/profile"
@@ -1173,7 +1324,9 @@ export default function StorefrontPage() {
                 Profile
               </button>
 
+
               <button
+                type="button"
                 onClick={() =>
                   router.push(
                     "/login"
@@ -1189,6 +1342,8 @@ export default function StorefrontPage() {
 
         </div>
 
+
+        {/* COPYRIGHT */}
 
         <div
           className={

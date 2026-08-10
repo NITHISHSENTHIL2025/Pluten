@@ -493,13 +493,7 @@ export default function StorefrontPage() {
           </span>
 
           <h2>
-            Build.
-            <br />
-            Measure.
-            <br />
-            Improve.
-            <br />
-            Ship.
+            O̶r̶d̶i̶n̶a̶r̶y̶
           </h2>
 
           <p>

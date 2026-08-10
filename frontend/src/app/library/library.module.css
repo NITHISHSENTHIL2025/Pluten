@@ -1,192 +1,966 @@
-/* frontend/src/app/library/library.module.css */
+/* =========================================================
+   PLUTEN — DIGITAL LIBRARY
+   frontend/src/app/library/library.module.css
+   ========================================================= */
 
 .pageContainer {
-    min-height: 100vh;
-    background-color: #0d0d0d; 
-    color: #e0e0e0;
-    padding: 3rem 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  background: #f5f5f3;
+  color: #111111;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    Arial,
+    sans-serif;
+  padding-bottom: 80px;
 }
 
-.contentWrapper { max-width: 1400px; margin: 0 auto; }
+
+/* =========================================================
+   TOP NAVIGATION
+   ========================================================= */
+
+.topNav {
+  width: 100%;
+  height: 76px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #dededc;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.topNavInner {
+  width: 100%;
+  padding: 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: #111111;
+  text-decoration: none;
+}
+
+.brandLogo {
+  width: 29px;
+  height: 29px;
+  object-fit: contain;
+  display: block;
+}
+
+.brandName {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+}
+
+
+/* =========================================================
+   NAV RIGHT
+   ========================================================= */
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #111111;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.navLink:hover {
+  opacity: 0.55;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.contentWrapper {
+  width: min(1380px, calc(100% - 88px));
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 3rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #1a1a1a;
+  min-height: 310px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 50px;
+  padding: 78px 0 44px;
+  border-bottom: 1px solid #d9d9d6;
+}
+
+.headerLeft {
+  max-width: 850px;
 }
 
 .backBtn {
-    background: none;
-    border: none;
-    color: #888;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    transition: color 0.2s;
-    min-height: 44px; /* Touch target */
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0 0 38px;
+
+  color: #666666;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.backBtn:hover {
+  color: #111111;
+  transform: translateX(-3px);
+}
+
+.pageEyebrow {
+  display: block;
+  margin-bottom: 17px;
+
+  color: #777777;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .pageTitle {
-    font-size: 2.2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #fff;
-    margin: 0;
+  margin: 0;
+
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(48px, 6vw, 88px);
+  line-height: 0.92;
+  font-weight: 700;
+  letter-spacing: -0.055em;
 }
 
-.subtitle { color: #666; margin-top: 0.5rem; font-size: 0.95rem; }
+.subtitle {
+  max-width: 560px;
+
+  margin: 25px 0 0;
+
+  color: #676767;
+
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   SECURITY BADGE
+   ========================================================= */
 
 .vaultBadge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    background-color: #0a0a0a;
-    color: #22c55e; 
-    font-size: 0.85rem;
-    font-weight: 600;
-    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.9), 
-                inset -2px -2px 4px rgba(255,255,255,0.02);
-    border: 1px solid #111;
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 11px 15px;
+
+  border: 1px solid #d5d5d2;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
+
+.vaultBadge svg {
+  color: #1f7a45;
+}
+
+
+/* =========================================================
+   LIBRARY META
+   ========================================================= */
+
+.libraryMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 25px 0 20px;
+}
+
+.assetCount {
+  color: #777777;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.assetCount strong {
+  color: #111111;
+}
+
+
+/* =========================================================
+   PRODUCT GRID
+   ========================================================= */
 
 .assetGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2.5rem;
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 22px;
+
+  padding-bottom: 80px;
 }
 
+
+/* =========================================================
+   ASSET CARD
+   ========================================================= */
+
 .assetCard {
-    background: #141414;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    /* Heavy Elevated Depth */
-    box-shadow: 10px 10px 24px rgba(0,0,0,0.85), 
-               -4px -4px 12px rgba(255,255,255,0.02),
-               inset 1px 1px 1px rgba(255,255,255,0.04);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    transform: translateZ(0); /* Hardware Accel */
-    will-change: transform, box-shadow;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #dededb;
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.045),
+    0 2px 5px rgba(0, 0, 0, 0.025);
+
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease;
+
+  animation: cardReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1)
+    both;
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   CARD IMAGE
+   ========================================================= */
+
+.cardImageWrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  background: #eeeeec;
 }
 
 .cardImage {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    background-color: #050505;
-    border-bottom: 1px solid #000;
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition:
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.cardImageShade {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.02) 0%,
+      rgba(0, 0, 0, 0) 60%,
+      rgba(0, 0, 0, 0.08) 100%
+    );
+}
+
+.noImage {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eeeeeb 0%,
+      #e3e3df 100%
+    );
+
+  color: #999999;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+
+/* =========================================================
+   CARD CONTENT
+   ========================================================= */
+
 .cardContent {
-    padding: 1.5rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(180deg, #141414 0%, #0f0f0f 100%);
+  min-height: 184px;
+
+  padding: 22px 22px 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.cardEyebrow {
+  margin-bottom: 12px;
+
+  color: #8a8a86;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
 }
 
 .cardTitle {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 1.5rem 0;
+  margin: 0;
+
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 21px;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
+.cardFooter {
+  margin-top: auto;
+  padding-top: 21px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.cardStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #777777;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.cardStatusDot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #3a9b5f;
+
+  box-shadow:
+    0 0 0 3px rgba(58, 155, 95, 0.1);
+}
+
+
+/* =========================================================
+   DOWNLOAD BUTTON
+   ========================================================= */
+
 .downloadBtn {
-    margin-top: auto;
-    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-    color: #e0e0e0;
-    border: 1px solid #222;
-    padding: 0 1.4rem;
-    min-height: 48px; /* Mobile touch target */
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    /* Physical Raised Button */
-    box-shadow: 6px 6px 12px rgba(0,0,0,0.8), 
-               -3px -3px 8px rgba(255,255,255,0.02),
-               inset 1px 1px 2px rgba(255,255,255,0.06);
-    transition: all 0.15s ease;
-    transform: translateZ(0);
+  appearance: none;
+
+  min-height: 45px;
+
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid #111111;
+  border-radius: 999px;
+
+  background: #111111;
+  color: #ffffff;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 12px rgba(0, 0, 0, 0.16);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.downloadBtn:hover {
+  background: #ffffff;
+  color: #111111;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 20px rgba(0, 0, 0, 0.12);
 }
 
 .downloadBtn:active {
-    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.9), 
-                inset -2px -2px 4px rgba(255,255,255,0.02);
-    transform: translateY(2px) translateZ(0);
-    color: #8b0000; 
-    border-color: #333;
+  transform: translateY(0);
+
+  box-shadow:
+    0 3px 7px rgba(0, 0, 0, 0.14);
 }
+
+.downloadBtn:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty {
+  min-height: 430px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  border-top: 1px solid #dededb;
+  border-bottom: 1px solid #dededb;
+}
+
+.emptyIcon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 24px;
+
+  border-radius: 50%;
+
+  background: #111111;
+  color: #ffffff;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.14);
+}
+
+.emptyTitle {
+  margin: 0;
+
+  color: #111111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 31px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.emptyText {
+  max-width: 400px;
+
+  margin: 12px 0 0;
+
+  color: #777777;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
 
 .loader {
-    min-height: 100vh;
-    background-color: #0d0d0d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f5f5f3;
+  color: #111111;
 }
 
-/* Hover Queries */
-@media (hover: hover) and (pointer: fine) {
-    .backBtn:hover { color: #fff; }
-    .assetCard:hover {
-        transform: translateY(-5px) translateZ(0);
-        box-shadow: 14px 14px 30px rgba(0,0,0,1), 
-                   -4px -4px 14px rgba(255,255,255,0.03),
-                   inset 1px 1px 2px rgba(255,255,255,0.08);
-    }
-    .downloadBtn:hover {
-        background: linear-gradient(145deg, #222, #111);
-        color: #fff;
-    }
+.loadingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 17px;
 }
 
-@media (max-width: 768px) {
-    .pageContainer { padding: 1.5rem 1rem; }
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-    }
-    .pageTitle { font-size: 1.5rem; }
-    .subtitle { font-size: 0.85rem; }
-    .assetGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-    .cardContent { padding: 0.75rem; }
-    .cardTitle {
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; 
-    }
-    .downloadBtn {
-        padding: 0 0.5rem;
-        font-size: 0.75rem;
-        min-height: 40px; /* Slightly smaller for 2-column mobile grid */
-    }
+.loadingLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+
+  animation: loadingPulse 1.4s ease-in-out infinite;
+}
+
+.loadingText {
+  color: #777777;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@keyframes loadingPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+  width: 100%;
+
+  border-top: 1px solid #dededb;
+
+  margin-top: 20px;
+}
+
+.footerInner {
+  width: min(1380px, calc(100% - 88px));
+  min-height: 100px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+.footerBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #111111;
+  text-decoration: none;
+}
+
+.footerBrand img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.footerBrand span {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.footerLinks a {
+  color: #666666;
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  transition: color 0.2s ease;
+}
+
+.footerLinks a:hover {
+  color: #111111;
+}
+
+.footerCopyright {
+  color: #999999;
+
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .assetGrid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .contentWrapper {
+    width: min(1100px, calc(100% - 64px));
+  }
+
+  .footerInner {
+    width: min(1100px, calc(100% - 64px));
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .topNavInner {
+    padding: 0 28px;
+  }
+
+  .header {
+    min-height: auto;
+
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 60px 0 38px;
+  }
+
+  .vaultBadge {
+    margin-top: 4px;
+  }
+
+  .assetGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+  }
+
+  .cardTitle {
+    font-size: 19px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .pageContainer {
+    padding-bottom: 50px;
+  }
+
+  .topNav {
+    height: 66px;
+  }
+
+  .topNavInner {
+    padding: 0 18px;
+  }
+
+  .brandLogo {
+    width: 26px;
+    height: 26px;
+  }
+
+  .brandName {
+    font-size: 14px;
+  }
+
+  .navActions {
+    gap: 15px;
+  }
+
+  .navLink {
+    font-size: 11px;
+  }
+
+  .navLink span {
+    display: none;
+  }
+
+  .contentWrapper {
+    width: calc(100% - 32px);
+  }
+
+  .header {
+    padding: 46px 0 30px;
+    gap: 25px;
+  }
+
+  .backBtn {
+    margin-bottom: 28px;
+  }
+
+  .pageEyebrow {
+    font-size: 9px;
+  }
+
+  .pageTitle {
+    font-size: 48px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .vaultBadge {
+    font-size: 9px;
+    padding: 9px 12px;
+  }
+
+  .libraryMeta {
+    padding: 20px 0 15px;
+  }
+
+  .assetGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 11px;
+  }
+
+  .assetCard {
+    border-radius: 13px;
+  }
+
+  .cardContent {
+    min-height: 145px;
+    padding: 13px;
+  }
+
+  .cardEyebrow {
+    font-size: 7px;
+    margin-bottom: 8px;
+  }
+
+  .cardTitle {
+    font-size: 15px;
+    line-height: 1.1;
+  }
+
+  .cardFooter {
+    padding-top: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .cardStatus {
+    font-size: 8px;
+  }
+
+  .downloadBtn {
+    width: 100%;
+    min-height: 40px;
+    font-size: 9px;
+    padding: 0 9px;
+  }
+
+  .empty {
+    min-height: 350px;
+  }
+
+  .emptyTitle {
+    font-size: 25px;
+  }
+
+  .emptyText {
+    font-size: 12px;
+  }
+
+  .footerInner {
+    width: calc(100% - 32px);
+    min-height: 90px;
+
+    flex-wrap: wrap;
+
+    padding: 20px 0;
+  }
+
+  .footerLinks {
+    gap: 17px;
+  }
+
+  .footerCopyright {
+    width: 100%;
+    order: 3;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .assetCard,
+  .loadingLogo {
+    animation: none;
+  }
+
+  .assetCard,
+  .cardImage,
+  .downloadBtn,
+  .navLink,
+  .backBtn {
+    transition: none;
+  }
 }

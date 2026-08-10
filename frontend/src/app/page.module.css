@@ -1,41 +1,157 @@
 /* =========================================================
    PLUTEN
-   Premium monochrome storefront
+   Premium storefront
 ========================================================= */
 
 .page {
   --black: #050505;
-  --dark: #0b0b0b;
-  --white: #fff;
   --paper: #f5f5f3;
-  --gray: #6e6e73;
+  --white: #ffffff;
+  --muted: #777773;
 
   min-height: 100vh;
 
   background: var(--paper);
-
   color: #111;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
   font-weight: 700;
 
   -webkit-font-smoothing: antialiased;
-
   text-rendering: optimizeLegibility;
 }
 
 
 /* =========================================================
-   BUTTONS / INPUTS
+   NAV
 ========================================================= */
 
-.page button,
-.page input {
-  font-family: inherit;
-  font-weight: 700;
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  height: 76px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.08);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
-.page button {
-  border: 0;
+
+.navInner {
+  width:
+    min(
+      calc(100% - 88px),
+      1440px
+    );
+
+  height: 100%;
+
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+}
+
+
+.brand {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  color: #111;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+}
+
+
+.brandLogo {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+
+.brand span {
+  font-size: 15px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.16em;
+}
+
+
+.navProducts {
+  position: absolute;
+
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  padding: 7px 0;
+
+  background: transparent;
+
+  color: #111;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.navProducts::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: #111;
+
+  transform:
+    scaleX(0);
+
+  transform-origin: center;
+
+  transition:
+    transform .3s ease;
+}
+
+
+.navProducts:hover::after {
+  transform:
+    scaleX(1);
+}
+
+
+.navSpacer {
+  margin-left: auto;
 }
 
 
@@ -46,7 +162,8 @@
 .hero {
   position: relative;
 
-  min-height: calc(100svh - 76px);
+  min-height:
+    calc(100svh - 76px);
 
   overflow: hidden;
 
@@ -57,42 +174,46 @@
   background:
     radial-gradient(
       circle at 72% 48%,
-      #fff 0%,
-      #f7f7f5 36%,
+      #ffffff 0%,
+      #f8f8f6 38%,
       #eeeeeb 100%
     );
 }
 
 
-.heroNoise {
+.hero::before {
+  content: "";
+
   position: absolute;
 
   inset: 0;
 
   pointer-events: none;
 
-  opacity: .025;
-
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.45),
+      transparent 45%
+    );
 }
 
 
 .heroGlow {
   position: absolute;
 
-  width: 50vw;
-  height: 50vw;
+  width: 55vw;
+  height: 55vw;
 
   right: -10vw;
-  top: 8vh;
+  top: 5%;
 
   border-radius: 50%;
 
   background:
-    rgba(255,255,255,.9);
+    rgba(255,255,255,.95);
 
-  filter: blur(90px);
+  filter: blur(100px);
 
   pointer-events: none;
 }
@@ -109,14 +230,14 @@
 
   width:
     min(
-      calc(100% - 48px),
+      calc(100% - 88px),
       1440px
     );
 
   margin-inline: auto;
 
   padding:
-    90px 0 120px;
+    80px 0 120px;
 }
 
 
@@ -125,9 +246,9 @@
 
   align-items: center;
 
-  gap: 11px;
+  gap: 12px;
 
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 
   color: #777;
 
@@ -135,7 +256,7 @@
 
   font-weight: 900;
 
-  letter-spacing: .16em;
+  letter-spacing: .18em;
 }
 
 
@@ -143,19 +264,19 @@
   width: 30px;
   height: 2px;
 
-  background: #888;
+  background: #777;
 }
 
 
 .heroTitle {
-  max-width: 760px;
+  max-width: 800px;
 
   margin: 0;
 
   font-size:
-    clamp(72px, 9.5vw, 148px);
+    clamp(72px, 9.6vw, 150px);
 
-  line-height: .82;
+  line-height: .79;
 
   letter-spacing: -.085em;
 
@@ -171,12 +292,12 @@
 
 
 .heroDescription {
-  max-width: 390px;
+  max-width: 400px;
 
   margin:
-    36px 0 30px;
+    38px 0 32px;
 
-  color: #5f5f5b;
+  color: #555550;
 
   font-size: 15px;
 
@@ -198,7 +319,7 @@
 
 
 .primaryButton {
-  min-height: 54px;
+  min-height: 56px;
 
   display: inline-flex;
 
@@ -206,16 +327,20 @@
 
   justify-content: center;
 
-  gap: 16px;
+  gap: 18px;
 
   padding:
-    0 21px 0 25px;
+    0 23px 0 27px;
+
+  border: 0;
 
   border-radius: 999px;
 
   background: #050505;
 
   color: #fff;
+
+  font-family: inherit;
 
   font-size: 13px;
 
@@ -224,8 +349,8 @@
   cursor: pointer;
 
   box-shadow:
-    0 2px 4px rgba(0,0,0,.12),
-    0 12px 30px rgba(0,0,0,.13);
+    0 2px 5px rgba(0,0,0,.12),
+    0 15px 40px rgba(0,0,0,.16);
 
   transition:
     transform .35s cubic-bezier(.16,1,.3,1),
@@ -235,17 +360,17 @@
 
 .primaryButton:hover {
   transform:
-    translateY(-3px);
+    translateY(-4px);
 
   box-shadow:
-    0 5px 10px rgba(0,0,0,.15),
-    0 20px 45px rgba(0,0,0,.18);
+    0 5px 12px rgba(0,0,0,.15),
+    0 25px 55px rgba(0,0,0,.19);
 }
 
 
 .primaryButton svg {
   transition:
-    transform .4s cubic-bezier(.16,1,.3,1);
+    transform .35s ease;
 }
 
 
@@ -272,15 +397,15 @@
 
   font-weight: 900;
 
-  letter-spacing: .15em;
+  letter-spacing: .17em;
 }
 
 
 /* =========================================================
-   PLANET
+   PLUTEN LOGO HERO
 ========================================================= */
 
-.planetArea {
+.logoArea {
   position: absolute;
 
   z-index: 5;
@@ -289,7 +414,7 @@
   top: 50%;
 
   width:
-    min(52vw,760px);
+    min(52vw, 760px);
 
   aspect-ratio: 1;
 
@@ -302,23 +427,23 @@
 }
 
 
-.planetHalo {
+.logoHalo {
   position: absolute;
 
-  width: 80%;
-  height: 80%;
+  width: 76%;
+  height: 76%;
 
   border-radius: 50%;
 
   background:
     radial-gradient(
       circle,
-      rgba(255,255,255,.96) 0%,
-      rgba(255,255,255,.58) 35%,
-      transparent 70%
+      rgba(255,255,255,.98),
+      rgba(255,255,255,.7) 40%,
+      transparent 72%
     );
 
-  filter: blur(35px);
+  filter: blur(45px);
 
   animation:
     haloPulse 5s ease-in-out infinite;
@@ -329,29 +454,35 @@
 
   0%,
   100% {
-    transform: scale(.96);
+    transform: scale(.95);
   }
 
   50% {
-    transform: scale(1.04);
+    transform: scale(1.05);
   }
 
 }
 
 
-.planet {
+.heroLogo {
   position: relative;
 
-  width: 63%;
+  z-index: 4;
+
+  width: 46%;
+
+  height: auto;
 
   aspect-ratio: 1;
 
-  overflow: hidden;
+  object-fit: contain;
 
-  border-radius: 50%;
+  display: block;
 
-  box-shadow:
-    0 30px 90px rgba(0,0,0,.16);
+  filter:
+    drop-shadow(
+      0 30px 45px rgba(0,0,0,.18)
+    );
 
   transform-style: preserve-3d;
 
@@ -361,80 +492,14 @@
 }
 
 
-.planetSurface {
+.logoOrbit {
   position: absolute;
 
-  inset: 0;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 34% 27%,
-      #ddd 0%,
-      #aaa 16%,
-      #777 35%,
-      #4c4c4c 58%,
-      #242424 78%,
-      #0b0b0b 100%
-    );
-}
-
-
-.planetSurface::before {
-  content: "";
-
-  position: absolute;
-
-  inset: -5%;
-
-  border-radius: 50%;
-
-  opacity: .45;
-
-  background:
-    radial-gradient(
-      ellipse at 50% 45%,
-      transparent 0 15%,
-      rgba(255,255,255,.13) 16% 17%,
-      transparent 18% 26%,
-      rgba(0,0,0,.18) 27% 29%,
-      transparent 30% 42%,
-      rgba(255,255,255,.08) 43% 45%,
-      transparent 46%
-    );
-
-  filter: blur(4px);
-
-  transform: rotate(-12deg);
-}
-
-
-.planetHighlight {
-  position: absolute;
-
-  inset: 0;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 31% 23%,
-      rgba(255,255,255,.42),
-      rgba(255,255,255,.12) 18%,
-      transparent 48%
-    );
-}
-
-
-.planetOrbit {
-  position: absolute;
-
-  width: 80%;
-  height: 27%;
+  width: 72%;
+  height: 25%;
 
   border:
-    2px solid rgba(0,0,0,.10);
+    1px solid rgba(0,0,0,.12);
 
   border-radius: 50%;
 
@@ -445,10 +510,10 @@
 }
 
 
-.planetLabel {
+.logoLabel {
   position: absolute;
 
-  right: 2%;
+  right: 4%;
   bottom: 17%;
 
   display: flex;
@@ -463,11 +528,11 @@
 
   font-weight: 900;
 
-  letter-spacing: .13em;
+  letter-spacing: .15em;
 }
 
 
-.planetLabel strong {
+.logoLabel strong {
   color: #555;
 
   font-size: 9px;
@@ -486,7 +551,7 @@
   z-index: 20;
 
   left: 50%;
-  bottom: 26px;
+  bottom: 25px;
 
   display: flex;
 
@@ -496,15 +561,19 @@
 
   padding: 0;
 
+  border: 0;
+
   background: transparent;
 
   color: #777;
+
+  font-family: inherit;
 
   font-size: 9px;
 
   font-weight: 900;
 
-  letter-spacing: .15em;
+  letter-spacing: .16em;
 
   cursor: pointer;
 
@@ -533,19 +602,19 @@
 .products {
   width:
     min(
-      calc(100% - 48px),
+      calc(100% - 88px),
       1440px
     );
 
   margin-inline: auto;
 
   padding:
-    150px 0 170px;
+    150px 0 175px;
 }
 
 
 /* =========================================================
-   PRODUCTS HEADER
+   PRODUCT HEADER
 ========================================================= */
 
 .productsHeader {
@@ -555,7 +624,7 @@
 
   justify-content: space-between;
 
-  gap: 50px;
+  gap: 60px;
 
   margin-bottom: 70px;
 }
@@ -564,7 +633,7 @@
 .sectionEyebrow {
   display: block;
 
-  margin-bottom: 17px;
+  margin-bottom: 18px;
 
   color: #777;
 
@@ -572,7 +641,7 @@
 
   font-weight: 900;
 
-  letter-spacing: .15em;
+  letter-spacing: .17em;
 }
 
 
@@ -582,9 +651,9 @@
   color: #111;
 
   font-size:
-    clamp(58px,7vw,104px);
+    clamp(60px, 7vw, 106px);
 
-  line-height: .83;
+  line-height: .82;
 
   letter-spacing: -.075em;
 
@@ -593,13 +662,13 @@
 
 
 .productsHeader p {
-  max-width: 290px;
+  max-width: 300px;
 
   margin: 0;
 
-  color: #666;
+  color: #555;
 
-  font-size: 13px;
+  font-size: 14px;
 
   line-height: 1.55;
 
@@ -608,16 +677,16 @@
 
 
 /* =========================================================
-   PRODUCT GRID
+   FOUR CARDS PER ROW
 ========================================================= */
 
 .productGrid {
   display: grid;
 
   grid-template-columns:
-    repeat(4,minmax(0,1fr));
+    repeat(4, minmax(0, 1fr));
 
-  gap: 26px;
+  gap: 24px;
 
   width: 100%;
 }
@@ -642,7 +711,7 @@
     opacity: 0;
 
     transform:
-      translateY(28px);
+      translateY(25px);
   }
 
   to {
@@ -663,11 +732,10 @@
   position: relative;
 
   width: 100%;
-  height: 100%;
 
   overflow: hidden;
 
-  border-radius: 26px;
+  border-radius: 25px;
 
   background: #fff;
 
@@ -679,39 +747,317 @@
   box-shadow:
     0 1px 2px rgba(0,0,0,.04),
     0 8px 25px rgba(0,0,0,.055),
-    0 24px 55px rgba(0,0,0,.035);
+    0 25px 60px rgba(0,0,0,.045);
 
   transition:
-    transform .55s cubic-bezier(.16,1,.3,1),
-    box-shadow .55s cubic-bezier(.16,1,.3,1);
+    transform .5s cubic-bezier(.16,1,.3,1),
+    box-shadow .5s cubic-bezier(.16,1,.3,1);
 }
 
 
-.productItem:nth-child(even) .productCard {
-  background: #0a0a0a;
+.productItem:nth-child(even)
+.productCard {
+  background: #080808;
 
   color: #fff;
 
   border-color:
     rgba(255,255,255,.08);
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.1),
+    0 12px 35px rgba(0,0,0,.12),
+    0 30px 70px rgba(0,0,0,.1);
 }
 
 
-.productItem:hover .productCard {
+.productItem:hover
+.productCard {
   transform:
     translateY(-9px);
 
   box-shadow:
-    0 5px 10px rgba(0,0,0,.06),
-    0 25px 60px rgba(0,0,0,.14),
-    0 45px 90px rgba(0,0,0,.08);
+    0 8px 15px rgba(0,0,0,.08),
+    0 28px 65px rgba(0,0,0,.16),
+    0 50px 100px rgba(0,0,0,.1);
 }
 
 
 /* =========================================================
-   MOBILE / TABLET PRODUCT CARD
-   ProductCard component owns its internals.
+   PRODUCT IMAGE
 ========================================================= */
+
+.productVisual {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  background: #eee;
+}
+
+
+.productItem:nth-child(even)
+.productVisual {
+  background: #050505;
+}
+
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition:
+    transform .7s
+    cubic-bezier(.16,1,.3,1);
+}
+
+
+.productItem:hover
+.cardImage {
+  transform:
+    scale(1.025);
+}
+
+
+.noImage {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+
+  place-items: center;
+
+  color: #777;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: .12em;
+}
+
+
+/* =========================================================
+   OFFER
+========================================================= */
+
+.offerBadge {
+  position: absolute;
+
+  top: 16px;
+  left: 16px;
+
+  z-index: 5;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding:
+    8px 11px;
+
+  border-radius: 999px;
+
+  background: #050505;
+
+  color: #fff;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.2);
+}
+
+
+.productItem:nth-child(even)
+.offerBadge {
+  background: #fff;
+
+  color: #111;
+}
+
+
+/* =========================================================
+   CARD CONTENT
+========================================================= */
+
+.cardContent {
+  padding:
+    24px 22px 22px;
+}
+
+
+.productMeta {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 16px;
+
+  color: #777;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .13em;
+
+  text-transform: uppercase;
+}
+
+
+.productItem:nth-child(even)
+.productMeta {
+  color: #999;
+}
+
+
+.saveText {
+  white-space: nowrap;
+}
+
+
+.cardTitle {
+  margin: 0;
+
+  min-height: 62px;
+
+  font-size: 22px;
+
+  line-height: 1.03;
+
+  letter-spacing: -.035em;
+
+  font-weight: 900;
+}
+
+
+.cardBottom {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 28px;
+
+  padding-top: 18px;
+
+  border-top:
+    1px solid rgba(0,0,0,.09);
+}
+
+
+.productItem:nth-child(even)
+.cardBottom {
+  border-top-color:
+    rgba(255,255,255,.12);
+}
+
+
+.priceContainer {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+
+.currentPrice {
+  font-size: 20px;
+
+  font-weight: 900;
+
+  letter-spacing: -.03em;
+}
+
+
+.oldPrice {
+  color: #999;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-decoration:
+    line-through;
+}
+
+
+.viewLabel {
+  color: #777;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .14em;
+}
+
+
+.productItem:nth-child(even)
+.viewLabel {
+  color: #aaa;
+}
+
+
+.priceSkeleton {
+  width: 70px;
+  height: 22px;
+
+  border-radius: 5px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ddd,
+      #eee,
+      #ddd
+    );
+
+  background-size:
+    200% 100%;
+
+  animation:
+    skeleton 1.2s
+    linear infinite;
+}
+
+
+@keyframes skeleton {
+
+  from {
+    background-position:
+      200% 0;
+  }
+
+  to {
+    background-position:
+      -200% 0;
+  }
+
+}
 
 
 /* =========================================================
@@ -727,13 +1073,13 @@
 
   justify-content: center;
 
-  gap: 11px;
+  gap: 12px;
 
   color: #777;
 
   font-size: 12px;
 
-  font-weight: 800;
+  font-weight: 900;
 }
 
 
@@ -747,9 +1093,7 @@
 
   animation:
     loadingPulse
-    1s
-    ease-in-out
-    infinite;
+    1s ease-in-out infinite;
 }
 
 
@@ -757,15 +1101,13 @@
 
   0%,
   100% {
-    transform: scale(.6);
-
-    opacity: .35;
+    opacity: .3;
+    transform: scale(.65);
   }
 
   50% {
-    transform: scale(1);
-
     opacity: 1;
+    transform: scale(1);
   }
 
 }
@@ -776,7 +1118,7 @@
 ========================================================= */
 
 .empty {
-  min-height: 250px;
+  min-height: 260px;
 
   display: flex;
 
@@ -789,17 +1131,16 @@
   border:
     1px solid rgba(0,0,0,.08);
 
-  border-radius: 22px;
+  border-radius: 24px;
 
-  background:
-    rgba(255,255,255,.55);
+  background: rgba(255,255,255,.6);
 
   text-align: center;
 }
 
 
 .empty strong {
-  font-size: 11px;
+  font-size: 12px;
 
   font-weight: 900;
 
@@ -808,11 +1149,11 @@
 
 
 .empty p {
-  margin-top: 10px;
+  margin: 10px 0 0;
 
   color: #777;
 
-  font-size: 11px;
+  font-size: 12px;
 
   font-weight: 700;
 }
@@ -823,12 +1164,12 @@
 ========================================================= */
 
 .philosophy {
-  min-height: 850px;
+  min-height: 820px;
 
   padding:
     55px 4vw 90px;
 
-  background: #0b0b0b;
+  background: #080808;
 
   color: #fff;
 }
@@ -836,8 +1177,6 @@
 
 .philosophyTop {
   display: flex;
-
-  align-items: center;
 
   justify-content: space-between;
 
@@ -847,7 +1186,7 @@
 
   font-weight: 900;
 
-  letter-spacing: .15em;
+  letter-spacing: .16em;
 }
 
 
@@ -897,7 +1236,7 @@
   margin:
     70px 0 0 auto;
 
-  color: #929292;
+  color: #999;
 
   font-size: 14px;
 
@@ -912,12 +1251,12 @@
 ========================================================= */
 
 .footer {
-  background: #0b0b0b;
+  background: #080808;
 
   color: #fff;
 
   padding:
-    0 4vw 22px;
+    0 4vw 20px;
 }
 
 
@@ -930,65 +1269,57 @@
 
   justify-content: space-between;
 
-  gap: 40px;
+  gap: 30px;
 
   border-top:
-    1px solid rgba(255,255,255,.10);
+    1px solid rgba(255,255,255,.1);
 }
 
-
-/* =========================================================
-   FOOTER BRAND
-========================================================= */
 
 .footerBrand {
   display: flex;
 
   align-items: center;
 
-  gap: 11px;
+  gap: 10px;
 
   color: #fff;
 
-  font-size: 14px;
+  text-decoration: none;
+
+  font-size: 13px;
 
   font-weight: 900;
 
-  letter-spacing: .13em;
+  letter-spacing: .14em;
 }
 
 
-.footerLogo {
-  width: 29px;
-  height: 29px;
-
-  display: block;
+.footerBrand img {
+  width: 28px;
+  height: 28px;
 
   object-fit: contain;
-
-  border-radius: 7px;
 }
 
-
-/* =========================================================
-   FOOTER LINKS
-========================================================= */
 
 .footerLinks {
   display: flex;
 
   align-items: center;
 
-  gap: 30px;
+  gap: 28px;
 }
 
 
 .footerLinks a {
   color: #aaa;
 
+  font-family: inherit;
+
   font-size: 11px;
 
-  font-weight: 800;
+  font-weight: 900;
 
   text-decoration: none;
 
@@ -1002,38 +1333,14 @@
 }
 
 
-/* =========================================================
-   COPYRIGHT
-========================================================= */
-
 .footerCopyright {
   color: #555;
 
   font-size: 9px;
 
-  font-weight: 800;
+  font-weight: 900;
 
-  letter-spacing: .13em;
-}
-
-
-/* =========================================================
-   LARGE TABLET
-========================================================= */
-
-@media (max-width:1200px) {
-
-  .productGrid {
-    grid-template-columns:
-      repeat(3,minmax(0,1fr));
-  }
-
-  .planetArea {
-    right: -4vw;
-
-    width: 55vw;
-  }
-
+  letter-spacing: .14em;
 }
 
 
@@ -1041,17 +1348,44 @@
    TABLET
 ========================================================= */
 
-@media (max-width:900px) {
+@media (max-width: 1150px) {
+
+  .productGrid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .logoArea {
+    right: -5vw;
+
+    width: 58vw;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .navInner,
+  .heroContent,
+  .products {
+    width:
+      calc(100% - 48px);
+  }
 
   .heroTitle {
     font-size:
-      clamp(64px,10vw,110px);
+      clamp(65px, 11vw, 110px);
   }
 
-  .planetArea {
-    right: -10vw;
+  .logoArea {
+    right: -12vw;
 
-    width: 62vw;
+    width: 65vw;
   }
 
   .productsHeader {
@@ -1062,9 +1396,9 @@
 
   .productGrid {
     grid-template-columns:
-      repeat(2,minmax(0,1fr));
+      repeat(2, minmax(0, 1fr));
 
-    gap: 22px;
+    gap: 20px;
   }
 
 }
@@ -1074,7 +1408,31 @@
    MOBILE
 ========================================================= */
 
-@media (max-width:760px) {
+@media (max-width: 700px) {
+
+  .nav {
+    height: 68px;
+  }
+
+  .navInner,
+  .heroContent,
+  .products {
+    width:
+      calc(100% - 32px);
+  }
+
+  .brandLogo {
+    width: 27px;
+    height: 27px;
+  }
+
+  .brand span {
+    font-size: 13px;
+  }
+
+  .navProducts {
+    font-size: 12px;
+  }
 
   .hero {
     min-height:
@@ -1084,21 +1442,15 @@
       flex-end;
   }
 
-
   .heroContent {
-    width:
-      calc(100% - 32px);
-
     padding:
-      0 0 100px;
+      0 0 95px;
   }
-
 
   .heroTitle {
     font-size:
-      clamp(58px,17vw,90px);
+      clamp(57px, 17vw, 90px);
   }
-
 
   .heroDescription {
     max-width: 290px;
@@ -1106,37 +1458,27 @@
     font-size: 13px;
   }
 
-
   .heroMeta {
-    margin-top: 40px;
+    margin-top: 42px;
   }
 
-
-  .planetArea {
+  .logoArea {
     width: 100vw;
 
-    right: -25vw;
+    right: -28vw;
 
-    top: 20%;
+    top: 21%;
 
     transform: none;
   }
 
-
-  .planet {
-    width: 55%;
+  .heroLogo {
+    width: 42%;
   }
 
-
-  .planetOrbit {
-    width: 72%;
-  }
-
-
-  .planetLabel {
+  .logoLabel {
     display: none;
   }
-
 
   .scrollIndicator {
     left: 16px;
@@ -1146,31 +1488,23 @@
     transform: none;
   }
 
-
   .scrollIndicator:hover {
     transform:
       translateY(-2px);
   }
 
-
   .products {
-    width:
-      calc(100% - 32px);
-
     padding:
       100px 0 110px;
   }
-
 
   .productsHeader {
     margin-bottom: 45px;
   }
 
-
   .productsHeader h2 {
     font-size: 64px;
   }
-
 
   .productGrid {
     grid-template-columns: 1fr;
@@ -1178,11 +1512,9 @@
     gap: 20px;
   }
 
-
-  .productCard {
-    border-radius: 22px;
+  .cardTitle {
+    font-size: 24px;
   }
-
 
   .philosophy {
     min-height: 680px;
@@ -1191,17 +1523,14 @@
       35px 20px 60px;
   }
 
-
   .philosophyContent {
     margin-top: 100px;
   }
-
 
   .philosophyContent h2 {
     font-size:
       clamp(64px,19vw,110px);
   }
-
 
   .philosophyContent p {
     margin:
@@ -1210,42 +1539,32 @@
     max-width: 290px;
   }
 
-
   .footer {
     padding:
       0 20px 15px;
   }
-
 
   .footerInner {
     min-height: 80px;
 
     flex-wrap: wrap;
 
-    gap: 20px;
-
     padding:
       18px 0;
-  }
-
-
-  .footerLinks {
-    gap: 20px;
   }
 
 }
 
 
 /* =========================================================
-   SMALL MOBILE
+   VERY SMALL
 ========================================================= */
 
-@media (max-width:480px) {
+@media (max-width: 480px) {
 
   .heroMeta {
     display: none;
   }
-
 
   .footerInner {
     align-items: flex-start;

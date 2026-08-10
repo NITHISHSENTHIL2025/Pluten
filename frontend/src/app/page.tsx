@@ -11,9 +11,7 @@ import { useRouter } from "next/navigation";
 
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUpRight,
-  Search,
 } from "lucide-react";
 
 import gsap from "gsap";
@@ -28,7 +26,7 @@ import styles from "./page.module.css";
 
 
 /* =========================================================
-   PRODUCT TYPE
+   PRODUCT
 ========================================================= */
 
 interface Product {
@@ -43,7 +41,7 @@ interface Product {
 
 
 /* =========================================================
-   STOREFRONT
+   PAGE
 ========================================================= */
 
 export default function StorefrontPage() {
@@ -60,17 +58,6 @@ export default function StorefrontPage() {
 
   const [loading, setLoading] =
     useState(true);
-
-  const [searchQuery, setSearchQuery] =
-    useState("");
-
-  const [selectedCategory, setSelectedCategory] =
-    useState("All Categories");
-
-  const [activeSort, setActiveSort] =
-    useState<"latest" | "trending">(
-      "latest"
-    );
 
 
   /* =========================================================
@@ -92,12 +79,12 @@ export default function StorefrontPage() {
   const planetRef =
     useRef<HTMLDivElement>(null);
 
-  const featuredRef =
+  const productsRef =
     useRef<HTMLElement>(null);
 
 
   /* =========================================================
-     FETCH PRODUCTS
+     FETCH REAL PRODUCTS
   ========================================================= */
 
   useEffect(() => {
@@ -115,20 +102,21 @@ export default function StorefrontPage() {
           );
 
 
-        if (mounted) {
-
-          setProducts(
-            Array.isArray(response.data)
-              ? response.data
-              : []
-          );
-
+        if (!mounted) {
+          return;
         }
+
+
+        setProducts(
+          Array.isArray(response.data)
+            ? response.data
+            : []
+        );
 
       } catch (error) {
 
         console.error(
-          "Failed to sync products:",
+          "Failed to load products:",
           error
         );
 
@@ -160,158 +148,29 @@ export default function StorefrontPage() {
 
 
   /* =========================================================
-     CATEGORIES
-  ========================================================= */
-
-  const availableCategories =
-    useMemo(() => {
-
-      const categories =
-        products
-          .map(
-            (product) =>
-              product.category?.trim() ||
-              "Uncategorized"
-          )
-          .filter(Boolean);
-
-
-      return [
-        "All Categories",
-        ...Array.from(
-          new Set(categories)
-        ),
-      ];
-
-    }, [products]);
-
-
-  /* =========================================================
-     FILTER + SORT
-  ========================================================= */
-
-  const displayedProducts =
-    useMemo(() => {
-
-      let filtered =
-        [...products];
-
-
-      /* CATEGORY */
-
-      if (
-        selectedCategory !==
-        "All Categories"
-      ) {
-
-        filtered =
-          filtered.filter(
-            (product) =>
-              (
-                product.category?.trim() ||
-                "Uncategorized"
-              ) ===
-              selectedCategory
-          );
-
-      }
-
-
-      /* SEARCH */
-
-      const query =
-        searchQuery
-          .trim()
-          .toLowerCase();
-
-
-      if (query) {
-
-        filtered =
-          filtered.filter(
-            (product) => {
-
-              const title =
-                product.title
-                  ?.toLowerCase() || "";
-
-              const description =
-                product.description
-                  ?.toLowerCase() || "";
-
-              const category =
-                product.category
-                  ?.toLowerCase() || "";
-
-
-              return (
-                title.includes(query) ||
-                description.includes(query) ||
-                category.includes(query)
-              );
-
-            }
-          );
-
-      }
-
-
-      /* SORT */
-
-      filtered.sort(
-        (a, b) => {
-
-          if (
-            activeSort ===
-            "latest"
-          ) {
-
-            return (
-              new Date(
-                b.createdAt
-              ).getTime()
-              -
-              new Date(
-                a.createdAt
-              ).getTime()
-            );
-
-          }
-
-
-          /*
-             Trending fallback.
-             Until a real popularity metric exists,
-             preserve the current product order.
-          */
-
-          return 0;
-
-        }
-      );
-
-
-      return filtered;
-
-    }, [
-      products,
-      selectedCategory,
-      searchQuery,
-      activeSort,
-    ]);
-
-
-  /* =========================================================
-     FEATURED PRODUCTS
+     PRODUCTS
      
-     FOUR PRODUCTS ON DESKTOP
+     Only real API products.
+     No fake filters/search/sorting.
   ========================================================= */
 
   const featuredProducts =
-    displayedProducts.slice(
-      0,
-      4
-    );
+    useMemo(() => {
+
+      return [...products]
+        .sort(
+          (a, b) =>
+            new Date(
+              b.createdAt
+            ).getTime()
+            -
+            new Date(
+              a.createdAt
+            ).getTime()
+        )
+        .slice(0, 4);
+
+    }, [products]);
 
 
   /* =========================================================
@@ -366,11 +225,9 @@ export default function StorefrontPage() {
           planet,
           {
             x: x * 24,
-
             y: y * 18,
 
             rotateY: x * 5,
-
             rotateX: y * -5,
 
             duration: .8,
@@ -384,29 +241,27 @@ export default function StorefrontPage() {
       };
 
 
-    const leave =
-      () => {
+    const leave = () => {
 
-        gsap.to(
-          planet,
-          {
-            x: 0,
+      gsap.to(
+        planet,
+        {
+          x: 0,
+          y: 0,
 
-            y: 0,
+          rotateX: 0,
+          rotateY: 0,
 
-            rotateX: 0,
+          duration: 1,
 
-            rotateY: 0,
+          ease:
+            "elastic.out(1,.45)",
 
-            duration: 1,
+          overwrite: true,
+        }
+      );
 
-            ease: "elastic.out(1,.45)",
-
-            overwrite: true,
-          }
-        );
-
-      };
+    };
 
 
     hero.addEventListener(
@@ -472,94 +327,77 @@ export default function StorefrontPage() {
 
     timeline.fromTo(
       title,
-
       {
         y: 70,
-
         opacity: 0,
       },
-
       {
         y: 0,
-
         opacity: 1,
 
         duration: .9,
 
-        ease: "power4.out",
+        ease:
+          "power4.out",
       }
     );
 
 
     timeline.fromTo(
       sub,
-
       {
         y: 30,
-
         opacity: 0,
       },
-
       {
         y: 0,
-
         opacity: 1,
 
         duration: .65,
 
-        ease: "power4.out",
+        ease:
+          "power4.out",
       },
-
       "-=.55"
     );
 
 
     timeline.fromTo(
       buttons,
-
       {
         y: 25,
-
         opacity: 0,
       },
-
       {
         y: 0,
-
         opacity: 1,
 
         duration: .55,
 
-        ease: "power4.out",
+        ease:
+          "power4.out",
       },
-
       "-=.4"
     );
 
 
     timeline.fromTo(
       planet,
-
       {
         scale: .82,
-
         opacity: 0,
-
         rotate: -8,
       },
-
       {
         scale: 1,
-
         opacity: 1,
-
         rotate: 0,
 
         duration: 1.2,
 
-        ease: "power4.out",
+        ease:
+          "power4.out",
       },
-
       "-=.8"
     );
 
@@ -574,16 +412,15 @@ export default function StorefrontPage() {
 
 
   /* =========================================================
-     SCROLL TO PRODUCTS
+     SCROLL
   ========================================================= */
 
   const scrollToProducts =
     () => {
 
-      featuredRef.current?.scrollIntoView(
+      productsRef.current?.scrollIntoView(
         {
           behavior: "smooth",
-
           block: "start",
         }
       );
@@ -630,8 +467,6 @@ export default function StorefrontPage() {
           }
         />
 
-
-        {/* HERO CONTENT */}
 
         <div
           className={
@@ -705,26 +540,6 @@ export default function StorefrontPage() {
 
               <ArrowUpRight
                 size={17}
-                strokeWidth={2}
-              />
-
-            </button>
-
-
-            <button
-              type="button"
-              className={
-                styles.textButton
-              }
-              onClick={
-                scrollToProducts
-              }
-            >
-
-              Discover Pluten
-
-              <ArrowRight
-                size={15}
                 strokeWidth={2}
               />
 
@@ -843,21 +658,19 @@ export default function StorefrontPage() {
 
 
       {/* =====================================================
-          FEATURED COLLECTION
+          PRODUCTS
       ===================================================== */}
 
       <section
-        ref={featuredRef}
+        ref={productsRef}
         className={
-          styles.featured
+          styles.products
         }
       >
 
-        {/* HEADER */}
-
         <div
           className={
-            styles.sectionHeader
+            styles.productsHeader
           }
         >
 
@@ -868,184 +681,25 @@ export default function StorefrontPage() {
                 styles.sectionEyebrow
               }
             >
-              01 / COLLECTION
+              01 / PRODUCTS
             </span>
 
             <h2>
-
-              Selected
-
+              Made to
               <br />
-
-              works.
-
+              matter.
             </h2>
 
           </div>
 
 
-          <div
-            className={
-              styles.sectionSide
-            }
-          >
-
-            <p>
-              A growing collection of
-              practical digital products
-              designed to help you build,
-              learn and move further.
-            </p>
-
-
-            <button
-              type="button"
-              onClick={() =>
-                router.push(
-                  "/products"
-                )
-              }
-            >
-
-              View all
-
-              <ArrowUpRight
-                size={15}
-                strokeWidth={2}
-              />
-
-            </button>
-
-          </div>
+          <p>
+            Digital products designed
+            with purpose. Nothing extra.
+          </p>
 
         </div>
 
-
-        {/* FILTERS */}
-
-        <div
-          className={
-            styles.filterRow
-          }
-        >
-
-          <div
-            className={
-              styles.categoryList
-            }
-          >
-
-            {availableCategories
-              .slice(0, 5)
-              .map(
-                (category) => (
-
-                  <button
-                    key={category}
-                    type="button"
-                    className={
-                      selectedCategory ===
-                      category
-                        ? styles.filterActive
-                        : styles.filter
-                    }
-                    onClick={() =>
-                      setSelectedCategory(
-                        category
-                      )
-                    }
-                  >
-
-                    {category}
-
-                  </button>
-
-                )
-              )}
-
-          </div>
-
-
-          <div
-            className={
-              styles.sortArea
-            }
-          >
-
-            <button
-              type="button"
-              className={
-                activeSort ===
-                "latest"
-                  ? styles.sortActive
-                  : styles.sort
-              }
-              onClick={() =>
-                setActiveSort(
-                  "latest"
-                )
-              }
-            >
-
-              Latest
-
-            </button>
-
-
-            <button
-              type="button"
-              className={
-                activeSort ===
-                "trending"
-                  ? styles.sortActive
-                  : styles.sort
-              }
-              onClick={() =>
-                setActiveSort(
-                  "trending"
-                )
-              }
-            >
-
-              Trending
-
-            </button>
-
-          </div>
-
-        </div>
-
-
-        {/* SEARCH */}
-
-        <div
-          className={
-            styles.searchWrapper
-          }
-        >
-
-          <Search
-            size={17}
-            strokeWidth={2}
-          />
-
-          <input
-            value={
-              searchQuery
-            }
-            onChange={(event) =>
-              setSearchQuery(
-                event.target.value
-              )
-            }
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-
-        </div>
-
-
-        {/* PRODUCTS */}
 
         {loading ? (
 
@@ -1057,7 +711,7 @@ export default function StorefrontPage() {
 
             <span />
 
-            Loading collection...
+            Loading products...
 
           </div>
 
@@ -1069,13 +723,12 @@ export default function StorefrontPage() {
             }
           >
 
-            <span>
-              NOTHING HERE YET.
-            </span>
+            <strong>
+              NO PRODUCTS YET.
+            </strong>
 
             <p>
-              Try another search
-              or category.
+              New products are coming soon.
             </p>
 
           </div>
@@ -1089,7 +742,10 @@ export default function StorefrontPage() {
           >
 
             {featuredProducts.map(
-              (product, index) => (
+              (
+                product,
+                index
+              ) => (
 
                 <div
                   key={
@@ -1165,9 +821,7 @@ export default function StorefrontPage() {
               styles.philosophyLabel
             }
           >
-
             OUR PRINCIPLE
-
           </span>
 
 
@@ -1206,7 +860,7 @@ export default function StorefrontPage() {
 
 
       {/* =====================================================
-          FOOTER
+          SMALL FOOTER
       ===================================================== */}
 
       <footer
@@ -1217,43 +871,30 @@ export default function StorefrontPage() {
 
         <div
           className={
-            styles.footerMain
+            styles.footerInner
           }
         >
 
-          {/* BRAND */}
+          <div
+            className={
+              styles.footerBrand
+            }
+          >
 
-          <div>
-
-            <div
+            <img
+              src="/favicon.ico"
+              alt="Pluten"
               className={
-                styles.footerBrand
+                styles.footerLogo
               }
-            >
+            />
 
-              {/* REAL PLUTEN LOGO */}
-
-              <img
-                src="/favicon.ico"
-                alt="Pluten"
-                className={
-                  styles.footerLogo
-                }
-              />
-
+            <span>
               PLUTEN
-
-            </div>
-
-
-            <p>
-              Beyond ordinary.
-            </p>
+            </span>
 
           </div>
 
-
-          {/* LINKS */}
 
           <div
             className={
@@ -1261,103 +902,33 @@ export default function StorefrontPage() {
             }
           >
 
-            <div>
-
-              <span>
-                EXPLORE
-              </span>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    "/products"
-                  )
-                }
-              >
-                Products
-              </button>
+            <a
+              href="https://instagram.com/pluten"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram
+            </a>
 
 
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    "/offers"
-                  )
-                }
-              >
-                New
-              </button>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    "/library"
-                  )
-                }
-              >
-                Library
-              </button>
-
-            </div>
-
-
-            <div>
-
-              <span>
-                ACCOUNT
-              </span>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    "/profile"
-                  )
-                }
-              >
-                Profile
-              </button>
-
-
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    "/login"
-                  )
-                }
-              >
-                Sign in
-              </button>
-
-            </div>
+            <a
+              href="mailto:support@pluten.site"
+            >
+              Support
+            </a>
 
           </div>
 
-        </div>
 
+          <div
+            className={
+              styles.footerCopyright
+            }
+          >
 
-        {/* COPYRIGHT */}
-
-        <div
-          className={
-            styles.footerBottom
-          }
-        >
-
-          <span>
             © 2026 PLUTEN
-          </span>
 
-          <span>
-            BEYOND ORDINARY.
-          </span>
+          </div>
 
         </div>
 

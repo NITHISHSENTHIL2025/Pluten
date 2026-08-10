@@ -1,17 +1,14 @@
 /* =========================================================
-   PLUTEN STORE
-   Premium monochrome / Apple-inspired
-   Single clean stylesheet — no duplicate selectors
+   PLUTEN
+   Premium monochrome storefront
 ========================================================= */
 
 .page {
   --black: #050505;
   --dark: #0b0b0b;
-  --white: #ffffff;
+  --white: #fff;
   --paper: #f5f5f3;
-  --soft: #eeeeeb;
   --gray: #6e6e73;
-  --light-gray: #969696;
 
   min-height: 100vh;
 
@@ -22,12 +19,13 @@
   font-weight: 700;
 
   -webkit-font-smoothing: antialiased;
+
   text-rendering: optimizeLegibility;
 }
 
 
 /* =========================================================
-   GLOBAL PAGE ELEMENTS
+   BUTTONS / INPUTS
 ========================================================= */
 
 .page button,
@@ -38,12 +36,6 @@
 
 .page button {
   border: 0;
-}
-
-.page button:focus-visible,
-.page input:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 4px;
 }
 
 
@@ -59,21 +51,18 @@
   overflow: hidden;
 
   display: flex;
+
   align-items: center;
 
   background:
     radial-gradient(
       circle at 72% 48%,
-      #ffffff 0%,
+      #fff 0%,
       #f7f7f5 36%,
       #eeeeeb 100%
     );
 }
 
-
-/* =========================================================
-   HERO NOISE
-========================================================= */
 
 .heroNoise {
   position: absolute;
@@ -89,10 +78,6 @@
 }
 
 
-/* =========================================================
-   HERO GLOW
-========================================================= */
-
 .heroGlow {
   position: absolute;
 
@@ -104,7 +89,8 @@
 
   border-radius: 50%;
 
-  background: rgba(255, 255, 255, .9);
+  background:
+    rgba(255,255,255,.9);
 
   filter: blur(90px);
 
@@ -121,20 +107,18 @@
 
   z-index: 10;
 
-  width: min(
-    calc(100% - 48px),
-    1440px
-  );
+  width:
+    min(
+      calc(100% - 48px),
+      1440px
+    );
 
   margin-inline: auto;
 
-  padding: 90px 0 120px;
+  padding:
+    90px 0 120px;
 }
 
-
-/* =========================================================
-   HERO EYEBROW
-========================================================= */
 
 .heroEyebrow {
   display: flex;
@@ -149,7 +133,7 @@
 
   font-size: 10px;
 
-  font-weight: 800;
+  font-weight: 900;
 
   letter-spacing: .16em;
 }
@@ -159,15 +143,9 @@
   width: 30px;
   height: 2px;
 
-  flex-shrink: 0;
-
   background: #888;
 }
 
-
-/* =========================================================
-   HERO TITLE
-========================================================= */
 
 .heroTitle {
   max-width: 760px;
@@ -192,10 +170,6 @@
 }
 
 
-/* =========================================================
-   HERO DESCRIPTION
-========================================================= */
-
 .heroDescription {
   max-width: 390px;
 
@@ -215,23 +189,13 @@
 
 
 /* =========================================================
-   HERO ACTIONS
+   HERO BUTTON
 ========================================================= */
 
 .heroActions {
-  display: flex;
-
-  align-items: center;
-
-  gap: 18px;
-
   opacity: 0;
 }
 
-
-/* =========================================================
-   PRIMARY BUTTON
-========================================================= */
 
 .primaryButton {
   min-height: 54px;
@@ -239,6 +203,7 @@
   display: inline-flex;
 
   align-items: center;
+
   justify-content: center;
 
   gap: 16px;
@@ -254,87 +219,39 @@
 
   font-size: 13px;
 
-  font-weight: 800;
-
-  letter-spacing: -.01em;
+  font-weight: 900;
 
   cursor: pointer;
 
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, .12),
-    0 12px 30px rgba(0, 0, 0, .13);
+    0 2px 4px rgba(0,0,0,.12),
+    0 12px 30px rgba(0,0,0,.13);
 
   transition:
-    transform .35s cubic-bezier(.16, 1, .3, 1),
-    box-shadow .35s ease,
-    background .25s ease;
+    transform .35s cubic-bezier(.16,1,.3,1),
+    box-shadow .35s ease;
 }
 
 
 .primaryButton:hover {
-  transform: translateY(-3px);
-
-  background: #151515;
+  transform:
+    translateY(-3px);
 
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, .15),
-    0 20px 45px rgba(0, 0, 0, .19);
+    0 5px 10px rgba(0,0,0,.15),
+    0 20px 45px rgba(0,0,0,.18);
 }
 
 
 .primaryButton svg {
   transition:
-    transform .4s cubic-bezier(.16, 1, .3, 1);
+    transform .4s cubic-bezier(.16,1,.3,1);
 }
 
 
 .primaryButton:hover svg {
   transform:
-    translate(4px, -4px);
-}
-
-
-/* =========================================================
-   SECONDARY BUTTON
-========================================================= */
-
-.textButton {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  padding:
-    0 0 6px;
-
-  background: transparent;
-
-  color: #555;
-
-  border-bottom:
-    2px solid #aaa;
-
-  font-size: 12px;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
-  transition:
-    color .25s ease,
-    border-color .25s ease,
-    transform .3s ease;
-}
-
-
-.textButton:hover {
-  color: #000;
-
-  border-color: #000;
-
-  transform:
-    translateX(3px);
+    translate(4px,-4px);
 }
 
 
@@ -345,8 +262,6 @@
 .heroMeta {
   display: flex;
 
-  align-items: center;
-
   gap: 30px;
 
   margin-top: 70px;
@@ -355,14 +270,14 @@
 
   font-size: 9px;
 
-  font-weight: 800;
+  font-weight: 900;
 
   letter-spacing: .15em;
 }
 
 
 /* =========================================================
-   PLANET AREA
+   PLANET
 ========================================================= */
 
 .planetArea {
@@ -374,7 +289,7 @@
   top: 50%;
 
   width:
-    min(52vw, 760px);
+    min(52vw,760px);
 
   aspect-ratio: 1;
 
@@ -386,10 +301,6 @@
     translateY(-50%);
 }
 
-
-/* =========================================================
-   PLANET HALO
-========================================================= */
 
 .planetHalo {
   position: absolute;
@@ -428,10 +339,6 @@
 }
 
 
-/* =========================================================
-   PLANET
-========================================================= */
-
 .planet {
   position: relative;
 
@@ -453,10 +360,6 @@
   opacity: 0;
 }
 
-
-/* =========================================================
-   PLANET SURFACE
-========================================================= */
 
 .planetSurface {
   position: absolute;
@@ -507,10 +410,6 @@
 }
 
 
-/* =========================================================
-   PLANET HIGHLIGHT
-========================================================= */
-
 .planetHighlight {
   position: absolute;
 
@@ -528,10 +427,6 @@
 }
 
 
-/* =========================================================
-   PLANET ORBIT
-========================================================= */
-
 .planetOrbit {
   position: absolute;
 
@@ -543,15 +438,12 @@
 
   border-radius: 50%;
 
-  transform: rotate(-17deg);
+  transform:
+    rotate(-17deg);
 
   pointer-events: none;
 }
 
-
-/* =========================================================
-   PLANET LABEL
-========================================================= */
 
 .planetLabel {
   position: absolute;
@@ -569,7 +461,7 @@
 
   font-size: 9px;
 
-  font-weight: 800;
+  font-weight: 900;
 
   letter-spacing: .13em;
 }
@@ -585,7 +477,7 @@
 
 
 /* =========================================================
-   SCROLL INDICATOR
+   SCROLL
 ========================================================= */
 
 .scrollIndicator {
@@ -610,7 +502,7 @@
 
   font-size: 9px;
 
-  font-weight: 800;
+  font-weight: 900;
 
   letter-spacing: .15em;
 
@@ -635,10 +527,10 @@
 
 
 /* =========================================================
-   FEATURED SECTION
+   PRODUCTS
 ========================================================= */
 
-.featured {
+.products {
   width:
     min(
       calc(100% - 48px),
@@ -653,10 +545,10 @@
 
 
 /* =========================================================
-   SECTION HEADER
+   PRODUCTS HEADER
 ========================================================= */
 
-.sectionHeader {
+.productsHeader {
   display: flex;
 
   align-items: flex-end;
@@ -684,13 +576,13 @@
 }
 
 
-.sectionHeader h2 {
+.productsHeader h2 {
   margin: 0;
 
   color: #111;
 
   font-size:
-    clamp(58px, 7vw, 104px);
+    clamp(58px,7vw,104px);
 
   line-height: .83;
 
@@ -700,221 +592,16 @@
 }
 
 
-/* =========================================================
-   SECTION SIDE
-========================================================= */
+.productsHeader p {
+  max-width: 290px;
 
-.sectionSide {
-  max-width: 350px;
-}
-
-
-.sectionSide p {
-  margin:
-    0 0 22px;
+  margin: 0;
 
   color: #666;
 
   font-size: 13px;
 
   line-height: 1.55;
-
-  font-weight: 700;
-}
-
-
-.sectionSide button {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  padding:
-    0 0 6px;
-
-  background: transparent;
-
-  color: #111;
-
-  border-bottom:
-    2px solid #aaa;
-
-  font-size: 11px;
-
-  font-weight: 900;
-
-  cursor: pointer;
-
-  transition:
-    border-color .25s ease,
-    transform .3s ease;
-}
-
-
-.sectionSide button:hover {
-  border-color: #111;
-
-  transform:
-    translateX(3px);
-}
-
-
-/* =========================================================
-   FILTER ROW
-========================================================= */
-
-.filterRow {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 20px;
-
-  padding:
-    16px 0;
-
-  border-top:
-    1px solid rgba(0,0,0,.12);
-
-  border-bottom:
-    1px solid rgba(0,0,0,.12);
-}
-
-
-/* =========================================================
-   FILTER GROUPS
-========================================================= */
-
-.categoryList,
-.sortArea {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  overflow-x: auto;
-
-  scrollbar-width: none;
-}
-
-
-.categoryList::-webkit-scrollbar,
-.sortArea::-webkit-scrollbar {
-  display: none;
-}
-
-
-/* =========================================================
-   FILTER BUTTONS
-========================================================= */
-
-.filter,
-.filterActive,
-.sort,
-.sortActive {
-  flex: 0 0 auto;
-
-  min-height: 34px;
-
-  padding:
-    0 14px;
-
-  border-radius: 999px;
-
-  font-size: 10px;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
-  transition:
-    color .25s ease,
-    background .25s ease,
-    transform .25s ease;
-}
-
-
-.filter,
-.sort {
-  background: transparent;
-
-  color: #777;
-}
-
-
-.filter:hover,
-.sort:hover {
-  color: #111;
-
-  transform:
-    translateY(-1px);
-}
-
-
-.filterActive,
-.sortActive {
-  background: #111;
-
-  color: #fff;
-
-  box-shadow:
-    0 5px 18px rgba(0,0,0,.12);
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.searchWrapper {
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin:
-    26px 0 40px;
-
-  padding:
-    0 2px;
-
-  color: #777;
-}
-
-
-.searchWrapper svg {
-  flex-shrink: 0;
-}
-
-
-.searchWrapper input {
-  width: 100%;
-
-  min-height: 44px;
-
-  padding: 0;
-
-  border: 0;
-
-  outline: 0;
-
-  background: transparent;
-
-  color: #111;
-
-  font-size: 14px;
-
-  font-weight: 800;
-}
-
-
-.searchWrapper input::placeholder {
-  color: #999;
 
   font-weight: 700;
 }
@@ -928,17 +615,13 @@
   display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(4,minmax(0,1fr));
 
   gap: 26px;
 
   width: 100%;
 }
 
-
-/* =========================================================
-   PRODUCT ITEM
-========================================================= */
 
 .productItem {
   min-width: 0;
@@ -953,6 +636,25 @@
 }
 
 
+@keyframes productEnter {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
 /* =========================================================
    PRODUCT CARD
 ========================================================= */
@@ -962,8 +664,6 @@
 
   width: 100%;
   height: 100%;
-
-  min-width: 0;
 
   overflow: hidden;
 
@@ -983,14 +683,9 @@
 
   transition:
     transform .55s cubic-bezier(.16,1,.3,1),
-    box-shadow .55s cubic-bezier(.16,1,.3,1),
-    border-color .35s ease;
+    box-shadow .55s cubic-bezier(.16,1,.3,1);
 }
 
-
-/* =========================================================
-   BLACK PRODUCT CARDS
-========================================================= */
 
 .productItem:nth-child(even) .productCard {
   background: #0a0a0a;
@@ -999,17 +694,8 @@
 
   border-color:
     rgba(255,255,255,.08);
-
-  box-shadow:
-    0 2px 5px rgba(0,0,0,.18),
-    0 14px 38px rgba(0,0,0,.20),
-    0 35px 75px rgba(0,0,0,.12);
 }
 
-
-/* =========================================================
-   PRODUCT CARD HOVER
-========================================================= */
 
 .productItem:hover .productCard {
   transform:
@@ -1022,615 +708,10 @@
 }
 
 
-.productItem:nth-child(even):hover .productCard {
-  box-shadow:
-    0 8px 20px rgba(0,0,0,.24),
-    0 30px 75px rgba(0,0,0,.30),
-    0 55px 105px rgba(0,0,0,.16);
-}
-
-
 /* =========================================================
-   PRODUCT VISUAL
+   MOBILE / TABLET PRODUCT CARD
+   ProductCard component owns its internals.
 ========================================================= */
-
-.productVisual {
-  position: relative;
-
-  width: 100%;
-
-  aspect-ratio: 1 / 1;
-
-  overflow: hidden;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff 0%,
-      #f5f5f3 55%,
-      #e9e9e7 100%
-    );
-}
-
-
-.productItem:nth-child(even) .productVisual {
-  background:
-    linear-gradient(
-      145deg,
-      #191919 0%,
-      #0c0c0c 60%,
-      #050505 100%
-    );
-}
-
-
-/* =========================================================
-   PRODUCT IMAGE
-========================================================= */
-
-.cardImage {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: cover;
-
-  transform: scale(1);
-
-  transition:
-    transform .9s cubic-bezier(.16,1,.3,1),
-    filter .6s ease;
-}
-
-
-.productItem:hover .cardImage {
-  transform:
-    scale(1.045);
-}
-
-
-/* =========================================================
-   IMAGE LIGHTING
-========================================================= */
-
-.productVisual::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  z-index: 2;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.10),
-      transparent 38%,
-      rgba(0,0,0,.09)
-    );
-
-  opacity: .72;
-
-  transition:
-    opacity .5s ease;
-}
-
-
-.productItem:hover .productVisual::after {
-  opacity: 1;
-}
-
-
-/* =========================================================
-   OFFER BADGE
-========================================================= */
-
-.offerBadge {
-  position: absolute;
-
-  z-index: 10;
-
-  top: 16px;
-  left: 16px;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  min-height: 34px;
-
-  padding:
-    0 13px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(5,5,5,.95);
-
-  color: #fff;
-
-  border:
-    1px solid rgba(255,255,255,.13);
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,.23);
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  font-size: 10px;
-
-  font-weight: 900;
-
-  letter-spacing: .07em;
-
-  white-space: nowrap;
-
-  transition:
-    transform .45s cubic-bezier(.16,1,.3,1);
-}
-
-
-.productItem:hover .offerBadge {
-  transform:
-    translateY(-3px);
-}
-
-
-/* =========================================================
-   PRODUCT ARROW
-========================================================= */
-
-.productArrow {
-  position: absolute;
-
-  z-index: 10;
-
-  right: 16px;
-  bottom: 16px;
-
-  width: 46px;
-  height: 46px;
-
-  display: grid;
-
-  place-items: center;
-
-  border-radius: 50%;
-
-  background:
-    rgba(255,255,255,.95);
-
-  color: #111;
-
-  border:
-    1px solid rgba(0,0,0,.08);
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.17);
-
-  opacity: 0;
-
-  transform:
-    translateY(10px)
-    scale(.82);
-
-  transition:
-    opacity .35s ease,
-    transform .5s cubic-bezier(.16,1,.3,1);
-}
-
-
-.productItem:hover .productArrow {
-  opacity: 1;
-
-  transform:
-    translateY(0)
-    scale(1);
-}
-
-
-/* =========================================================
-   CARD CONTENT
-========================================================= */
-
-.cardContent {
-  padding:
-    22px 22px 20px;
-}
-
-
-/* =========================================================
-   PRODUCT META
-========================================================= */
-
-.productMeta {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 11px;
-
-  color: #858585;
-
-  font-size: 9px;
-
-  line-height: 1;
-
-  font-weight: 900;
-
-  letter-spacing: .13em;
-
-  text-transform: uppercase;
-}
-
-
-.saveText {
-  color: #111;
-
-  font-weight: 900;
-
-  white-space: nowrap;
-}
-
-
-.productItem:nth-child(even) .saveText {
-  color: #fff;
-}
-
-
-/* =========================================================
-   TITLE ROW
-========================================================= */
-
-.titleRow {
-  display: flex;
-
-  align-items: flex-start;
-
-  justify-content: space-between;
-
-  gap: 16px;
-}
-
-
-/* =========================================================
-   PRODUCT TITLE
-========================================================= */
-
-.cardTitle {
-  max-width: 90%;
-
-  margin: 0;
-
-  color: #111;
-
-  font-size:
-    clamp(19px, 1.35vw, 24px);
-
-  line-height: 1.1;
-
-  font-weight: 900;
-
-  letter-spacing: -.045em;
-
-  transition:
-    transform .4s cubic-bezier(.16,1,.3,1);
-}
-
-
-.productItem:nth-child(even) .cardTitle {
-  color: #fff;
-}
-
-
-.productItem:hover .cardTitle {
-  transform:
-    translateX(2px);
-}
-
-
-/* =========================================================
-   TITLE ARROW
-========================================================= */
-
-.titleArrow {
-  flex-shrink: 0;
-
-  margin-top: 2px;
-
-  color: #777;
-
-  opacity: .45;
-
-  transition:
-    opacity .35s ease,
-    transform .4s cubic-bezier(.16,1,.3,1);
-}
-
-
-.productItem:hover .titleArrow {
-  opacity: 1;
-
-  transform:
-    translate(3px,-3px);
-}
-
-
-.productItem:nth-child(even) .titleArrow {
-  color: #fff;
-}
-
-
-/* =========================================================
-   VENDOR
-========================================================= */
-
-.cardVendor {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  margin-top: 17px;
-
-  color: #666;
-
-  font-size: 9px;
-
-  font-weight: 900;
-
-  letter-spacing: .12em;
-}
-
-
-.productItem:nth-child(even) .cardVendor {
-  color: #aaa;
-}
-
-
-/* =========================================================
-   VENDOR AVATAR
-========================================================= */
-
-.vendorAvatar {
-  width: 22px;
-  height: 22px;
-
-  display: grid;
-
-  place-items: center;
-
-  border-radius: 50%;
-
-  background: #eeeeec;
-
-  color: #555;
-
-  border:
-    1px solid rgba(0,0,0,.08);
-}
-
-
-.productItem:nth-child(even) .vendorAvatar {
-  background: #232323;
-
-  color: #aaa;
-
-  border-color:
-    rgba(255,255,255,.10);
-}
-
-
-/* =========================================================
-   VERIFIED
-========================================================= */
-
-.verified {
-  width: 15px;
-  height: 15px;
-
-  display: grid;
-
-  place-items: center;
-
-  border-radius: 50%;
-
-  background: #111;
-
-  color: #fff;
-}
-
-
-.productItem:nth-child(even) .verified {
-  background: #fff;
-
-  color: #111;
-}
-
-
-/* =========================================================
-   RATING
-========================================================= */
-
-.cardRating {
-  display: flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  margin-top: 11px;
-
-  color: #555;
-
-  font-size: 10px;
-
-  font-weight: 800;
-
-  letter-spacing: .02em;
-}
-
-
-.productItem:nth-child(even) .cardRating {
-  color: #aaa;
-}
-
-
-.cardRating svg {
-  color: #111;
-}
-
-
-.productItem:nth-child(even) .cardRating svg {
-  color: #fff;
-}
-
-
-.ratingDivider {
-  color: #aaa;
-}
-
-
-/* =========================================================
-   CARD BOTTOM
-========================================================= */
-
-.cardBottom {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 16px;
-
-  margin-top: 20px;
-
-  padding-top: 17px;
-
-  border-top:
-    1px solid rgba(0,0,0,.09);
-}
-
-
-.productItem:nth-child(even) .cardBottom {
-  border-top-color:
-    rgba(255,255,255,.12);
-}
-
-
-/* =========================================================
-   PRICE
-========================================================= */
-
-.priceContainer {
-  display: flex;
-
-  align-items: baseline;
-
-  gap: 9px;
-}
-
-
-.currentPrice {
-  color: #111;
-
-  font-size: 22px;
-
-  line-height: 1;
-
-  font-weight: 900;
-
-  letter-spacing: -.055em;
-}
-
-
-.productItem:nth-child(even) .currentPrice {
-  color: #fff;
-}
-
-
-.oldPrice {
-  color: #999;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-  text-decoration:
-    line-through;
-}
-
-
-/* =========================================================
-   VIEW LABEL
-========================================================= */
-
-.viewLabel {
-  color: #777;
-
-  font-size: 9px;
-
-  font-weight: 900;
-
-  letter-spacing: .14em;
-
-  transition:
-    color .3s ease,
-    transform .3s ease;
-}
-
-
-.productItem:hover .viewLabel {
-  color: #111;
-
-  transform:
-    translateX(-2px);
-}
-
-
-.productItem:nth-child(even) .viewLabel {
-  color: #aaa;
-}
-
-
-.productItem:nth-child(even):hover .viewLabel {
-  color: #fff;
-}
-
-
-/* =========================================================
-   NO IMAGE
-========================================================= */
-
-.noImage {
-  width: 100%;
-  height: 100%;
-
-  display: grid;
-
-  place-items: center;
-
-  color: #999;
-
-  font-size: 10px;
-
-  font-weight: 900;
-
-  letter-spacing: .15em;
-}
 
 
 /* =========================================================
@@ -1677,11 +758,13 @@
   0%,
   100% {
     transform: scale(.6);
+
     opacity: .35;
   }
 
   50% {
     transform: scale(1);
+
     opacity: 1;
   }
 
@@ -1689,11 +772,11 @@
 
 
 /* =========================================================
-   EMPTY STATE
+   EMPTY
 ========================================================= */
 
 .empty {
-  min-height: 280px;
+  min-height: 250px;
 
   display: flex;
 
@@ -1715,9 +798,7 @@
 }
 
 
-.empty span {
-  color: #111;
-
+.empty strong {
   font-size: 11px;
 
   font-weight: 900;
@@ -1734,29 +815,6 @@
   font-size: 11px;
 
   font-weight: 700;
-}
-
-
-/* =========================================================
-   PRODUCT ANIMATION
-========================================================= */
-
-@keyframes productEnter {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(28px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-
 }
 
 
@@ -1795,7 +853,7 @@
 
 .philosophyContent {
   width:
-    min(1100px, 100%);
+    min(1100px,100%);
 
   margin:
     130px auto 0;
@@ -1823,7 +881,7 @@
   color: #fff;
 
   font-size:
-    clamp(78px, 12vw, 174px);
+    clamp(78px,12vw,174px);
 
   line-height: .77;
 
@@ -1850,34 +908,29 @@
 
 
 /* =========================================================
-   FOOTER
+   SMALL FOOTER
 ========================================================= */
 
 .footer {
-  padding:
-    0 4vw 30px;
-
   background: #0b0b0b;
 
   color: #fff;
+
+  padding:
+    0 4vw 22px;
 }
 
 
-/* =========================================================
-   FOOTER MAIN
-========================================================= */
+.footerInner {
+  min-height: 92px;
 
-.footerMain {
   display: flex;
 
-  align-items: flex-start;
+  align-items: center;
 
   justify-content: space-between;
 
-  gap: 70px;
-
-  padding:
-    90px 0;
+  gap: 40px;
 
   border-top:
     1px solid rgba(255,255,255,.10);
@@ -1893,49 +946,27 @@
 
   align-items: center;
 
-  gap: 13px;
+  gap: 11px;
 
   color: #fff;
 
-  font-size: 16px;
+  font-size: 14px;
 
   font-weight: 900;
 
-  letter-spacing: .12em;
+  letter-spacing: .13em;
 }
 
 
-/*
-   IMPORTANT:
-   This replaces the old fake P circle.
-   The actual Pluten favicon is used.
-*/
-
 .footerLogo {
-  width: 32px;
-  height: 32px;
+  width: 29px;
+  height: 29px;
 
   display: block;
 
   object-fit: contain;
 
-  border-radius: 8px;
-}
-
-
-/* =========================================================
-   FOOTER DESCRIPTION
-========================================================= */
-
-.footerMain > div:first-child > p {
-  margin:
-    16px 0 0;
-
-  color: #777;
-
-  font-size: 12px;
-
-  font-weight: 700;
+  border-radius: 7px;
 }
 
 
@@ -1946,86 +977,43 @@
 .footerLinks {
   display: flex;
 
-  gap: 100px;
+  align-items: center;
+
+  gap: 30px;
 }
 
 
-.footerLinks > div {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: flex-start;
-
-  gap: 13px;
-}
-
-
-.footerLinks span {
-  margin-bottom: 8px;
-
-  color: #666;
-
-  font-size: 9px;
-
-  font-weight: 900;
-
-  letter-spacing: .15em;
-}
-
-
-.footerLinks button {
-  padding: 0;
-
-  background: transparent;
-
+.footerLinks a {
   color: #aaa;
 
   font-size: 11px;
 
   font-weight: 800;
 
-  cursor: pointer;
+  text-decoration: none;
 
   transition:
-    color .25s ease,
-    transform .25s ease;
+    color .25s ease;
 }
 
 
-.footerLinks button:hover {
+.footerLinks a:hover {
   color: #fff;
-
-  transform:
-    translateX(4px);
 }
 
 
 /* =========================================================
-   FOOTER BOTTOM
+   COPYRIGHT
 ========================================================= */
 
-.footerBottom {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 20px;
-
-  padding-top: 20px;
-
-  border-top:
-    1px solid rgba(255,255,255,.08);
-
+.footerCopyright {
   color: #555;
 
   font-size: 9px;
 
   font-weight: 800;
 
-  letter-spacing: .14em;
+  letter-spacing: .13em;
 }
 
 
@@ -2033,11 +1021,11 @@
    LARGE TABLET
 ========================================================= */
 
-@media (max-width: 1200px) {
+@media (max-width:1200px) {
 
   .productGrid {
     grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+      repeat(3,minmax(0,1fr));
   }
 
   .planetArea {
@@ -2053,15 +1041,11 @@
    TABLET
 ========================================================= */
 
-@media (max-width: 900px) {
-
-  .heroContent {
-    padding-top: 75px;
-  }
+@media (max-width:900px) {
 
   .heroTitle {
     font-size:
-      clamp(64px, 10vw, 110px);
+      clamp(64px,10vw,110px);
   }
 
   .planetArea {
@@ -2070,7 +1054,7 @@
     width: 62vw;
   }
 
-  .sectionHeader {
+  .productsHeader {
     align-items: flex-start;
 
     flex-direction: column;
@@ -2078,7 +1062,7 @@
 
   .productGrid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(2,minmax(0,1fr));
 
     gap: 22px;
   }
@@ -2090,7 +1074,7 @@
    MOBILE
 ========================================================= */
 
-@media (max-width: 760px) {
+@media (max-width:760px) {
 
   .hero {
     min-height:
@@ -2111,28 +1095,15 @@
 
 
   .heroTitle {
-    position: relative;
-
-    z-index: 20;
-
     font-size:
-      clamp(58px, 17vw, 90px);
+      clamp(58px,17vw,90px);
   }
 
 
   .heroDescription {
     max-width: 290px;
 
-    margin-top: 25px;
-
     font-size: 13px;
-  }
-
-
-  .heroActions {
-    flex-wrap: wrap;
-
-    gap: 16px;
   }
 
 
@@ -2149,8 +1120,6 @@
     top: 20%;
 
     transform: none;
-
-    opacity: .9;
   }
 
 
@@ -2171,6 +1140,7 @@
 
   .scrollIndicator {
     left: 16px;
+
     bottom: 20px;
 
     transform: none;
@@ -2183,7 +1153,7 @@
   }
 
 
-  .featured {
+  .products {
     width:
       calc(100% - 32px);
 
@@ -2192,25 +1162,13 @@
   }
 
 
-  .sectionHeader {
+  .productsHeader {
     margin-bottom: 45px;
   }
 
 
-  .sectionHeader h2 {
+  .productsHeader h2 {
     font-size: 64px;
-  }
-
-
-  .sectionSide {
-    max-width: 320px;
-  }
-
-
-  .filterRow {
-    align-items: flex-start;
-
-    flex-direction: column;
   }
 
 
@@ -2223,26 +1181,6 @@
 
   .productCard {
     border-radius: 22px;
-  }
-
-
-  .productArrow {
-    opacity: 1;
-
-    transform:
-      translateY(0)
-      scale(.85);
-  }
-
-
-  .cardContent {
-    padding:
-      20px 18px 18px;
-  }
-
-
-  .cardTitle {
-    font-size: 21px;
   }
 
 
@@ -2261,7 +1199,7 @@
 
   .philosophyContent h2 {
     font-size:
-      clamp(64px, 19vw, 110px);
+      clamp(64px,19vw,110px);
   }
 
 
@@ -2275,29 +1213,24 @@
 
   .footer {
     padding:
-      0 20px 20px;
+      0 20px 15px;
   }
 
 
-  .footerMain {
-    flex-direction: column;
+  .footerInner {
+    min-height: 80px;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
 
     padding:
-      65px 0;
+      18px 0;
   }
 
 
   .footerLinks {
-    gap: 70px;
-  }
-
-
-  .footerBottom {
-    align-items: flex-start;
-
-    flex-direction: column;
-
-    gap: 10px;
+    gap: 20px;
   }
 
 }
@@ -2307,36 +1240,17 @@
    SMALL MOBILE
 ========================================================= */
 
-@media (max-width: 480px) {
-
-  .heroActions {
-    flex-direction: column;
-
-    align-items: flex-start;
-  }
-
-
-  .primaryButton {
-    width: 205px;
-
-    justify-content: space-between;
-  }
-
-
-  .planetArea {
-    right: -32vw;
-
-    top: 15%;
-  }
-
+@media (max-width:480px) {
 
   .heroMeta {
     display: none;
   }
 
 
-  .footerLinks {
-    gap: 45px;
+  .footerInner {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 
 }

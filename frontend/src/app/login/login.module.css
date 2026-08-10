@@ -1,11 +1,14 @@
 /* =========================================================
    PLUTEN — LOGIN
    frontend/src/app/login/login.module.css
+
+   Premium white / editorial / minimal system
    ========================================================= */
 
 .premiumContainer {
   min-height: 100vh;
   width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,18 +16,13 @@
   position: relative;
   overflow: hidden;
 
-  background:
-    radial-gradient(
-      circle at 50% 42%,
-      rgba(255, 255, 255, 0.035),
-      transparent 32%
-    ),
-    #080808;
+  box-sizing: border-box;
 
-  color: #ffffff;
+  background: #f7f7f5;
+
+  color: #111111;
 
   padding: 32px;
-  box-sizing: border-box;
 
   font-family:
     -apple-system,
@@ -35,114 +33,130 @@
     sans-serif;
 }
 
+
 /* =========================================================
-   BACKGROUND DETAIL
+   BACKGROUND
    ========================================================= */
 
 .backgroundGrid {
   position: absolute;
+
   inset: 0;
 
   pointer-events: none;
 
-  opacity: 0.22;
+  opacity: 0.28;
 
   background-image:
     linear-gradient(
-      rgba(255, 255, 255, 0.025) 1px,
+      rgba(0, 0, 0, 0.025) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.025) 1px,
+      rgba(0, 0, 0, 0.025) 1px,
       transparent 1px
     );
 
   background-size: 80px 80px;
 
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 25%,
-    black 75%,
-    transparent
-  );
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 25%,
+      black 75%,
+      transparent
+    );
 }
 
+
 /* =========================================================
-   CENTER GLOW
+   SOFT CENTER LIGHT
    ========================================================= */
 
 .backgroundGlow {
   position: absolute;
 
-  width: 620px;
-  height: 620px;
+  width: 680px;
+  height: 680px;
 
   border-radius: 50%;
 
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.045) 0%,
-    rgba(255, 255, 255, 0.012) 35%,
-    transparent 70%
-  );
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.55) 38%,
+      rgba(255, 255, 255, 0) 72%
+    );
 
-  filter: blur(20px);
+  filter: blur(12px);
 
   pointer-events: none;
 }
 
+
 /* =========================================================
-   LOGIN CARD
+   MAIN LOGIN PANEL
    ========================================================= */
 
 .skeuomorphicCard {
   position: relative;
+
   z-index: 2;
 
   width: 100%;
-  max-width: 430px;
 
-  padding: 44px;
+  max-width: 460px;
 
   box-sizing: border-box;
 
-  border-radius: 24px;
+  padding: 54px 52px 48px;
 
-  background:
-    linear-gradient(
-      145deg,
-      #151515 0%,
-      #0f0f0f 50%,
-      #0b0b0b 100%
-    );
+  background: rgba(255, 255, 255, 0.92);
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  border-radius: 28px;
 
   box-shadow:
-    0 35px 90px rgba(0, 0, 0, 0.7),
-    0 10px 30px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 30px 80px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
 
-  animation: cardEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  animation:
+    cardEnter
+    0.8s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    both;
 }
+
 
 @keyframes cardEnter {
   from {
     opacity: 0;
-    transform: translateY(18px) scale(0.98);
+
+    transform:
+      translateY(18px)
+      scale(0.985);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+
+    transform:
+      translateY(0)
+      scale(1);
   }
 }
+
 
 /* =========================================================
    BRAND
@@ -150,32 +164,39 @@
 
 .brand {
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
 
-  margin-bottom: 30px;
+  justify-content: center;
+
+  margin-bottom: 38px;
 }
 
+
 .brandLogo {
-  width: 54px;
-  height: 54px;
+  width: 58px;
+
+  height: 58px;
 
   object-fit: contain;
 
   display: block;
 
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
+
 .brandName {
-  color: #ffffff;
+  color: #111111;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 14px;
+  font-size: 15px;
 
   font-weight: 700;
 
@@ -186,30 +207,35 @@
   text-transform: uppercase;
 }
 
+
 /* =========================================================
    SECURITY ICON
    ========================================================= */
 
 .securityIcon {
   width: 46px;
+
   height: 46px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   border-radius: 50%;
 
-  background: #111111;
+  background: #ffffff;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.05),
-    0 12px 30px rgba(0, 0, 0, 0.4);
+    0 8px 20px rgba(0, 0, 0, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
+
 
 /* =========================================================
    TITLE
@@ -222,32 +248,35 @@
 
   text-align: center;
 
-  color: #ffffff;
+  color: #111111;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 28px;
+  font-size: 38px;
 
-  line-height: 1.05;
+  line-height: 1;
 
   font-weight: 500;
 
-  letter-spacing: -0.035em;
+  letter-spacing: -0.045em;
 }
+
 
 /* =========================================================
    DESCRIPTION
    ========================================================= */
 
 .description {
-  max-width: 320px;
+  width: 100%;
 
-  margin: 14px auto 0;
+  max-width: 340px;
 
-  color: #858585;
+  margin: 17px auto 0;
+
+  color: #6d6d6d;
 
   font-size: 14px;
 
@@ -255,6 +284,7 @@
 
   text-align: center;
 }
+
 
 /* =========================================================
    STATUS MESSAGE
@@ -265,11 +295,11 @@
 
   box-sizing: border-box;
 
-  margin-top: 22px;
+  margin-top: 24px;
 
-  padding: 12px 14px;
+  padding: 13px 15px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
   font-size: 12px;
 
@@ -278,24 +308,35 @@
   text-align: center;
 }
 
-.expiredMessage {
-  color: #d7b86a;
-
-  background: rgba(120, 85, 0, 0.12);
-
-  border: 1px solid rgba(180, 135, 20, 0.2);
-}
-
-.errorMessage {
-  color: #ff7373;
-
-  background: rgba(120, 0, 0, 0.12);
-
-  border: 1px solid rgba(180, 0, 0, 0.2);
-}
 
 /* =========================================================
-   GOOGLE LOGIN AREA
+   EXPIRED SESSION
+   ========================================================= */
+
+.expiredMessage {
+  color: #725b16;
+
+  background: #faf7ea;
+
+  border: 1px solid #e9dfb9;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.errorMessage {
+  color: #8b1e1e;
+
+  background: #fff4f4;
+
+  border: 1px solid #f0d1d1;
+}
+
+
+/* =========================================================
+   GOOGLE LOGIN
    ========================================================= */
 
 .googleArea {
@@ -305,10 +346,22 @@
 
   justify-content: center;
 
-  margin-top: 30px;
+  align-items: center;
+
+  margin-top: 32px;
 
   min-height: 48px;
 }
+
+
+/*
+   Google controls the internal appearance of the
+   official GoogleLogin component.
+
+   We intentionally do NOT fake or recreate Google's
+   authentication button.
+*/
+
 
 /* =========================================================
    LOADING
@@ -325,8 +378,9 @@
 
   justify-content: center;
 
-  color: #888888;
+  color: #777777;
 }
+
 
 /* =========================================================
    TRUST LINE
@@ -343,117 +397,327 @@
 
   gap: 7px;
 
-  margin-top: 24px;
+  margin-top: 28px;
 
-  padding-top: 22px;
+  padding-top: 24px;
 
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
 
-  color: #666666;
+  color: #8a8a8a;
 
   font-size: 11px;
 
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
+
 /* =========================================================
-   FOOTER
+   PAGE LABEL
    ========================================================= */
 
-.footer {
+.pageLabel {
   position: absolute;
 
-  left: 0;
-  right: 0;
-  bottom: 24px;
+  left: 34px;
 
-  z-index: 2;
+  top: 30px;
 
-  display: flex;
+  z-index: 3;
 
-  justify-content: center;
+  color: #8a8a8a;
 
-  pointer-events: none;
-
-  color: #444444;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
   font-size: 10px;
 
-  letter-spacing: 0.12em;
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
 
   text-transform: uppercase;
 }
 
+
 /* =========================================================
-   MOBILE
+   BOTTOM BRAND LINE
+   ========================================================= */
+
+.bottomLabel {
+  position: absolute;
+
+  left: 50%;
+
+  bottom: 28px;
+
+  transform: translateX(-50%);
+
+  z-index: 3;
+
+  color: #999999;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  white-space: nowrap;
+
+  text-transform: uppercase;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .skeuomorphicCard {
+    transition:
+      box-shadow 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .skeuomorphicCard:hover {
+    box-shadow:
+      0 38px 95px rgba(0, 0, 0, 0.1),
+      0 10px 28px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+  }
+}
+
+
+/* =========================================================
+   TABLET
    ========================================================= */
 
 @media (max-width: 768px) {
   .premiumContainer {
-    padding: 20px;
+    padding: 24px;
   }
 
   .skeuomorphicCard {
-    max-width: 420px;
+    max-width: 440px;
 
-    padding: 36px 24px;
+    padding:
+      44px
+      32px
+      40px;
 
-    border-radius: 20px;
+    border-radius: 24px;
   }
 
   .brand {
-    margin-bottom: 26px;
+    margin-bottom: 32px;
   }
 
   .brandLogo {
-    width: 48px;
-    height: 48px;
+    width: 52px;
 
-    margin-bottom: 13px;
+    height: 52px;
+
+    margin-bottom: 14px;
   }
 
   .title {
-    font-size: 25px;
+    font-size: 33px;
   }
 
   .description {
     font-size: 13px;
 
+    max-width: 310px;
+  }
+
+  .googleArea {
+    margin-top: 28px;
+  }
+
+  .pageLabel {
+    left: 22px;
+
+    top: 22px;
+  }
+
+  .bottomLabel {
+    bottom: 18px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .premiumContainer {
+    min-height: 100svh;
+
+    padding:
+      18px
+      16px;
+  }
+
+  .backgroundGrid {
+    opacity: 0.16;
+
+    background-size: 55px 55px;
+  }
+
+  .backgroundGlow {
+    width: 420px;
+
+    height: 420px;
+  }
+
+  .skeuomorphicCard {
+    width: 100%;
+
+    max-width: 430px;
+
+    padding:
+      38px
+      22px
+      34px;
+
+    border-radius: 22px;
+  }
+
+  .brand {
+    margin-bottom: 28px;
+  }
+
+  .brandLogo {
+    width: 50px;
+
+    height: 50px;
+
+    margin-bottom: 13px;
+  }
+
+  .brandName {
+    font-size: 14px;
+
+    letter-spacing: 0.2em;
+  }
+
+  .securityIcon {
+    width: 44px;
+
+    height: 44px;
+
+    margin-bottom: 20px;
+  }
+
+  .title {
+    font-size: 29px;
+
+    letter-spacing: -0.04em;
+  }
+
+  .description {
+    margin-top: 15px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
     max-width: 290px;
+  }
+
+  .statusMessage {
+    margin-top: 20px;
+
+    padding:
+      12px
+      13px;
+
+    font-size: 11px;
   }
 
   .googleArea {
     margin-top: 26px;
   }
 
-  .footer {
-    bottom: 15px;
+  .trustLine {
+    margin-top: 24px;
+
+    padding-top: 21px;
+
+    font-size: 10px;
+  }
+
+  .pageLabel {
+    left: 18px;
+
+    top: 17px;
 
     font-size: 9px;
   }
+
+  .bottomLabel {
+    bottom: 13px;
+
+    font-size: 8px;
+  }
 }
+
 
 /* =========================================================
    SMALL MOBILE
    ========================================================= */
 
-@media (max-width: 400px) {
+@media (max-width: 380px) {
   .premiumContainer {
-    padding: 14px;
+    padding:
+      14px
+      12px;
   }
 
   .skeuomorphicCard {
-    padding: 32px 20px;
+    padding:
+      34px
+      18px
+      30px;
+
+    border-radius: 20px;
+  }
+
+  .brandLogo {
+    width: 46px;
+
+    height: 46px;
+  }
+
+  .brandName {
+    font-size: 13px;
   }
 
   .title {
-    font-size: 23px;
+    font-size: 26px;
   }
 
   .description {
     font-size: 12px;
+
+    max-width: 270px;
+  }
+
+  .bottomLabel {
+    display: none;
   }
 }
+
 
 /* =========================================================
    REDUCED MOTION
@@ -462,5 +726,9 @@
 @media (prefers-reduced-motion: reduce) {
   .skeuomorphicCard {
     animation: none;
+  }
+
+  .skeuomorphicCard {
+    transition: none;
   }
 }

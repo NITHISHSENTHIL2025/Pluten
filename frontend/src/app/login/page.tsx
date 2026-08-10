@@ -14,21 +14,23 @@ import {
   useSearchParams,
 } from "next/navigation";
 
-import {
-  GoogleLogin,
-  GoogleOAuthProvider,
-} from "@react-oauth/google";
-
 import apiClient from "@/lib/apiClient";
 
 import styles from "./login.module.css";
+
+import {
+  GoogleOAuthProvider,
+  GoogleLogin,
+} from "@react-oauth/google";
+
 
 /* =========================================================
    LOGIN ENGINE
    ========================================================= */
 
 function LoginEngine() {
-  const searchParams = useSearchParams();
+  const searchParams =
+    useSearchParams();
 
   const redirectUrl =
     searchParams.get("redirect");
@@ -36,182 +38,179 @@ function LoginEngine() {
   const isExpired =
     searchParams.get("expired");
 
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
   const [loading, setLoading] =
     useState(false);
 
   const [error, setError] =
     useState("");
 
-  /* =======================================================
+
+  /* =========================================================
      GOOGLE LOGIN
-     ======================================================= */
+     ========================================================= */
 
-  const handleGoogleSuccess = async (
-    credentialResponse: any
-  ) => {
-    try {
-      setLoading(true);
+  const handleGoogleSuccess =
+    async (
+      credentialResponse: any
+    ) => {
+      try {
+        setLoading(true);
 
-      setError("");
+        setError("");
 
-      /* ---------------------------------------------------
-         SEND GOOGLE CREDENTIAL TO BACKEND
-      --------------------------------------------------- */
 
-      const response =
-        await apiClient.post(
-          "/auth/google-login",
-          {
-            token:
-              credentialResponse.credential,
-          }
+        /* =====================================================
+           SEND GOOGLE TOKEN TO BACKEND
+        ===================================================== */
+
+        const response =
+          await apiClient.post(
+            "/auth/google-login",
+            {
+              token:
+                credentialResponse.credential,
+            }
+          );
+
+
+        /* =====================================================
+           EXTRACT AUTH DATA
+        ===================================================== */
+
+        const userRole =
+          response.data.user?.role ||
+          "CUSTOMER";
+
+        const secureToken =
+          response.data.token;
+
+
+        /* =====================================================
+           STORE CLIENT AUTH
+        ===================================================== */
+
+        localStorage.setItem(
+          "token",
+          secureToken
         );
 
-      /* ---------------------------------------------------
-         READ AUTHENTICATED USER
-      --------------------------------------------------- */
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            response.data.user
+          )
+        );
 
-      const userRole =
-        response.data.user?.role ||
-        "CUSTOMER";
-
-      const secureToken =
-        response.data.token;
-
-      /* ---------------------------------------------------
-         STORE AUTH SESSION
-      --------------------------------------------------- */
-
-      localStorage.setItem(
-        "token",
-        secureToken
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(
-          response.data.user
-        )
-      );
-
-      localStorage.setItem(
-        "role",
-        userRole
-      );
-
-      /* ---------------------------------------------------
-         MIDDLEWARE AUTH COOKIES
-
-         These cookies allow the Vercel / Next.js
-         middleware to recognize the authenticated
-         browser session.
-
-         IMPORTANT:
-         These are NOT replacing backend authorization.
-         Backend authorization must still verify the
-         actual token/session.
-      --------------------------------------------------- */
-
-      document.cookie =
-        "client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax";
-
-      document.cookie =
-        `user_role=${encodeURIComponent(
+        localStorage.setItem(
+          "role",
           userRole
-        )}; path=/; max-age=86400; Secure; SameSite=Lax`;
+        );
 
-      /* ---------------------------------------------------
-         COOKIE RACE CONDITION PROTECTION
 
-         Give the browser a short moment to persist
-         the cookies before navigation.
-      --------------------------------------------------- */
+        /* =====================================================
+           MIDDLEWARE COOKIES
+        ===================================================== */
 
-      setTimeout(() => {
-        /* -------------------------------------------------
-           ADMIN / MANAGEMENT USERS
-        ------------------------------------------------- */
+        document.cookie =
+          `client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax`;
 
-        if (
-          userRole === "SUPER_ADMIN" ||
-          userRole === "PRODUCT_MANAGER" ||
-          userRole === "FINANCE_MANAGER"
-        ) {
+        document.cookie =
+          `user_role=${userRole}; path=/; max-age=86400; Secure; SameSite=Lax`;
+
+
+        /* =====================================================
+           COOKIE RACE CONDITION PROTECTION
+
+           Give the browser enough time to persist the
+           cookies before navigating.
+        ===================================================== */
+
+        setTimeout(() => {
+          if (
+            userRole ===
+              "SUPER_ADMIN" ||
+            userRole ===
+              "PRODUCT_MANAGER" ||
+            userRole ===
+              "FINANCE_MANAGER"
+          ) {
+            window.location.href =
+              "/admin/products";
+
+            return;
+          }
+
+
+          if (
+            redirectUrl &&
+            redirectUrl !== "/dashboard"
+          ) {
+            window.location.href =
+              redirectUrl;
+
+            return;
+          }
+
+
           window.location.href =
-            "/admin/products";
+            "/";
+        }, 300);
 
-          return;
-        }
+      } catch (err: any) {
+        console.error(
+          "Google login failed:",
+          err
+        );
 
-        /* -------------------------------------------------
-           EXPLICIT REDIRECT
+        setError(
+          err.response?.data?.error ||
+            "Google authentication failed. Please try again."
+        );
 
-           Prevent redirecting to dashboard if the
-           old login flow supplied that default.
-        ------------------------------------------------- */
+        setLoading(false);
+      }
+    };
 
-        if (
-          redirectUrl &&
-          redirectUrl !== "/dashboard"
-        ) {
-          window.location.href =
-            redirectUrl;
 
-          return;
-        }
-
-        /* -------------------------------------------------
-           NORMAL CUSTOMER
-        ------------------------------------------------- */
-
-        window.location.href = "/";
-      }, 300);
-    } catch (err: any) {
-      console.error(
-        "Google login failed:",
-        err
-      );
-
-      setError(
-        err.response?.data?.error ||
-          "Google authentication failed. Please try again."
-      );
-
-      setLoading(false);
-    }
-  };
-
-  /* =======================================================
+  /* =========================================================
      GOOGLE LOGIN ERROR
-     ======================================================= */
+     ========================================================= */
 
-  const handleGoogleError = () => {
-    setError(
-      "Google authentication failed. Please try again."
-    );
+  const handleGoogleError =
+    () => {
+      setError(
+        "Google authentication failed. Please try again."
+      );
+    };
 
-    setLoading(false);
-  };
 
-  /* =======================================================
+  /* =========================================================
      RENDER
-     ======================================================= */
+     ========================================================= */
 
   return (
     <GoogleOAuthProvider
       clientId={
         process.env
-          .NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+          .NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+        ""
       }
     >
+
       <main
         className={
           styles.premiumContainer
         }
       >
-        {/* =================================================
+
+        {/* ===================================================
             BACKGROUND
-        ================================================= */}
+        =================================================== */}
 
         <div
           className={
@@ -227,23 +226,42 @@ function LoginEngine() {
           aria-hidden="true"
         />
 
-        {/* =================================================
+
+        {/* ===================================================
+            TOP PAGE LABEL
+        =================================================== */}
+
+        <div
+          className={
+            styles.pageLabel
+          }
+          aria-hidden="true"
+        >
+          PLUTEN / ACCOUNT
+        </div>
+
+
+        {/* ===================================================
             LOGIN CARD
-        ================================================= */}
+        =================================================== */}
 
         <section
           className={
             styles.skeuomorphicCard
           }
-          aria-labelledby="login-title"
+          aria-label="Pluten secure login"
         >
-          {/* ===============================================
-              PLUTEN BRAND
-          =============================================== */}
+
+          {/* =================================================
+              BRAND
+          ================================================= */}
 
           <div
-            className={styles.brand}
+            className={
+              styles.brand
+            }
           >
+
             <img
               src="/favicon.ico"
               alt="Pluten"
@@ -259,11 +277,13 @@ function LoginEngine() {
             >
               PLUTEN
             </span>
+
           </div>
 
-          {/* ===============================================
+
+          {/* =================================================
               SECURITY ICON
-          =============================================== */}
+          ================================================= */}
 
           <div
             className={
@@ -272,39 +292,44 @@ function LoginEngine() {
             aria-hidden="true"
           >
             <ShieldCheck
-              size={23}
+              size={21}
               strokeWidth={1.7}
             />
           </div>
 
-          {/* ===============================================
+
+          {/* =================================================
               TITLE
-          =============================================== */}
+          ================================================= */}
 
           <h1
-            id="login-title"
-            className={styles.title}
+            className={
+              styles.title
+            }
           >
             Access securely.
           </h1>
 
-          {/* ===============================================
+
+          {/* =================================================
               DESCRIPTION
-          =============================================== */}
+          ================================================= */}
 
           <p
             className={
               styles.description
             }
           >
-            Sign in with Google to access
-            your Pluten Digital Library and
-            manage your purchases.
+            Sign in with Google to
+            access your Pluten Digital
+            Library and manage your
+            purchases.
           </p>
 
-          {/* ===============================================
+
+          {/* =================================================
               EXPIRED SESSION
-          =============================================== */}
+          ================================================= */}
 
           {isExpired === "true" && (
             <div
@@ -317,9 +342,10 @@ function LoginEngine() {
             </div>
           )}
 
-          {/* ===============================================
+
+          {/* =================================================
               ERROR
-          =============================================== */}
+          ================================================= */}
 
           {error && (
             <div
@@ -330,28 +356,35 @@ function LoginEngine() {
             </div>
           )}
 
-          {/* ===============================================
-              GOOGLE AUTHENTICATION
-          =============================================== */}
 
-          {loading ? (
-            <div
-              className={
-                styles.loadingState
-              }
-              aria-live="polite"
-            >
-              <Loader2
-                size={22}
-                className="animate-spin"
-              />
-            </div>
-          ) : (
-            <div
-              className={
-                styles.googleArea
-              }
-            >
+          {/* =================================================
+              GOOGLE AUTHENTICATION
+          ================================================= */}
+
+          <div
+            className={
+              styles.googleArea
+            }
+          >
+
+            {loading ? (
+
+              <div
+                className={
+                  styles.loadingState
+                }
+                aria-live="polite"
+              >
+
+                <Loader2
+                  size={22}
+                  className="animate-spin"
+                />
+
+              </div>
+
+            ) : (
+
               <GoogleLogin
                 onSuccess={
                   handleGoogleSuccess
@@ -359,71 +392,61 @@ function LoginEngine() {
                 onError={
                   handleGoogleError
                 }
-                theme="filled_black"
+                theme="outline"
                 shape="rectangular"
-                width="280"
+                size="large"
+                text="signin_with"
+                width="320"
               />
-            </div>
-          )}
 
-          {/* ===============================================
-              TRUST / SECURITY
-          =============================================== */}
+            )}
+
+          </div>
+
+
+          {/* =================================================
+              TRUST LINE
+          ================================================= */}
 
           <div
             className={
               styles.trustLine
             }
           >
+
             <ShieldCheck
               size={13}
-              strokeWidth={1.8}
+              strokeWidth={1.7}
             />
 
             <span>
               Secure authentication
             </span>
+
           </div>
+
         </section>
 
-        {/* =================================================
-            FOOTER
-        ================================================= */}
 
-        <footer
-          className={styles.footer}
+        {/* ===================================================
+            BOTTOM BRAND
+        =================================================== */}
+
+        <div
+          className={
+            styles.bottomLabel
+          }
+          aria-hidden="true"
         >
           PLUTEN — BEYOND ORDINARY.
-        </footer>
+        </div>
+
       </main>
+
     </GoogleOAuthProvider>
   );
 }
 
-/* =========================================================
-   LOADING FALLBACK
-   ========================================================= */
-
-function LoginLoading() {
-  return (
-    <main
-      className={
-        styles.premiumContainer
-      }
-    >
-      <div
-        className={
-          styles.loadingState
-        }
-      >
-        <Loader2
-          size={24}
-          className="animate-spin"
-        />
-      </div>
-    </main>
-  );
-}
 
 /* =========================================================
    PAGE
@@ -432,7 +455,24 @@ function LoginLoading() {
 export default function LoginPage() {
   return (
     <Suspense
-      fallback={<LoginLoading />}
+      fallback={
+        <main
+          className={
+            styles.premiumContainer
+          }
+        >
+          <div
+            className={
+              styles.loadingState
+            }
+          >
+            <Loader2
+              size={24}
+              className="animate-spin"
+            />
+          </div>
+        </main>
+      }
     >
       <LoginEngine />
     </Suspense>

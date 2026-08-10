@@ -1,119 +1,466 @@
-/* frontend/src/app/login/login.module.css */
+/* =========================================================
+   PLUTEN — LOGIN
+   frontend/src/app/login/login.module.css
+   ========================================================= */
 
 .premiumContainer {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0a0a0a;
-  padding: 1.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.035),
+      transparent 32%
+    ),
+    #080808;
+
+  color: #ffffff;
+
+  padding: 32px;
   box-sizing: border-box;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
+/* =========================================================
+   BACKGROUND DETAIL
+   ========================================================= */
+
+.backgroundGrid {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.22;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size: 80px 80px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 25%,
+    black 75%,
+    transparent
+  );
+}
+
+/* =========================================================
+   CENTER GLOW
+   ========================================================= */
+
+.backgroundGlow {
+  position: absolute;
+
+  width: 620px;
+  height: 620px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.045) 0%,
+    rgba(255, 255, 255, 0.012) 35%,
+    transparent 70%
+  );
+
+  filter: blur(20px);
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
+
 .skeuomorphicCard {
-  background: #111111;
-  padding: 3.5rem;
+  position: relative;
+  z-index: 2;
+
   width: 100%;
-  max-width: 450px;
-  border-radius: 20px;
+  max-width: 430px;
+
+  padding: 44px;
+
   box-sizing: border-box;
-  /* Heavy Raised Depth */
-  box-shadow: 16px 16px 32px #030303, 
-             -8px -8px 24px rgba(255, 255, 255, 0.02),
-             inset 1px 1px 2px rgba(255, 255, 255, 0.04);
-  border: 1px solid #1a1a1a;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #151515 0%,
+      #0f0f0f 50%,
+      #0b0b0b 100%
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 35px 90px rgba(0, 0, 0, 0.7),
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateZ(0); /* Hardware Acceleration */
+
+  animation: cardEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.brandLogo {
+  width: 54px;
+  height: 54px;
+
+  object-fit: contain;
+
+  display: block;
+
+  margin-bottom: 15px;
+}
+
+.brandName {
+  color: #ffffff;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.22em;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   SECURITY ICON
+   ========================================================= */
+
+.securityIcon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #111111;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    0 12px 30px rgba(0, 0, 0, 0.4);
+
+  margin-bottom: 20px;
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
 
 .title {
+  width: 100%;
+
+  margin: 0;
+
   text-align: center;
-  font-size: 1.5rem;
-  letter-spacing: 2px;
+
+  color: #ffffff;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 28px;
+
+  line-height: 1.05;
+
+  font-weight: 500;
+
+  letter-spacing: -0.035em;
+}
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.description {
+  max-width: 320px;
+
+  margin: 14px auto 0;
+
+  color: #858585;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+
+  text-align: center;
+}
+
+/* =========================================================
+   STATUS MESSAGE
+   ========================================================= */
+
+.statusMessage {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-top: 22px;
+
+  padding: 12px 14px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.expiredMessage {
+  color: #d7b86a;
+
+  background: rgba(120, 85, 0, 0.12);
+
+  border: 1px solid rgba(180, 135, 20, 0.2);
+}
+
+.errorMessage {
+  color: #ff7373;
+
+  background: rgba(120, 0, 0, 0.12);
+
+  border: 1px solid rgba(180, 0, 0, 0.2);
+}
+
+/* =========================================================
+   GOOGLE LOGIN AREA
+   ========================================================= */
+
+.googleArea {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 30px;
+
+  min-height: 48px;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loadingState {
+  width: 100%;
+
+  min-height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #888888;
+}
+
+/* =========================================================
+   TRUST LINE
+   ========================================================= */
+
+.trustLine {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 24px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+  color: #666666;
+
+  font-size: 11px;
+
+  letter-spacing: 0.03em;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 24px;
+
+  z-index: 2;
+
+  display: flex;
+
+  justify-content: center;
+
+  pointer-events: none;
+
+  color: #444444;
+
+  font-size: 10px;
+
+  letter-spacing: 0.12em;
+
   text-transform: uppercase;
-  color: #f5f5f5;
-  margin-bottom: 2rem;
-  width: 100%;
 }
 
-.skeuomorphicInput {
-  width: 100%;
-  background: #0a0a0a;
-  border: none;
-  padding: 0 1.2rem;
-  min-height: 48px; /* Mobile touch target */
-  border-radius: 12px;
-  color: #f5f5f5;
-  font-size: 1rem;
-  box-sizing: border-box;
-  /* Deep Carved Input */
-  box-shadow: inset 6px 6px 12px #040404, 
-              inset -4px -4px 10px #151515;
-  margin-bottom: 1.5rem;
-  outline: none;
-  transition: all 0.3s ease;
-  transform: translateZ(0);
-}
-
-.skeuomorphicInput:focus {
-  box-shadow: inset 8px 8px 14px #030303, 
-              inset -4px -4px 10px #181818, 
-              0 0 15px rgba(139, 0, 0, 0.3);
-}
-
-.skeuomorphicButton {
-  width: 100%;
-  min-height: 48px; /* Mobile touch target */
-  background: linear-gradient(145deg, #950000, #7d0000);
-  color: #f5f5f5;
-  font-weight: bold;
-  letter-spacing: 1px;
-  border: none;
-  border-radius: 12px;
-  box-sizing: border-box;
-  /* Raised Machined Button */
-  box-shadow: 8px 8px 16px #040404, 
-             -4px -4px 10px #1e1e1e,
-             inset 1px 1px 2px rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  margin-top: 1rem;
-  transform: translateZ(0);
-}
-
-.skeuomorphicButton:active {
-  background: #8b0000;
-  box-shadow: inset 6px 6px 12px #5c0000, 
-              inset -4px -4px 10px #ba0000;
-  transform: translateY(2px) translateZ(0);
-}
-
-.linkText {
-  display: block;
-  text-align: center;
-  margin-top: 1.5rem;
-  color: #888;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  width: 100%;
-  padding: 0.5rem 0; /* Easier to tap on mobile */
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .linkText:hover { color: #f5f5f5; }
-}
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 768px) {
-  .skeuomorphicCard {
-    padding: 2.5rem 1.5rem; 
-    border-radius: 16px;
+  .premiumContainer {
+    padding: 20px;
   }
-  .title { font-size: 1.25rem; margin-bottom: 1.5rem; }
-  .skeuomorphicInput, .skeuomorphicButton {
-    min-height: 48px; /* Ensures they don't shrink on mobile */
-    font-size: 0.95rem;
+
+  .skeuomorphicCard {
+    max-width: 420px;
+
+    padding: 36px 24px;
+
+    border-radius: 20px;
+  }
+
+  .brand {
+    margin-bottom: 26px;
+  }
+
+  .brandLogo {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 13px;
+  }
+
+  .title {
+    font-size: 25px;
+  }
+
+  .description {
+    font-size: 13px;
+
+    max-width: 290px;
+  }
+
+  .googleArea {
+    margin-top: 26px;
+  }
+
+  .footer {
+    bottom: 15px;
+
+    font-size: 9px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+  .premiumContainer {
+    padding: 14px;
+  }
+
+  .skeuomorphicCard {
+    padding: 32px 20px;
+  }
+
+  .title {
+    font-size: 23px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeuomorphicCard {
+    animation: none;
   }
 }

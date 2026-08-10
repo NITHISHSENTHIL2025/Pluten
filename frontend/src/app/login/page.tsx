@@ -1,100 +1,440 @@
-// frontend/src/app/login/page.tsx
 "use client";
 
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Loader2, ShieldCheck } from 'lucide-react';
-import apiClient from '@/lib/apiClient';
-import styles from './login.module.css'; 
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import {
+  Suspense,
+  useState,
+} from "react";
+
+import {
+  Loader2,
+  ShieldCheck,
+} from "lucide-react";
+
+import {
+  useSearchParams,
+} from "next/navigation";
+
+import {
+  GoogleLogin,
+  GoogleOAuthProvider,
+} from "@react-oauth/google";
+
+import apiClient from "@/lib/apiClient";
+
+import styles from "./login.module.css";
+
+/* =========================================================
+   LOGIN ENGINE
+   ========================================================= */
 
 function LoginEngine() {
-    const searchParams = useSearchParams();
-    const redirectUrl = searchParams.get('redirect');
-    const isExpired = searchParams.get('expired');
+  const searchParams = useSearchParams();
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+  const redirectUrl =
+    searchParams.get("redirect");
 
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        try {
-            setLoading(true);
-            const response = await apiClient.post('/auth/google-login', {
-                token: credentialResponse.credential
-            });
-            
-            const userRole = response.data.user?.role || 'CUSTOMER';
-            const secureToken = response.data.token;
-            
-            localStorage.setItem('token', secureToken);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            localStorage.setItem('role', userRole);
-            
-            // Stamp the cookies for the Vercel Middleware
-            document.cookie = `client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax`;
-            document.cookie = `user_role=${userRole}; path=/; max-age=86400; Secure; SameSite=Lax`;
-            
-            // THE FIX: The Cookie Race Condition
-            // Pause for 300 milliseconds to guarantee the browser saves the cookies to disk
-            // before redirecting. This ensures the Middleware reads your SUPER_ADMIN status.
-            setTimeout(() => {
-                if (userRole === 'SUPER_ADMIN' || userRole === 'PRODUCT_MANAGER' || userRole === 'FINANCE_MANAGER') {
-                    window.location.href = '/admin/products';
-                } else if (redirectUrl && redirectUrl !== '/dashboard') {
-                    window.location.href = redirectUrl;
-                } else {
-                    window.location.href = '/';
-                }
-            }, 300);
+  const isExpired =
+    searchParams.get("expired");
 
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Google SSO failed.');
-            setLoading(false);
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  /* =======================================================
+     GOOGLE LOGIN
+     ======================================================= */
+
+  const handleGoogleSuccess = async (
+    credentialResponse: any
+  ) => {
+    try {
+      setLoading(true);
+
+      setError("");
+
+      /* ---------------------------------------------------
+         SEND GOOGLE CREDENTIAL TO BACKEND
+      --------------------------------------------------- */
+
+      const response =
+        await apiClient.post(
+          "/auth/google-login",
+          {
+            token:
+              credentialResponse.credential,
+          }
+        );
+
+      /* ---------------------------------------------------
+         READ AUTHENTICATED USER
+      --------------------------------------------------- */
+
+      const userRole =
+        response.data.user?.role ||
+        "CUSTOMER";
+
+      const secureToken =
+        response.data.token;
+
+      /* ---------------------------------------------------
+         STORE AUTH SESSION
+      --------------------------------------------------- */
+
+      localStorage.setItem(
+        "token",
+        secureToken
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          response.data.user
+        )
+      );
+
+      localStorage.setItem(
+        "role",
+        userRole
+      );
+
+      /* ---------------------------------------------------
+         MIDDLEWARE AUTH COOKIES
+
+         These cookies allow the Vercel / Next.js
+         middleware to recognize the authenticated
+         browser session.
+
+         IMPORTANT:
+         These are NOT replacing backend authorization.
+         Backend authorization must still verify the
+         actual token/session.
+      --------------------------------------------------- */
+
+      document.cookie =
+        "client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax";
+
+      document.cookie =
+        `user_role=${encodeURIComponent(
+          userRole
+        )}; path=/; max-age=86400; Secure; SameSite=Lax`;
+
+      /* ---------------------------------------------------
+         COOKIE RACE CONDITION PROTECTION
+
+         Give the browser a short moment to persist
+         the cookies before navigation.
+      --------------------------------------------------- */
+
+      setTimeout(() => {
+        /* -------------------------------------------------
+           ADMIN / MANAGEMENT USERS
+        ------------------------------------------------- */
+
+        if (
+          userRole === "SUPER_ADMIN" ||
+          userRole === "PRODUCT_MANAGER" ||
+          userRole === "FINANCE_MANAGER"
+        ) {
+          window.location.href =
+            "/admin/products";
+
+          return;
         }
-    };
 
-    return (
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
-            <div className={styles.premiumContainer}>
-                <div className={styles.skeuomorphicCard} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 2rem' }}>
-                    
-                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                        <ShieldCheck size={24} color="#fff" />
-                    </div>
+        /* -------------------------------------------------
+           EXPLICIT REDIRECT
 
-                    <h1 className={styles.title} style={{ marginBottom: '0.5rem' }}>ACCESS SECURELY</h1>
-                    <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '2.5rem', textAlign: 'center' }}>
-                        Authenticate with Google to access your Digital Library and complete purchases.
-                    </p>
+           Prevent redirecting to dashboard if the
+           old login flow supplied that default.
+        ------------------------------------------------- */
 
-                    {isExpired === 'true' && <p className="text-yellow-500 text-sm mb-4 text-center bg-yellow-950/30 p-2 rounded border border-yellow-900 w-full">Secure session expired. Please authenticate again.</p>}
-                    {error && <p className="text-red-500 text-sm mb-6 text-center bg-red-950/30 p-3 rounded border border-red-900 w-full">{error}</p>}
+        if (
+          redirectUrl &&
+          redirectUrl !== "/dashboard"
+        ) {
+          window.location.href =
+            redirectUrl;
 
-                    {loading ? (
-                        <div style={{ padding: '1rem', display: 'flex', justifyContent: 'center' }}>
-                            <Loader2 className="animate-spin text-neutral-400" />
-                        </div>
-                    ) : (
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <GoogleLogin 
-                                onSuccess={handleGoogleSuccess}
-                                onError={() => setError('Google Authentication Failed')}
-                                theme="filled_black"
-                                shape="rectangular"
-                                width={280} 
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </GoogleOAuthProvider>
+          return;
+        }
+
+        /* -------------------------------------------------
+           NORMAL CUSTOMER
+        ------------------------------------------------- */
+
+        window.location.href = "/";
+      }, 300);
+    } catch (err: any) {
+      console.error(
+        "Google login failed:",
+        err
+      );
+
+      setError(
+        err.response?.data?.error ||
+          "Google authentication failed. Please try again."
+      );
+
+      setLoading(false);
+    }
+  };
+
+  /* =======================================================
+     GOOGLE LOGIN ERROR
+     ======================================================= */
+
+  const handleGoogleError = () => {
+    setError(
+      "Google authentication failed. Please try again."
     );
+
+    setLoading(false);
+  };
+
+  /* =======================================================
+     RENDER
+     ======================================================= */
+
+  return (
+    <GoogleOAuthProvider
+      clientId={
+        process.env
+          .NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+      }
+    >
+      <main
+        className={
+          styles.premiumContainer
+        }
+      >
+        {/* =================================================
+            BACKGROUND
+        ================================================= */}
+
+        <div
+          className={
+            styles.backgroundGrid
+          }
+          aria-hidden="true"
+        />
+
+        <div
+          className={
+            styles.backgroundGlow
+          }
+          aria-hidden="true"
+        />
+
+        {/* =================================================
+            LOGIN CARD
+        ================================================= */}
+
+        <section
+          className={
+            styles.skeuomorphicCard
+          }
+          aria-labelledby="login-title"
+        >
+          {/* ===============================================
+              PLUTEN BRAND
+          =============================================== */}
+
+          <div
+            className={styles.brand}
+          >
+            <img
+              src="/favicon.ico"
+              alt="Pluten"
+              className={
+                styles.brandLogo
+              }
+            />
+
+            <span
+              className={
+                styles.brandName
+              }
+            >
+              PLUTEN
+            </span>
+          </div>
+
+          {/* ===============================================
+              SECURITY ICON
+          =============================================== */}
+
+          <div
+            className={
+              styles.securityIcon
+            }
+            aria-hidden="true"
+          >
+            <ShieldCheck
+              size={23}
+              strokeWidth={1.7}
+            />
+          </div>
+
+          {/* ===============================================
+              TITLE
+          =============================================== */}
+
+          <h1
+            id="login-title"
+            className={styles.title}
+          >
+            Access securely.
+          </h1>
+
+          {/* ===============================================
+              DESCRIPTION
+          =============================================== */}
+
+          <p
+            className={
+              styles.description
+            }
+          >
+            Sign in with Google to access
+            your Pluten Digital Library and
+            manage your purchases.
+          </p>
+
+          {/* ===============================================
+              EXPIRED SESSION
+          =============================================== */}
+
+          {isExpired === "true" && (
+            <div
+              className={`${styles.statusMessage} ${styles.expiredMessage}`}
+              role="status"
+            >
+              Your secure session has
+              expired. Please authenticate
+              again.
+            </div>
+          )}
+
+          {/* ===============================================
+              ERROR
+          =============================================== */}
+
+          {error && (
+            <div
+              className={`${styles.statusMessage} ${styles.errorMessage}`}
+              role="alert"
+            >
+              {error}
+            </div>
+          )}
+
+          {/* ===============================================
+              GOOGLE AUTHENTICATION
+          =============================================== */}
+
+          {loading ? (
+            <div
+              className={
+                styles.loadingState
+              }
+              aria-live="polite"
+            >
+              <Loader2
+                size={22}
+                className="animate-spin"
+              />
+            </div>
+          ) : (
+            <div
+              className={
+                styles.googleArea
+              }
+            >
+              <GoogleLogin
+                onSuccess={
+                  handleGoogleSuccess
+                }
+                onError={
+                  handleGoogleError
+                }
+                theme="filled_black"
+                shape="rectangular"
+                width="280"
+              />
+            </div>
+          )}
+
+          {/* ===============================================
+              TRUST / SECURITY
+          =============================================== */}
+
+          <div
+            className={
+              styles.trustLine
+            }
+          >
+            <ShieldCheck
+              size={13}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              Secure authentication
+            </span>
+          </div>
+        </section>
+
+        {/* =================================================
+            FOOTER
+        ================================================= */}
+
+        <footer
+          className={styles.footer}
+        >
+          PLUTEN — BEYOND ORDINARY.
+        </footer>
+      </main>
+    </GoogleOAuthProvider>
+  );
 }
 
+/* =========================================================
+   LOADING FALLBACK
+   ========================================================= */
+
+function LoginLoading() {
+  return (
+    <main
+      className={
+        styles.premiumContainer
+      }
+    >
+      <div
+        className={
+          styles.loadingState
+        }
+      >
+        <Loader2
+          size={24}
+          className="animate-spin"
+        />
+      </div>
+    </main>
+  );
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 export default function LoginPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><Loader2 className="animate-spin text-neutral-600" /></div>}>
-            <LoginEngine />
-        </Suspense>
-    );
+  return (
+    <Suspense
+      fallback={<LoginLoading />}
+    >
+      <LoginEngine />
+    </Suspense>
+  );
 }

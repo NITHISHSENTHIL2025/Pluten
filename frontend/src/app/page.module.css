@@ -759,14 +759,13 @@
    PRODUCT GRID
 ========================================================= */
 
-.productGrid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 18px;
+.productsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
 }
+
 
 
 .productItem {
@@ -2102,7 +2101,27 @@
   }
 
 }
+@media (max-width: 1200px) {
+    .productsGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
 
+/* 2 products per row */
+@media (max-width: 800px) {
+    .productsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+/* 1 product per row */
+@media (max-width: 520px) {
+    .productsGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
 
 /* =========================================================
    MOBILE

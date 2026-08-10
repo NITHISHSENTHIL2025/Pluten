@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { ArrowUpRight, Check } from "lucide-react";
+import {
+  Star,
+  Check,
+  ArrowUpRight,
+  Sparkles,
+} from "lucide-react";
+
 import { useOffers } from "@/context/OfferContext";
 import styles from "../app/page.module.css";
 
@@ -21,7 +27,7 @@ export default function ProductCard({
   const { activeOffers, loadingOffers } = useOffers();
 
   const { finalPrice, activeOffer } = useMemo(() => {
-    let price = Number(product.price);
+    const originalPrice = Number(product.price);
 
     const offer = activeOffers.find(
       (o: any) => o.autoApply
@@ -29,183 +35,155 @@ export default function ProductCard({
 
     if (!offer) {
       return {
-        finalPrice: price,
+        finalPrice: originalPrice,
         activeOffer: null,
       };
     }
 
+    let discountAmount = 0;
+
     if (offer.type === "PERCENTAGE") {
-      price =
-        price -
-        price * (Number(offer.value) / 100);
+      discountAmount =
+        originalPrice * (Number(offer.value) / 100);
     }
 
     if (offer.type === "FIXED") {
-      price =
-        price - Number(offer.value);
+      discountAmount = Number(offer.value);
     }
 
+    const discountedPrice = Math.max(
+      0,
+      originalPrice - discountAmount
+    );
+
     return {
-      finalPrice: Math.max(
-        0,
-        Math.round(price)
-      ),
+      finalPrice: Math.round(discountedPrice),
       activeOffer: offer,
     };
   }, [product.price, activeOffers]);
 
-  const originalPrice =
-    Number(product.price);
+  const originalPrice = Number(product.price);
 
   const hasDiscount =
-    activeOffer &&
-    finalPrice < originalPrice;
+    !!activeOffer && finalPrice < originalPrice;
+
+  const discountPercentage =
+    hasDiscount && activeOffer?.type === "PERCENTAGE"
+      ? Number(activeOffer.value)
+      : Math.round(
+          ((originalPrice - finalPrice) / originalPrice) *
+            100
+        );
 
   return (
     <article className={styles.productCard}>
+      {/* IMAGE AREA */}
+      <div className={styles.productVisual}>
 
-      {/* =========================================
-          IMAGE
-      ========================================= */}
-
-      <div className={styles.productImageFrame}>
-
-        {product.thumbnail ? (
-          <img
-            src={product.thumbnail}
-            alt={product.title}
-            className={styles.productImage}
-          />
-        ) : (
-          <div className={styles.productNoImage}>
-            <span>PLUTEN</span>
+        {/* OFFER */}
+        {hasDiscount && (
+          <div className={styles.offerPill}>
+            <Sparkles size={11} strokeWidth={2} />
+            <span>
+              {activeOffer?.type === "PERCENTAGE"
+                ? `${activeOffer.value}% OFF`
+                : `SAVE ₹${activeOffer?.value}`}
+            </span>
           </div>
         )}
 
-        {/* Hover circle */}
+        {/* IMAGE */}
+        <div className={styles.imageFrame}>
+          {product.thumbnail ? (
+            <img
+              src={product.thumbnail}
+              alt={product.title}
+              className={styles.cardImage}
+            />
+          ) : (
+            <div className={styles.noImage}>
+              <span>NO PREVIEW</span>
+            </div>
+          )}
+        </div>
 
-        <div
-          className={
-            styles.productHoverArrow
-          }
-        >
+        {/* HOVER ARROW */}
+        <div className={styles.productArrow}>
           <ArrowUpRight
-            size={19}
+            size={18}
+            strokeWidth={1.6}
+          />
+        </div>
+      </div>
+
+      {/* PRODUCT INFO */}
+      <div className={styles.cardContent}>
+
+        <div className={styles.productMeta}>
+          <span>
+            {product.category || "E-BOOKS"}
+          </span>
+
+          {hasDiscount && (
+            <span className={styles.saveText}>
+              SAVE {discountPercentage}%
+            </span>
+          )}
+        </div>
+
+        <h3 className={styles.cardTitle}>
+          {product.title}
+        </h3>
+
+        {/* BRAND */}
+        <div className={styles.cardVendor}>
+          <span>PLUTEN</span>
+
+          <span className={styles.verified}>
+            <Check
+              size={9}
+              strokeWidth={3}
+            />
+          </span>
+        </div>
+
+        {/* RATING */}
+        <div className={styles.cardRating}>
+          <Star
+            size={11}
+            fill="currentColor"
             strokeWidth={1.5}
           />
+          <span>5.0</span>
         </div>
 
-      </div>
+        {/* PRICE */}
+        <div className={styles.cardBottom}>
 
+          {loadingOffers ? (
+            <div className={styles.priceSkeleton} />
+          ) : (
+            <div className={styles.priceContainer}>
 
-      {/* =========================================
-          PRODUCT INFORMATION
-      ========================================= */}
+              <span className={styles.currentPrice}>
+                ₹{finalPrice.toLocaleString("en-IN")}
+              </span>
 
-      <div className={styles.productInfo}>
-
-        <div
-          className={
-            styles.productInfoTop
-          }
-        >
-
-          <div>
-
-            <div
-              className={
-                styles.productEyebrow
-              }
-            >
-              {product.category ||
-                "DIGITAL PRODUCT"}
-            </div>
-
-            <h3
-              className={
-                styles.productTitle
-              }
-            >
-              {product.title}
-            </h3>
-
-          </div>
-
-          <ArrowUpRight
-            className={
-              styles.productTitleArrow
-            }
-            size={18}
-            strokeWidth={1.4}
-          />
-
-        </div>
-
-
-        {/* =====================================
-            META
-        ===================================== */}
-
-        <div
-          className={
-            styles.productMeta
-          }
-        >
-
-          <div
-            className={
-              styles.productBrand
-            }
-          >
-            <span>PLUTEN</span>
-
-            <Check
-              size={11}
-              strokeWidth={2}
-            />
-          </div>
-
-
-          {/* PRICE */}
-
-          <div
-            className={
-              styles.productPrice
-            }
-          >
-
-            {loadingOffers ? (
-              <span
-                className={
-                  styles.priceLoading
-                }
-              />
-            ) : (
-              <>
-                <span>
-                  ₹
-                  {finalPrice.toLocaleString(
-                    "en-IN"
-                  )}
+              {hasDiscount && (
+                <span className={styles.oldPrice}>
+                  ₹{originalPrice.toLocaleString("en-IN")}
                 </span>
+              )}
 
-                {hasDiscount && (
-                  <del>
-                    ₹
-                    {originalPrice.toLocaleString(
-                      "en-IN"
-                    )}
-                  </del>
-                )}
-              </>
-            )}
+            </div>
+          )}
 
-          </div>
+          <span className={styles.viewLabel}>
+            VIEW
+          </span>
 
         </div>
-
       </div>
-
     </article>
   );
 }

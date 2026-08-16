@@ -1,5 +1,5 @@
 "use client";
-
+import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -163,28 +163,19 @@ export default function MyLibraryPage() {
      ========================================================= */
 
   if (loading) {
-    return (
-      <div className={styles.loader}>
-        <div className={styles.loadingContent}>
-          <img
-            src="/favicon.ico"
-            alt="Pluten"
-            className={styles.loadingLogo}
+  return (
+    <div className={styles.contentWrapper}>
+      <div className={styles.assetGrid}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <PlutenSkeleton
+            key={index}
+            variant="library"
           />
-
-          <Loader2
-            size={17}
-            strokeWidth={1.8}
-            className="animate-spin"
-          />
-
-          <span className={styles.loadingText}>
-            Loading your library
-          </span>
-        </div>
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
 
   /* =========================================================

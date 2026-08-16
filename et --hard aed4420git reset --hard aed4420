@@ -1,0 +1,77 @@
+[33mf89f7fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m new ui liquid v1.1
+[33m6ed3c75[m new ui liquid v1
+[33m41c3590[m new ui liquid
+[33m4c96ec1[m feat: rebuild Pluten liquid navigation and storefront
+[33m9f55837[m feat: redesign storefront with Pluten Liquid OS
+[33m63fbcbf[m new ui
+[33m244a1ed[m Fix storefront responsive CSS
+[33ma204223[m Optimize mobile storefront layout
+[33maed4420[m Update Pluten profile page
+[33ma01bee2[m Update Pluten profile page
+[33m35bf7bb[m Refine Pluten premium login UI
+[33m5b013a0[m login change
+[33m53cab88[m Redesign Pluten digital library
+[33m2452e8b[m fix premium navigation layout
+[33m9a88508[m refine storefront navigation
+[33mda4592d[m Finalize Pluten premium storefront
+[33mf7da9f2[m Refine Pluten homepage and simplify footer
+[33me408101[m Refine Pluten storefront design
+[33m8847507[m Fix product grid to four columns
+[33m07d1683[m Upgrade Pluten product page design
+[33m4a27357[m upgrade Pluten premium product cards
+[33m7e39e21[m refine Pluten product collection UI
+[33mea08b18[m feat: Pluten V2 premium storefront
+[33ma3ad6d2[m Finalize Pluten logo
+[33m29a1302[m Update Pluten favicon
+[33m3764a89[m Restore previous favicon
+[33mb70c877[m Restore previous
+[33mef4a951[m Restore previous favicon
+[33m52a9256[m chore: update Pluten branding
+[33m8b52d1f[m Update Pluten branding and logo"
+[33m596c906[m Update Pluten branding and logo
+[33m287f2be[m chore: update branding to Pluten, add new logos, favicon, and SEO
+[33m38a581d[m Merge branch 'main' of https://github.com/NITHISHSENTHIL2025/Pluten
+[33m6383aa3[m chore: update branding to Pluten, add new logos, favicon, and SEO metadata
+[33m8e85223[m Remove project title from README.md
+[33m6299de7[m Fix CORS for pluten.site
+[33m5c3e3ee[m Update Pluten branding and production configuration
+[33m0f07834[m feat: implement dual-threat payment verification and secure return_url
+[33m159d346[m Fix logout cookie clearing
+[33mffc63a8[m Fix auth getMe isVerified bug
+[33me1ac7d8[m fix: add 300ms storage delay to eliminate cookie race condition on login
+[33mcd556b7[m fix: use window.location for hard reload to sync navbar and admin state
+[33mbb3f070[m feat: enterprise auth sync, RBAC middleware, and interceptor debounce
+[33m5ac4972[m fix: update helmet CORS policy and prevent 403 auto-logout
+[33m3d31520[m fix: bypass global interceptor in admin layout to prevent auth loop
+[33mf4c31f1[m fix: finalize robust Bearer token extraction and cross-origin auth handshake
+[33m4df68a7[m fix: add request interceptor to pass Bearer token for cross-origin auth
+[33mfa1b9d4[m fix: add vercel.json edge override for COOP popup block
+[33m8cee9ea[m fix: inject COOP headers into next.config.ts to unblock Google OAuth
+[33mb670e3c[m fix: override helmet COOP for google auth popup, set explicit CORS, and configure cross-domain cookies
+[33m36f4d87[m fix: replace Next.js Image with standard img tag for 1:1 ratio and force auth state interval
+[33ma1c2af8[m style: implement 2-column mobile grid, premium pricing, and robust auth state
+[33m6796bf7[m fix: resolve mobile layout overflow, set 1fr mobile grid, and fix auth state UI
+[33m2e23259[m feat: implement google sso, purge legacy auth, and apply hardware-accelerated skeuomorphic UI
+[33m01bb3c1[m feat: finalize production architecture, clean profile UI, and set 1:1 image grid
+[33mac49fd6[m fix: force cashfree frontend sdk into sandbox mode
+[33m3b8939e[m fix: remove hardcoded NODE_ENV override to stop sandbox keys from hitting production
+[33m0dfa3af[m fix: enforce cashfree api version to resolve handshake mismatch
+[33mfe7f394[m chore: add cashfree environment debugging logs
+[33me481f29[m fix: sanitize cashfree api keys to prevent trailing space auth errors
+[33m2499f9b[m fix: update cashfree backend config to sync with render environment variables
+[33m2945d8d[m fix: enforce correct layout structure and remove rogue navbar
+[33mb56c145[m fix: restore storefront page layout and remove standalone navbar
+[33ma455276[m fix: resolve cashfree auth, fix price rounding mismatch, and update secure logout
+[33m7843095[m fix: restore globals.css import in root layout to resolve unstyled white screen
+[33mbf2fc23[m fix: remove duplicate proxy.ts file to resolve Next.js middleware conflict
+[33mb2cadd9[m feat: implement dual-cookie cross-domain auth, secure routing, and disk-stream uploads
+[33m5447bb7[m fix: honor redirect query parameter after successful login
+[33m69f6c95[m fix: resolve nodemailer timeout and add tokens to json responses
+[33mfa270c5[m chore: generate missing prisma migrations
+[33m43541d9[m fix: resolve Next.js build error by wrapping useSearchParams in Suspense
+[33ma4aab86[m fix: ignore missing typescript definitions for cashfree sdk
+[33md0e9837[m fix: add description field to Product type interface
+[33m76b9b10[m Merge remote README
+[33m14371b7[m 🚀 Production Ready: Security audits cleared, RBAC verified, and soft deletes implemented
+[33mb4a3958[m Initial commit
+[33m13f09c1[m chore: initial commit - establishing iSevens ecosystem

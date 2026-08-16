@@ -1,5 +1,5 @@
 "use client";
-
+import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Library, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -425,10 +425,11 @@ export default function StorefrontPage() {
         {/* LOADING */}
 
         {loading && (
-          <div className={styles.loading}>
-            <span />
-            Loading products...
-          </div>
+          <div className={styles.productGrid}>
+  {Array.from({ length: 4 }).map((_, index) => (
+    <PlutenSkeleton key={index} variant="product" />
+  ))}
+</div>
         )}
 
         {/* EMPTY */}

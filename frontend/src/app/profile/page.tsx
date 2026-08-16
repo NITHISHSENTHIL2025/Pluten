@@ -1,5 +1,5 @@
 "use client";
-
+import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
 import {
   useEffect,
   useState,
@@ -204,17 +204,14 @@ export default function ProfilePage() {
      ======================================================= */
 
   if (loading) {
-    return (
-      <main
-        className={styles.loader}
-      >
-        <Loader2
-          size={24}
-          className="animate-spin"
-        />
-      </main>
-    );
-  }
+  return (
+    <main className={styles.pageContainer}>
+      <div className={styles.contentWrapper}>
+        <PlutenSkeleton variant="profile" />
+      </div>
+    </main>
+  );
+}
 
 
   /* =======================================================

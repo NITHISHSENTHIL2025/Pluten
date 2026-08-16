@@ -1,5 +1,5 @@
 "use client";
-
+import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft, ShieldCheck, User, Check, AlertCircle, Phone, X } from 'lucide-react';
@@ -112,9 +112,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#111] flex items-center justify-center">
-                <Loader2 className="animate-spin text-neutral-500 w-10 h-10" />
-            </div>
+            <div className={styles.productLayout}>
+    <PlutenSkeleton variant="product" />
+
+    <div>
+      <PlutenSkeleton variant="text" />
+    </div>
+  </div>
         );
     }
 

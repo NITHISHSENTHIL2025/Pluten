@@ -1,633 +1,77 @@
 "use client";
-import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
-import {
-  useEffect,
-  useState,
-} from "react";
 
-import {
-  useRouter,
-} from "next/navigation";
-
-import {
-  ArrowLeft,
-  BookOpen,
-  Crown,
-  Library,
-  Loader2,
-  LogOut,
-  Mail,
-  ShieldCheck,
-  User,
-} from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Library, Crown, Loader2, LogOut, Mail, ShieldCheck, User, AlertCircle, RefreshCw } from "lucide-react";
 import apiClient from "@/lib/apiClient";
-
 import styles from "./profile.module.css";
 
+interface UserProfile { firstName:string|null; lastName:string|null; email:string; role:string; isPremium:boolean; createdAt:string; }
 
-/* =========================================================
-   USER PROFILE
-   ========================================================= */
+export default function ProfilePage(){
+  const router=useRouter();
+  const [profile,setProfile]=useState<UserProfile|null>(null);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState<string|null>(null);
+  const [loggingOut,setLoggingOut]=useState(false);
 
-interface UserProfile {
-  firstName: string | null;
-
-  lastName: string | null;
-
-  email: string;
-
-  role: string;
-
-  isPremium: boolean;
-
-  createdAt: string;
-}
-
-
-/* =========================================================
-   PROFILE PAGE
-   ========================================================= */
-
-export default function ProfilePage() {
-  const router = useRouter();
-
-
-  /* =======================================================
-     STATE
-     ======================================================= */
-
-  const [profile, setProfile] =
-    useState<UserProfile | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [loggingOut, setLoggingOut] =
-    useState(false);
-
-
-  /* =======================================================
-     FETCH SECURE PROFILE
-     ======================================================= */
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchProfile = async () => {
-      try {
-        const response =
-          await apiClient.get(
-            "/user/profile"
-          );
-
-        if (!mounted) {
-          return;
-        }
-
-        setProfile(response.data);
-
-      } catch (error) {
-        console.error(
-          "Failed to load secure profile:",
-          error
-        );
-
-
-        /* ===============================================
-           CLEAR INVALID CLIENT SESSION
-        =============================================== */
-
-
-
-        router.push("/login");
-
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+  const loadProfile=async()=>{
+    setLoading(true); setError(null);
+    try{
+      const response=await apiClient.get<UserProfile>("/user/profile");
+      setProfile(response.data);
+    }catch(err:any){
+      if(err?.response?.status===401||err?.response?.status===403){
+        router.replace(`/login?redirect=${encodeURIComponent("/profile")}`);
+        return;
       }
-    };
-
-
-    fetchProfile();
-
-
-    return () => {
-      mounted = false;
-    };
-
-  }, [router]);
-
-
-  /* =======================================================
-     LOGOUT
-     ======================================================= */
-
-  const handleLogout = async () => {
-    if (loggingOut) {
-      return;
-    }
-
-    try {
-      setLoggingOut(true);
-
-      await apiClient.post(
-        "/auth/logout"
-      );
-
-    } catch (error) {
-      console.error(
-        "Secure logout network fault:",
-        error
-      );
-
-    } finally {
-
-      /* ===============================================
-         CLEAR LOCAL AUTH STATE
-      =============================================== */
-
-
-
-      /* ===============================================
-         CLEAR MIDDLEWARE COOKIES
-      =============================================== */
-
-
-
-      /* ===============================================
-         RETURN TO STOREFRONT
-      =============================================== */
-
-      window.location.href = "/";
-    }
+      setError(err?.response?.data?.error||"We couldn't load your profile right now.");
+    }finally{setLoading(false);}
   };
 
+  useEffect(()=>{loadProfile();},[]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* =======================================================
-     LOADING
-     ======================================================= */
+  const logout=async()=>{
+    if(loggingOut)return;
+    setLoggingOut(true);
+    try{await apiClient.post("/auth/logout");}catch(error){console.error("Logout failed",error);}finally{window.location.replace("/");}
+  };
 
-  if (loading) {
-  return (
-    <main className={styles.pageContainer}>
-      <div className={styles.contentWrapper}>
-        <PlutenSkeleton variant="profile" />
-      </div>
-    </main>
-  );
-}
+  if(loading)return <main className={styles.page}><div className={styles.loading}><Loader2 size={30} className="pluten-login-spinner"/><span>Loading your account</span></div></main>;
 
+  if(error||!profile)return <main className={styles.page}><div className={styles.content}><button className={styles.back} onClick={()=>router.push("/")}><ArrowLeft size={16}/> Back to store</button><div className={styles.error}><AlertCircle size={22}/><h1 className={styles.errorTitle}>Account unavailable</h1><p className={styles.errorText}>{error||"Your secure session could not be loaded."}</p><button className={styles.retry} onClick={loadProfile}><RefreshCw size={15}/> Try again</button></div></div></main>;
 
-  /* =======================================================
-     NO PROFILE
-     ======================================================= */
+  const name=[profile.firstName,profile.lastName].filter(Boolean).join(" ").trim()||"Pluten member";
+  const initials=name.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase();
+  const label=profile.role==="SUPER_ADMIN"?"Super Admin":profile.isPremium?"Premium member":"Standard account";
 
-  if (!profile) {
-    return null;
-  }
+  return <main className={styles.page}>
+    <div className={styles.content}>
+      <button className={styles.back} onClick={()=>router.push("/")}><ArrowLeft size={16}/> Back to store</button>
+      <div className={styles.eyebrow}>PLUTEN / ACCOUNT</div>
+      <h1 className={styles.title}>Profile.</h1>
+      <p className={styles.subtitle}>Your account, purchases and secure access — in one place.</p>
 
-
-  /* =======================================================
-     DISPLAY NAME
-     ======================================================= */
-
-  const displayName =
-    profile.firstName
-      ? `${profile.firstName} ${
-          profile.lastName || ""
-        }`.trim()
-      : "User";
-
-
-  /* =======================================================
-     ACCOUNT STATUS
-     ======================================================= */
-
-  const isSuperAdmin =
-    profile.role ===
-    "SUPER_ADMIN";
-
-
-  /* =======================================================
-     RENDER
-     ======================================================= */
-
-  return (
-    <main
-      className={
-        styles.pageContainer
-      }
-    >
-
-      {/* ===================================================
-          BACKGROUND
-      =================================================== */}
-
-      <div
-        className={
-          styles.backgroundGrid
-        }
-        aria-hidden="true"
-      />
-
-      <div
-        className={
-          styles.backgroundGlow
-        }
-        aria-hidden="true"
-      />
-
-
-      {/* ===================================================
-          HEADER
-      =================================================== */}
-
-      <header
-        className={styles.header}
-      >
-
-        <button
-          type="button"
-          onClick={() =>
-            router.push("/")
-          }
-          className={
-            styles.backBtn
-          }
-        >
-          <ArrowLeft
-            size={16}
-            strokeWidth={1.8}
-          />
-
-          <span>
-            Back to store
-          </span>
-        </button>
-
-
-        <span
-          className={
-            styles.headerLabel
-          }
-        >
-          PLUTEN / ACCOUNT
-        </span>
-
-      </header>
-
-
-      {/* ===================================================
-          MAIN CONTENT
-      =================================================== */}
-
-      <section
-        className={
-          styles.contentWrapper
-        }
-      >
-
-        {/* =================================================
-            PAGE INTRO
-        ================================================= */}
-
-        <div
-          className={
-            styles.pageIntro
-          }
-        >
-
-          <span
-            className={
-              styles.eyebrow
-            }
-          >
-            YOUR ACCOUNT
-          </span>
-
-
-          <h1
-            className={
-              styles.pageTitle
-            }
-          >
-            Profile.
-          </h1>
-
-
-          <p
-            className={
-              styles.pageDescription
-            }
-          >
-            Manage your Pluten account
-            and access everything you've
-            purchased.
-          </p>
-
+      <section className={styles.profileCard}>
+        <div className={styles.identity}>
+          <div className={styles.avatar}>{initials}</div>
+          <div>
+            <h2 className={styles.identityName}>{name}</h2>
+            <p className={styles.email}><Mail size={14}/>{profile.email}</p>
+          </div>
+          <div className={styles.badge}>{profile.role==="SUPER_ADMIN"?<ShieldCheck size={14}/>:profile.isPremium?<Crown size={14}/>:<User size={14}/>} {label}</div>
         </div>
-
-
-        {/* =================================================
-            IDENTITY CARD
-        ================================================= */}
-
-        <section
-          className={
-            styles.identityCard
-          }
-        >
-
-          {/* ===============================================
-              AVATAR
-          =============================================== */}
-
-          <div
-            className={
-              styles.avatar
-            }
-          >
-            <User
-              size={32}
-              strokeWidth={1.5}
-            />
-          </div>
-
-
-          {/* ===============================================
-              USER INFORMATION
-          =============================================== */}
-
-          <div
-            className={
-              styles.userInfo
-            }
-          >
-
-            <h2>
-              {displayName}
-            </h2>
-
-
-            <div
-              className={
-                styles.userEmail
-              }
-            >
-              <Mail
-                size={15}
-                strokeWidth={1.7}
-              />
-
-              <span>
-                {profile.email}
-              </span>
-            </div>
-
-
-            {/* =============================================
-                ACCOUNT STATUS
-            ============================================= */}
-
-            <div
-              className={
-                styles.accountBadge
-              }
-            >
-
-              {isSuperAdmin ? (
-                <>
-                  <ShieldCheck
-                    size={15}
-                    strokeWidth={1.8}
-                  />
-
-                  <span>
-                    Super Admin
-                  </span>
-                </>
-              ) : profile.isPremium ? (
-                <>
-                  <Crown
-                    size={15}
-                    strokeWidth={1.8}
-                  />
-
-                  <span>
-                    Premium Member
-                  </span>
-                </>
-              ) : (
-                <>
-                  <User
-                    size={15}
-                    strokeWidth={1.8}
-                  />
-
-                  <span>
-                    Standard Account
-                  </span>
-                </>
-              )}
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* =================================================
-            ACCOUNT ACTIONS
-        ================================================= */}
-
-        <section
-          className={
-            styles.actionsSection
-          }
-        >
-
-          <span
-            className={
-              styles.sectionLabel
-            }
-          >
-            ACCOUNT
-          </span>
-
-
-          {/* ===============================================
-              DIGITAL LIBRARY
-          =============================================== */}
-
-          <button
-            type="button"
-            className={
-              styles.actionCard
-            }
-            onClick={() =>
-              router.push("/library")
-            }
-          >
-
-            <div
-              className={
-                styles.actionIcon
-              }
-            >
-              <Library
-                size={20}
-                strokeWidth={1.7}
-              />
-            </div>
-
-
-            <div
-              className={
-                styles.actionText
-              }
-            >
-
-              <strong>
-                Digital Library
-              </strong>
-
-              <span>
-                Access your purchased
-                digital products.
-              </span>
-
-            </div>
-
-
-            <span
-              className={
-                styles.actionArrow
-              }
-            >
-              â†—
-            </span>
-
+        <div className={styles.actionGrid}>
+          <button className={styles.actionCard} onClick={()=>router.push("/library")}>
+            <span className={styles.actionMain}><span className={styles.actionIcon}><Library size={20}/></span><span><strong className={styles.actionTitle}>Digital Library</strong><span className={styles.actionText}>Access every product you've purchased.</span></span></span>
+            <span aria-hidden="true">→</span>
           </button>
-
-
-          {/* ===============================================
-              PURCHASED PRODUCTS
-          =============================================== */}
-
-          <button
-            type="button"
-            className={
-              styles.actionCard
-            }
-            onClick={() =>
-              router.push("/library")
-            }
-          >
-
-            <div
-              className={
-                styles.actionIcon
-              }
-            >
-              <BookOpen
-                size={20}
-                strokeWidth={1.7}
-              />
-            </div>
-
-
-            <div
-              className={
-                styles.actionText
-              }
-            >
-
-              <strong>
-                Your Products
-              </strong>
-
-              <span>
-                View the digital products
-                you've acquired.
-              </span>
-
-            </div>
-
-
-            <span
-              className={
-                styles.actionArrow
-              }
-            >
-              â†—
-            </span>
-
-          </button>
-
-        </section>
-
-
-        {/* =================================================
-            LOGOUT
-        ================================================= */}
-
-        <button
-          type="button"
-          onClick={
-            handleLogout
-          }
-          disabled={
-            loggingOut
-          }
-          className={
-            styles.logoutBtn
-          }
-        >
-
-          {loggingOut ? (
-            <>
-              <Loader2
-                size={17}
-                className="animate-spin"
-              />
-
-              <span>
-                Signing out...
-              </span>
-            </>
-          ) : (
-            <>
-              <LogOut
-                size={17}
-                strokeWidth={1.8}
-              />
-
-              <span>
-                Sign out
-              </span>
-            </>
-          )}
-
-        </button>
-
+        </div>
+        <div className={styles.logout}>
+          <p className={styles.logoutText}>Your purchases remain available after you sign out.</p>
+          <button className={styles.logoutBtn} onClick={logout} disabled={loggingOut}>{loggingOut?<><Loader2 size={16} className="pluten-login-spinner"/> Signing out</>:<><LogOut size={16}/> Sign out</>}</button>
+        </div>
       </section>
-
-
-      {/* ===================================================
-          FOOTER LABEL
-      =================================================== */}
-
-      <div
-        className={
-          styles.bottomLabel
-        }
-      >
-        PLUTEN â€” BEYOND ORDINARY.
-      </div>
-
-    </main>
-  );
+    </div>
+  </main>;
 }

@@ -1,159 +1,69 @@
 "use client";
 
-import { useMemo } from "react";
-import { ArrowUpRight, Sparkles } from "lucide-react";
-import { useOffers } from "@/context/OfferContext";
-import styles from "../app/page.module.css";
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { useOffers } from '@/context/OfferContext';
+import styles from '../app/page.module.css';
 
 interface Product {
-  id: string;
-  title: string;
-  price: number | string;
-  thumbnail: string | null;
-  category?: string;
+    id: string;
+    title: string;
+    price: number | string;
+    thumbnail: string | null;
+    category?: string;
+    description?: string;
 }
 
-interface ProductCardProps {
-  product: Product;
-  index?: number;
-}
+export default function ProductCard({ product }: { product: Product }) {
+    const { getBestOfferForProduct } = useOffers();
+    const price = Number(product.price) || 0;
+    const offer = getBestOfferForProduct(product.id, price);
 
-export default function ProductCard({ product }: ProductCardProps) {
-  const { activeOffers, loadingOffers } = useOffers();
+    const discount = offer
+        ? offer.type === 'PERCENTAGE'
+            ? Math.min(price, price * (Number(offer.value) / 100))
+            : Math.min(price, Number(offer.value))
+        : 0;
 
-  const originalPrice = Number(product.price);
+    const finalPrice = Math.max(0, price - discount);
+    const hasDiscount = discount > 0;
 
-  const { finalPrice, activeOffer } = useMemo(() => {
-    const eligibleOffers = activeOffers
-      .filter((offer) => offer.autoApply && offer.status === "ACTIVE")
-      .filter((offer) => {
-        const appliesToProduct =
-          offer.applyTo === "ALL" ||
-          (offer.applyTo === "SELECTED" &&
-            offer.products?.some((item) => item.id === product.id));
+    return (
+        <article className={styles.productCard}>
+            <Link href={`/product/${product.id}`} className={styles.productCardLink} aria-label={`View ${product.title}`}>
+                <div className={styles.productVisual}>
+                    {product.thumbnail ? (
+                        <img
+                            src={product.thumbnail}
+                            alt=""
+                            className={styles.cardImage}
+                            loading="lazy"
+                        />
+                    ) : (
+                        <div className={styles.cardImageFallback} aria-hidden="true">PLUTEN</div>
+                    )}
+                    {hasDiscount && (
+    <span className={styles.offerBadge}>
+        {offer?.type === 'PERCENTAGE'
+            ? `${offer.value}% OFF`
+            : `₹${Number(offer?.value ?? 0).toLocaleString('en-IN')} OFF`}
+    </span>
+)}
+                </div>
 
-        if (!appliesToProduct) return false;
+                <div className={styles.productMeta}>
+                    <span className={styles.productCategory}>{product.category || 'Digital product'}</span>
+                    <h3 className={styles.cardTitle}>{product.title}</h3>
 
-        if (
-          offer.minOrderAmount !== null &&
-          Number(product.price) < Number(offer.minOrderAmount)
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-
-    const best = eligibleOffers.reduce<{
-      offer: (typeof activeOffers)[number] | null;
-      final: number;
-    }>(
-      (bestSoFar, offer) => {
-        const base = Number(product.price);
-        let discount = 0;
-
-        if (offer.type === "PERCENTAGE") {
-          discount = base * (Number(offer.value) / 100);
-        } else {
-          discount = Number(offer.value);
-        }
-
-        const candidate = Number(
-          Math.max(0, base - discount).toFixed(2)
-        );
-
-        if (candidate < bestSoFar.final) {
-          return { offer, final: candidate };
-        }
-
-        return bestSoFar;
-      },
-      { offer: null, final: Number(originalPrice.toFixed(2)) }
+                    <div className={styles.cardBottom}>
+                        <div className={styles.priceBlock}>
+                            <span className={styles.currentPrice}>₹{finalPrice.toLocaleString('en-IN')}</span>
+                            {hasDiscount && <span className={styles.originalPrice}>₹{price.toLocaleString('en-IN')}</span>}
+                        </div>
+                        <span className={styles.viewLabel}>VIEW <ArrowUpRight size={14} /></span>
+                    </div>
+                </div>
+            </Link>
+        </article>
     );
-
-    return {
-      finalPrice: best.final,
-      activeOffer: best.offer,
-    };
-  }, [activeOffers, originalPrice, product.id, product.price]);
-
-  const hasDiscount =
-    Number.isFinite(originalPrice) &&
-    !!activeOffer &&
-    finalPrice < originalPrice;
-
-  const discountPercent =
-    hasDiscount && originalPrice > 0
-      ? Math.round(
-          ((originalPrice - finalPrice) / originalPrice) * 100
-        )
-      : 0;
-
-  return (
-    <article className={styles.productCard}>
-      <div className={styles.productVisual}>
-        {product.thumbnail ? (
-          <img
-            src={product.thumbnail}
-            alt={product.title}
-            className={styles.cardImage}
-            loading="lazy"
-          />
-        ) : (
-          <div className={styles.noImage}>NO PREVIEW</div>
-        )}
-
-        {hasDiscount && activeOffer && (
-          <div className={styles.offerBadge}>
-            <Sparkles size={12} strokeWidth={2.5} />
-            <span>
-              {activeOffer.type === "PERCENTAGE"
-                ? `${discountPercent}% OFF`
-                : `₹${Number(activeOffer.value).toLocaleString("en-IN")} OFF`}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.cardContent}>
-        <div className={styles.productMeta}>
-          <span>{product.category || "DIGITAL PRODUCT"}</span>
-
-          {hasDiscount && (
-            <span className={styles.saveText}>
-              SAVE {discountPercent}%
-            </span>
-          )}
-        </div>
-
-        <h3 className={styles.cardTitle}>{product.title}</h3>
-
-        <div className={styles.cardBottom}>
-          {loadingOffers ? (
-            <div
-              className={styles.priceSkeleton}
-              aria-label="Loading price"
-            />
-          ) : (
-            <div className={styles.priceContainer}>
-              <span className={styles.currentPrice}>
-                ₹{finalPrice.toLocaleString("en-IN")}
-              </span>
-
-              {hasDiscount && (
-                <span className={styles.oldPrice}>
-                  ₹{originalPrice.toLocaleString("en-IN")}
-                </span>
-              )}
-            </div>
-          )}
-
-          <span className={styles.viewLabel}>
-            VIEW
-            <ArrowUpRight size={12} strokeWidth={2} />
-          </span>
-        </div>
-      </div>
-    </article>
-  );
 }

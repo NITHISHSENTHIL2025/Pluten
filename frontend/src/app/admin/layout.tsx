@@ -1,4 +1,3 @@
-// frontend/src/app/admin/layout.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -11,7 +10,7 @@ import {
   Users,
   Package,
   Settings,
-  ShieldAlert,
+  ShieldCheck,
   Tag,
   Loader2,
   Menu,
@@ -35,7 +34,7 @@ interface MeResponse {
 interface NavItem {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   roles: AdminRole[];
 }
 
@@ -86,136 +85,265 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
 
-  const [authorized, setAuthorized] = useState(false);
-  const [role, setRole] = useState<AdminRole | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [role, setRole] =
+    useState<AdminRole | null>(null);
+  const [checking, setChecking] =
+    useState(true);
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
 
   useEffect(() => {
     let mounted = true;
 
-    const verifyClearance = async () => {
+    const verify = async () => {
       try {
-        const response = await apiClient.get<MeResponse>("/auth/me");
-        const currentRole = response.data?.user?.role;
+        const response =
+          await apiClient.get<MeResponse>(
+            "/auth/me"
+          );
+
+        const nextRole =
+          response.data?.user?.role;
+
+        const allowed: AdminRole[] = [
+          "SUPER_ADMIN",
+          "FINANCE_MANAGER",
+          "PRODUCT_MANAGER",
+          "CUSTOMER_SUPPORT",
+        ];
 
         if (
-          !currentRole ||
-          ![
-            "SUPER_ADMIN",
-            "FINANCE_MANAGER",
-            "PRODUCT_MANAGER",
-            "CUSTOMER_SUPPORT",
-          ].includes(currentRole)
+          !nextRole ||
+          !allowed.includes(nextRole)
         ) {
-          throw new Error("Insufficient clearance.");
+          throw new Error(
+            "Insufficient clearance."
+          );
         }
 
         if (mounted) {
-          setRole(currentRole);
-          setAuthorized(true);
+          setRole(nextRole);
         }
       } catch (error) {
-        console.error("Dashboard clearance rejected:", error);
-        if (mounted) router.replace("/login?redirect=/admin");
+        console.error(
+          "Admin authorization failed:",
+          error
+        );
+
+        if (mounted) {
+          router.replace(
+            `/login?redirect=${encodeURIComponent(
+              pathname || "/admin"
+            )}`
+          );
+        }
       } finally {
-        if (mounted) setChecking(false);
+        if (mounted) {
+          setChecking(false);
+        }
       }
     };
 
-    verifyClearance();
+    verify();
 
     return () => {
       mounted = false;
     };
-  }, [router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const visibleItems = useMemo(() => {
-    if (!role) return [];
-    return NAV_ITEMS.filter((item) => item.roles.includes(role));
-  }, [role]);
+  const visibleItems = useMemo(
+    () =>
+      role
+        ? NAV_ITEMS.filter((item) =>
+            item.roles.includes(role)
+          )
+        : [],
+    [role]
+  );
 
-  if (checking || !authorized) {
+  useEffect(() => {
+    if (!role) return;
+    const current = NAV_ITEMS.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`));
+    if (pathname.startsWith("/admin") && (!current || !current.roles.includes(role))) {
+      const firstAllowed = visibleItems[0]?.href || "/";
+      if (pathname !== firstAllowed) router.replace(firstAllowed);
+    }
+  }, [pathname, role, router, visibleItems]);
+
+  if (checking || !role) {
     return (
-      <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center px-6">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <Loader2 className="animate-spin text-red-700" size={34} />
-          <span className="text-xs tracking-[0.25em] uppercase text-neutral-500">
-            Verifying secure access
-          </span>
-        </div>
+      <div className={styles.authLoading}>
+        <Loader2
+          className="animate-spin"
+          size={30}
+        />
+        <span>
+          Verifying secure access
+        </span>
       </div>
     );
   }
 
   return (
-    <div className={`${styles.adminLayout} min-h-[100dvh]`}>
+    <div className={styles.adminLayout}>
       <button
         type="button"
-        className="fixed left-4 top-4 z-[100] hidden max-[900px]:flex h-11 w-11 items-center justify-center rounded-xl border border-neutral-800 bg-black/80 text-white backdrop-blur-xl"
-        onClick={() => setMobileOpen((value) => !value)}
-        aria-label={mobileOpen ? "Close admin menu" : "Open admin menu"}
+        className={styles.mobileMenuButton}
+        onClick={() =>
+          setMobileOpen((open) => !open)
+        }
+        aria-label={
+          mobileOpen
+            ? "Close admin navigation"
+            : "Open admin navigation"
+        }
         aria-expanded={mobileOpen}
       >
-        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        {mobileOpen ? (
+          <X size={20} />
+        ) : (
+          <Menu size={20} />
+        )}
       </button>
 
       {mobileOpen && (
         <button
           type="button"
-          aria-label="Close admin menu overlay"
-          className="fixed inset-0 z-[80] hidden max-[900px]:block bg-black/70 backdrop-blur-sm"
+          className={styles.sidebarBackdrop}
+          aria-label="Close admin navigation"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       <aside
-        className={`${styles.sidebar} ${mobileOpen ? "!translate-x-0" : ""} max-[900px]:fixed max-[900px]:left-0 max-[900px]:top-0 max-[900px]:z-[90] max-[900px]:h-[100dvh] max-[900px]:transition-transform max-[900px]:duration-300 max-[900px]:-translate-x-full`}
+        className={`${styles.sidebar} ${
+          mobileOpen
+            ? styles.sidebarOpen
+            : ""
+        }`}
       >
-        <div className={styles.sidebarHeader}>
-          <ShieldAlert size={20} />
-          <span className={styles.brandName}>PLUTEN</span>
-          <span className={styles.environmentBadge}>PROD</span>
+        <div
+          className={styles.sidebarHeader}
+        >
+          <div
+            className={styles.adminBrandMark}
+            aria-hidden="true"
+          >
+            P
+          </div>
+          <div>
+            <span
+              className={styles.brandName}
+            >
+              PLUTEN
+            </span>
+            <span
+              className={styles.brandSub}
+            >
+              MISSION CONTROL
+            </span>
+          </div>
+          <span
+            className={styles.environmentBadge}
+          >
+            PROD
+          </span>
         </div>
 
-        <nav className={styles.navGroup} aria-label="Admin navigation">
-          <span className={styles.navLabel}>Core Operations</span>
+        <nav
+          className={styles.navGroup}
+          aria-label="Admin navigation"
+        >
+          <span
+            className={styles.navLabel}
+          >
+            Workspace
+          </span>
 
           {visibleItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`${styles.navItem} ${pathname === item.href ? styles.navItemActive : ""}`}
-              aria-current={pathname === item.href ? "page" : undefined}
+              className={`${styles.navItem} ${
+                pathname === item.href
+                  ? styles.navItemActive
+                  : ""
+              }`}
+              aria-current={
+                pathname === item.href
+                  ? "page"
+                  : undefined
+              }
             >
               {item.icon}
               <span>{item.label}</span>
             </Link>
           ))}
         </nav>
+
+        <div
+          className={styles.sidebarFooter}
+        >
+          <div
+            className={styles.roleBadge}
+          >
+            <ShieldCheck size={14} />
+            <span>
+              {role.replaceAll(
+                "_",
+                " "
+              )}
+            </span>
+          </div>
+          <Link
+            href="/"
+            className={
+              styles.backToStore
+            }
+          >
+            ← Back to Pluten
+          </Link>
+        </div>
       </aside>
 
       <main className={styles.mainContent}>
-        <header className={`${styles.topbar} flex items-center justify-between gap-4`}>
-          <div className="pl-[52px] max-[900px]:pl-16">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+        <header className={styles.topbar}>
+          <div>
+            <span
+              className={
+                styles.topbarEyebrow
+              }
+            >
               Mission Control
             </span>
-            <span className="ml-3 hidden sm:inline text-[11px] text-neutral-700">
+            <span
+              className={
+                styles.topbarSlash
+              }
+            >
               / secure operations
             </span>
           </div>
 
-          <span className="rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">
-            {role?.replaceAll("_", " ")}
-          </span>
+          <div
+            className={styles.topbarRole}
+          >
+            {role.replaceAll(
+              "_",
+              " "
+            )}
+          </div>
         </header>
 
-        {children}
+        <div
+          className={styles.pageShell}
+        >
+          {children}
+        </div>
       </main>
     </div>
   );

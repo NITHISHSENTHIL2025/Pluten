@@ -1159,3 +1159,14 @@
     transition: none;
   }
 }
+
+/* =========================================================
+   INTERACTION HARDENING
+========================================================= */
+
+.backBtn:focus-visible,
+.actionCard:focus-visible,
+.logoutBtn:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}

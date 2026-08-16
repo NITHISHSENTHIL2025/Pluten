@@ -397,3 +397,47 @@
 
 .iconBtnEdit:hover { color: #ffffff; border-color: #555555; }
 .iconBtnDelete:hover { color: #ff3333; border-color: #550000; }
+
+/* =========================================================
+   PRODUCTION INTERACTION / RESPONSIVE HARDENING
+========================================================= */
+
+.navItem:focus-visible,
+.primaryButton:focus-visible,
+.iconBtn:focus-visible,
+.closeBtn:focus-visible {
+  outline: 2px solid #ff3333;
+  outline-offset: 3px;
+}
+
+.searchBar:focus-within,
+.recessedInput:focus-within {
+  outline: 2px solid rgba(255, 51, 51, 0.28);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .navGroup {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .navGroup::-webkit-scrollbar {
+    display: none;
+  }
+
+  .navItem {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+
+  .sidebar {
+    max-width: 100%;
+  }
+
+  .topbar {
+    overflow-x: auto;
+  }
+}

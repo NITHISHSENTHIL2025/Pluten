@@ -24,6 +24,23 @@
   --radius-md: 14px;
   --radius-lg: 22px;
   --radius-pill: 999px;
+
+  /* Production semantic aliases */
+  --pluten-surface-page: var(--pluten-paper);
+  --pluten-surface-card: var(--pluten-white);
+  --pluten-surface-subtle: var(--pluten-gray-100);
+  --pluten-text-primary: var(--pluten-black);
+  --pluten-text-secondary: var(--pluten-gray-600);
+  --pluten-text-muted: var(--pluten-gray-500);
+  --pluten-border-subtle: var(--pluten-border);
+  --pluten-border-strong: rgba(0, 0, 0, 0.16);
+  --pluten-focus-ring: rgba(17, 17, 17, 0.28);
+  --pluten-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --pluten-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.09);
+  --pluten-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
+  --pluten-z-nav: 100;
+  --pluten-z-drawer: 1000;
+  --pluten-z-modal: 9999;
 }
 
 * {
@@ -88,6 +105,29 @@ a {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* =========================================================
+   ACCESSIBILITY / INTERACTION SAFETY
+========================================================= */
+
+:where(a, button, input, textarea, select, [role="button"]):focus-visible {
+  outline: 2px solid var(--pluten-focus-ring);
+  outline-offset: 3px;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+img {
+  height: auto;
 }
 
 ::selection {

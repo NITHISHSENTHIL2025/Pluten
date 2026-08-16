@@ -1667,3 +1667,18 @@
 .navSpacer {
   display: none;
 }
+
+/* =========================================================
+   INTERACTION HARDENING
+========================================================= */
+
+.primaryButton:focus-visible,
+.scrollIndicator:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}
+
+.productItem:focus-visible .productCard {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}

@@ -964,3 +964,19 @@
     transition: none;
   }
 }
+
+/* =========================================================
+   INTERACTION HARDENING
+========================================================= */
+
+.backBtn:focus-visible,
+.navLink:focus-visible,
+.downloadBtn:focus-visible,
+.footerLinks a:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}
+
+.assetCard:focus-within {
+  border-color: rgba(0, 0, 0, 0.18);
+}

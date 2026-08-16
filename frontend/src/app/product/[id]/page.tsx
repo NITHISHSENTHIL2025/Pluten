@@ -77,16 +77,21 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 mode: cashfreeMode,
             });
 
-            const response = await apiClient.post(
-                "/payments/create",
-                {
-                    productId: product!.id,
-                    amount: finalPrice,
-                    customerPhone: cleanedPhone
-                }
-            );
+            const clientRequestId = crypto.randomUUID();
 
-            const { payment_session_id } = response.data;
+const response = await apiClient.post(
+  "/payments/create",
+  {
+    productId: product!.id,
+    customerPhone: cleanedPhone,
+    clientRequestId,
+  }
+);
+
+            const {
+  payment_session_id,
+  order_id,
+} = response.data;
 
             // THE FIX: Change "_modal" to "_self"
             const checkoutOptions = {

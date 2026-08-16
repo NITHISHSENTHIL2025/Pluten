@@ -1,22 +1,75 @@
-// frontend/src/utils/price.ts
-export const calculateDiscount = (originalPrice: number, offer: any) => {
-    if (!offer || offer.status !== 'ACTIVE') {
-        return { finalPrice: originalPrice, discountAmount: 0 };
-    }
+export interface PriceResult {
+  finalPrice: number;
+  discountAmount: number;
+}
 
-    let discountAmount = 0;
+export const calculateDiscount = (
+  originalPrice: number,
+  offer: any
+): PriceResult => {
+  const base =
+    Number(originalPrice);
 
-    if (offer.type === 'PERCENTAGE') {
-        discountAmount = originalPrice * (offer.value / 100);
-    } else if (offer.type === 'FIXED') {
-        discountAmount = offer.value;
-    }
-
-    const finalPrice = Math.max(0, originalPrice - discountAmount);
-
-    // THE FIX: Use precise 2-decimal formatting instead of Math.round()
-    return { 
-        finalPrice: Number(finalPrice.toFixed(2)), 
-        discountAmount: Number(discountAmount.toFixed(2)) 
+  if (
+    !Number.isFinite(base) ||
+    base < 0
+  ) {
+    return {
+      finalPrice: 0,
+      discountAmount: 0,
     };
+  }
+
+  if (
+    !offer ||
+    offer.status !== "ACTIVE"
+  ) {
+    return {
+      finalPrice: Number(
+        base.toFixed(2)
+      ),
+      discountAmount: 0,
+    };
+  }
+
+  let discountAmount = 0;
+
+  if (
+    offer.type ===
+    "PERCENTAGE"
+  ) {
+    discountAmount =
+      base *
+      (Number(offer.value) / 100);
+  }
+
+  if (
+    offer.type === "FIXED"
+  ) {
+    discountAmount =
+      Number(offer.value);
+  }
+
+  discountAmount = Math.max(
+    0,
+    Math.min(
+      base,
+      Number(
+        discountAmount.toFixed(2)
+      )
+    )
+  );
+
+  const finalPrice =
+    Number(
+      Math.max(
+        0,
+        base - discountAmount
+      ).toFixed(2)
+    );
+
+  return {
+    finalPrice,
+    discountAmount,
+  };
 };

@@ -1,217 +1,515 @@
-// backend/controllers/paymentController.js
 const { PrismaClient } = require('@prisma/client');
-const { Cashfree } = require('../utils/cashfree'); 
+const { Cashfree } = require('../utils/cashfree');
 const crypto = require('crypto');
+
 const prisma = new PrismaClient();
 
-// 1. Initialize the Transaction
+const API_VERSION = process.env.CASHFREE_API_VERSION || '2025-01-01';
+
+function toMoney(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return null;
+    return Number(n.toFixed(2));
+}
+
+async function calculateServerPrice(product) {
+    const now = new Date();
+
+    const offers = await prisma.offer.findMany({
+        where: {
+            status: 'ACTIVE',
+            autoApply: true,
+            startAt: { lte: now },
+            endAt: { gte: now },
+        },
+        include: {
+            products: {
+                select: { id: true },
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+
+    let bestPrice = Number(product.price);
+
+    for (const offer of offers) {
+        const appliesToProduct =
+            offer.applyTo === 'ALL' ||
+            (offer.applyTo === 'SELECTED' &&
+                offer.products.some((item) => item.id === product.id));
+
+        if (!appliesToProduct) continue;
+
+        // minOrderAmount is kept compatible with the current one-product checkout.
+        if (
+            offer.minOrderAmount !== null &&
+            Number(product.price) < Number(offer.minOrderAmount)
+        ) {
+            continue;
+        }
+
+        let discount = 0;
+
+        if (offer.type === 'PERCENTAGE') {
+            discount =
+                Number(product.price) * (Number(offer.value) / 100);
+        } else if (offer.type === 'FIXED') {
+            discount = Number(offer.value);
+        }
+
+        const candidate = Math.max(
+            0,
+            Number(product.price) - discount
+        );
+
+        if (candidate < bestPrice) {
+            bestPrice = candidate;
+        }
+    }
+
+    return toMoney(bestPrice);
+}
+
+// 1. Initialize a transaction
 const createOrder = async (req, res) => {
-    let internalOrderId = null; 
+    let internalOrderId = null;
 
     try {
-        const { amount, productId, customerPhone } = req.body;
-        
-        const product = await prisma.product.findUnique({ where: { id: productId } });
-        if (!product) {
-            return res.status(404).json({ error: "Asset not found." });
+        const { productId, customerPhone, clientRequestId } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({
+                error: 'Product ID is required.',
+            });
         }
 
-        let finalPrice = product.price;
-        const now = new Date();
-        
-        const activeOffer = await prisma.offer.findFirst({
+        if (!customerPhone || !/^\d{10}$/.test(String(customerPhone))) {
+            return res.status(400).json({
+                error: 'A valid 10-digit customer phone number is required.',
+            });
+        }
+
+        if (!clientRequestId || typeof clientRequestId !== 'string') {
+            return res.status(400).json({
+                error: 'Checkout request ID is required.',
+            });
+        }
+
+        // Idempotency: same authenticated user + same request id returns the
+        // existing order instead of creating a second payment order.
+        const existingOrder = await prisma.order.findFirst({
             where: {
-                status: 'ACTIVE',
-                autoApply: true,
-                startAt: { lte: now },
-                endAt: { gte: now }
-            }
+                userId: req.user.id,
+                clientRequestId,
+            },
+            select: {
+                id: true,
+                status: true,
+            },
         });
 
-        if (activeOffer) {
-            let discountAmount = 0;
-            if (activeOffer.type === 'PERCENTAGE') {
-                discountAmount = Number(product.price) * (Number(activeOffer.value) / 100);
-            } else if (activeOffer.type === 'FIXED') {
-                discountAmount = Number(activeOffer.value);
+        if (existingOrder) {
+            if (existingOrder.status === 'SUCCESS') {
+                return res.status(200).json({
+                    success: true,
+                    alreadyPurchased: true,
+                    order_id: existingOrder.id,
+                });
             }
-            finalPrice = Math.max(0, Number(product.price) - discountAmount);
+
+            // The frontend can safely resume an existing pending attempt.
+            // Fetching a fresh session is delegated to Cashfree by creating
+            // only when the existing attempt has no active session in your DB.
+            return res.status(409).json({
+                error: 'A checkout attempt already exists for this request.',
+                order_id: existingOrder.id,
+            });
         }
 
-        finalPrice = Number(finalPrice.toFixed(2));
-        const frontendAmount = Number(Number(amount).toFixed(2));
+        const product = await prisma.product.findFirst({
+            where: {
+                id: productId,
+                isArchived: false,
+                isDigital: true,
+            },
+        });
 
-        if (finalPrice !== frontendAmount) {
-            console.warn(`[SECURITY] Price mismatch. Expected ₹${finalPrice}, got ₹${frontendAmount}`);
-            return res.status(400).json({ error: "Product price mismatch or invalid asset." });
+        if (!product) {
+            return res.status(404).json({
+                error: 'Digital product not found or unavailable.',
+            });
         }
 
-        internalOrderId = `isvn_${req.user.id}_${Date.now()}`;
+        if (!product.assetUrl) {
+            return res.status(409).json({
+                error: 'This digital product is not ready for delivery yet.',
+            });
+        }
+
+        const finalPrice = await calculateServerPrice(product);
+
+        if (finalPrice === null) {
+            return res.status(500).json({
+                error: 'Unable to calculate the secure product price.',
+            });
+        }
+
+        internalOrderId = `pluten_${req.user.id}_${crypto.randomUUID()}`;
 
         await prisma.order.create({
             data: {
                 id: internalOrderId,
                 userId: req.user.id,
-                productId: productId,
-                totalAmount: finalPrice, 
+                productId: product.id,
+                totalAmount: finalPrice,
                 status: 'PENDING',
-                transactionId: 'AWAITING_PAYMENT'
-            }
+                transactionId: 'AWAITING_PAYMENT',
+                clientRequestId,
+            },
         });
 
-        // THE FIX: Cashfree {order_id} template variable injection
-        const frontendBaseUrl = process.env.FRONTEND_URL || 'https://i-seven-xi.vercel.app';
+        const frontendBaseUrl = process.env.FRONTEND_URL;
+
+        if (!frontendBaseUrl) {
+            throw new Error('FRONTEND_URL is not configured.');
+        }
+
+        const webhookUrl = process.env.CASHFREE_WEBHOOK_URL;
 
         const request = {
             order_id: internalOrderId,
-            order_amount: finalPrice, 
-            order_currency: "INR",
+            order_amount: finalPrice,
+            order_currency: 'INR',
             customer_details: {
-                customer_id: req.user.id,
-                customer_phone: customerPhone || "9999999999",
-                customer_email: req.user.email
+                customer_id: String(req.user.id),
+                customer_phone: String(customerPhone),
+                customer_email: req.user.email,
             },
-            order_meta: { 
-                return_url: `${frontendBaseUrl}/payment-success?order_id={order_id}` 
-            }
+            order_meta: {
+                return_url: `${frontendBaseUrl}/payment-success?order_id={order_id}`,
+                ...(webhookUrl
+                    ? { notify_url: webhookUrl }
+                    : {}),
+            },
         };
 
-        const response = await Cashfree.PGCreateOrder("2023-08-01", request);
-        
-        res.status(200).json({ 
-            payment_session_id: response.data.payment_session_id,
-            order_id: internalOrderId 
-        });
+        const response = await Cashfree.PGCreateOrder(
+            API_VERSION,
+            request
+        );
 
+        return res.status(200).json({
+            success: true,
+            payment_session_id: response.data.payment_session_id,
+            order_id: internalOrderId,
+            amount: finalPrice,
+        });
     } catch (error) {
-        console.error("Cashfree Order Rejection:", error.response?.data?.message || error.message);
-        
+        console.error(
+            'Cashfree Order Error:',
+            error?.response?.data || error.message
+        );
+
+        // IMPORTANT:
+        // Do NOT delete the order after a gateway/network error.
+        // It is retained for reconciliation.
         if (internalOrderId) {
-            await prisma.order.deleteMany({ where: { id: internalOrderId, status: 'PENDING' } });
-            console.log(`[iSevens Core] Rolled back pending order ${internalOrderId} due to gateway failure.`);
+            try {
+                await prisma.order.updateMany({
+                    where: {
+                        id: internalOrderId,
+                        status: 'PENDING',
+                    },
+                    data: {
+                        transactionId: 'GATEWAY_CREATE_FAILED',
+                    },
+                });
+            } catch (updateError) {
+                console.error(
+                    'Failed to mark gateway-create failure:',
+                    updateError.message
+                );
+            }
         }
 
-        res.status(500).json({ error: "Failed to initialize secure transaction." });
+        return res.status(500).json({
+            error: 'Failed to initialize secure transaction.',
+        });
     }
 };
 
-// 2. Active Server-Side Verification (Triggered by Frontend)
+// 2. Server-side verification
 const verifyPayment = async (req, res) => {
     const { orderId } = req.body;
-    
+
+    if (!orderId || typeof orderId !== 'string') {
+        return res.status(400).json({
+            error: 'Order ID is required.',
+        });
+    }
+
     try {
-        const cfResponse = await Cashfree.PGOrderFetchPayments("2023-08-01", orderId);
-        const successfulPayment = cfResponse.data.find(payment => payment.payment_status === "SUCCESS");
+        // CRITICAL OWNERSHIP CHECK.
+        // A customer may only verify their own order.
+        const order = await prisma.order.findFirst({
+            where: {
+                id: orderId,
+                userId: req.user.id,
+            },
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                error: 'Order not found for the authenticated account.',
+            });
+        }
+
+        if (order.status === 'SUCCESS') {
+            return res.status(200).json({
+                success: true,
+                message: 'Asset already secured.',
+                order,
+            });
+        }
+
+        const cfResponse =
+            await Cashfree.PGOrderFetchPayments(
+                API_VERSION,
+                orderId
+            );
+
+        const successfulPayment =
+            cfResponse.data.find(
+                (payment) =>
+                    payment.payment_status === 'SUCCESS'
+            );
 
         if (!successfulPayment) {
-            return res.status(400).json({ error: "Payment has not been completed." });
-        }
-
-        const gatewayAmount = successfulPayment.payment_amount;
-        const cfPaymentId = successfulPayment.cf_payment_id;
-
-        const fulfillmentResult = await prisma.$transaction(async (tx) => {
-            const order = await tx.order.findUnique({ where: { id: orderId } });
-            
-            if (!order) throw new Error("ORDER_NOT_FOUND");
-            if (order.status === 'SUCCESS') throw new Error("ALREADY_FULFILLED"); 
-
-            if (Number(gatewayAmount) !== Number(order.totalAmount)) {
-                console.error(`[SECURITY] Amount mismatch on ${orderId}. Expected ${order.totalAmount}, got ${gatewayAmount}.`);
-                await tx.order.update({
-                    where: { id: orderId },
-                    data: { status: 'FLAGGED_AMOUNT_MISMATCH' }
-                });
-                throw new Error("AMOUNT_MISMATCH");
-            }
-
-            return await tx.order.update({
-                where: { id: orderId },
-                data: { 
-                    status: 'SUCCESS',
-                    transactionId: String(cfPaymentId) 
-                }
+            return res.status(409).json({
+                error: 'Payment has not been confirmed yet.',
+                status: 'PENDING',
             });
+        }
+
+        const gatewayAmount = toMoney(
+            successfulPayment.payment_amount
+        );
+
+        const expectedAmount = toMoney(
+            order.totalAmount
+        );
+
+        if (
+            gatewayAmount === null ||
+            expectedAmount === null ||
+            gatewayAmount !== expectedAmount
+        ) {
+            console.error(
+                `[SECURITY] Amount mismatch on ${orderId}. Expected ${expectedAmount}, got ${gatewayAmount}.`
+            );
+
+            await prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    status: 'FLAGGED_AMOUNT_MISMATCH',
+                },
+            });
+
+            return res.status(400).json({
+                error:
+                    'Payment verification failed due to a monetary mismatch.',
+            });
+        }
+
+        const fulfilled = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                status: 'SUCCESS',
+                transactionId: String(
+                    successfulPayment.cf_payment_id
+                ),
+            },
         });
-        
-        res.status(200).json({ success: true, order: fulfillmentResult });
+
+        return res.status(200).json({
+            success: true,
+            order: fulfilled,
+        });
     } catch (error) {
-        if (error.message === "ALREADY_FULFILLED") {
-            return res.status(200).json({ success: true, message: "Asset already secured." });
-        }
-        if (error.message === "AMOUNT_MISMATCH") {
-            return res.status(400).json({ error: "Payment verification failed due to monetary mismatch." });
-        }
-        if (error.message === "ORDER_NOT_FOUND") {
-            return res.status(404).json({ error: "Order reference could not be located in ledger." });
-        }
-        
-        console.error("Fulfillment Verification Error:", error.message);
-        res.status(500).json({ error: "Failed to verify transaction with the gateway." });
+        console.error(
+            'Fulfillment Verification Error:',
+            error.message
+        );
+
+        return res.status(500).json({
+            error:
+                'Failed to verify transaction with the gateway.',
+        });
     }
 };
 
-// 3. Passive Cryptographic Webhook (Triggered by Cashfree)
+// 3. Cryptographic webhook
 const webhookHandler = async (req, res) => {
     try {
-        const signature = req.headers['x-webhook-signature'];
-        const timestamp = req.headers['x-webhook-timestamp'];
+        const signature =
+            req.headers['x-webhook-signature'];
+
+        const timestamp =
+            req.headers['x-webhook-timestamp'];
+
         const rawBody = req.rawBody;
 
         if (!signature || !timestamp || !rawBody) {
-            return res.status(400).send('Missing webhook cryptography headers.');
+            return res
+                .status(400)
+                .send('Missing webhook cryptography headers.');
         }
 
-        const dataToHash = timestamp + rawBody;
+        const timestampMs = Number(timestamp);
 
-        const secretKey = process.env.CASHFREE_CLIENT_SECRET || process.env.CASHFREE_SECRET_KEY;
-
-        const expectedSignature = crypto
-            .createHmac('sha256', secretKey)
-            .update(dataToHash)
-            .digest('base64');
-
-        if (expectedSignature !== signature) {
-            console.warn("[SECURITY ALERT] Invalid webhook signature detected. Potential spoofing attempt.");
-            return res.status(401).send('Signature mismatch');
+        if (!Number.isFinite(timestampMs)) {
+            return res
+                .status(401)
+                .send('Invalid webhook timestamp.');
         }
 
-        const payload = req.body;
-        
-        if (payload.event === 'PAYMENT_SUCCESS_WEBHOOK') {
-            const orderId = payload.data.order.order_id;
-            const gatewayAmount = payload.data.payment.payment_amount;
-            const cfPaymentId = payload.data.payment.cf_payment_id;
-            
-            await prisma.$transaction(async (tx) => {
-                const order = await tx.order.findUnique({ where: { id: orderId } });
-                
-                if (!order || order.status === 'SUCCESS') return; 
-                
-                if (Number(gatewayAmount) !== Number(order.totalAmount)) {
-                    await tx.order.update({
-                        where: { id: orderId },
-                        data: { status: 'FLAGGED_AMOUNT_MISMATCH' }
-                    });
-                    return;
-                }
+        // Replay protection.
+        // Keep a small tolerance window around the signed timestamp.
+        const age = Math.abs(Date.now() - timestampMs);
 
+        if (age > 5 * 60 * 1000) {
+            return res
+                .status(401)
+                .send('Expired webhook.');
+        }
+
+        const secretKey =
+            process.env.CASHFREE_CLIENT_SECRET ||
+            process.env.CASHFREE_SECRET_KEY;
+
+        if (!secretKey) {
+            throw new Error(
+                'Cashfree webhook secret is not configured.'
+            );
+        }
+
+        const expectedSignature =
+            crypto
+                .createHmac('sha256', secretKey)
+                .update(
+                    `${timestamp}${rawBody}`
+                )
+                .digest('base64');
+
+        const signaturesMatch =
+            expectedSignature.length ===
+                signature.length &&
+            crypto.timingSafeEqual(
+                Buffer.from(expectedSignature),
+                Buffer.from(signature)
+            );
+
+        if (!signaturesMatch) {
+            console.warn(
+                '[SECURITY ALERT] Invalid Cashfree webhook signature.'
+            );
+
+            return res
+                .status(401)
+                .send('Signature mismatch');
+        }
+
+        const payload =
+            typeof req.body === 'string'
+                ? JSON.parse(req.body)
+                : req.body;
+
+        if (
+            payload?.event !==
+            'PAYMENT_SUCCESS_WEBHOOK'
+        ) {
+            return res
+                .status(200)
+                .send('WEBHOOK_RECEIVED');
+        }
+
+        const orderId =
+            payload?.data?.order?.order_id;
+
+        const gatewayAmount =
+            toMoney(
+                payload?.data?.payment?.payment_amount
+            );
+
+        const cfPaymentId =
+            payload?.data?.payment?.cf_payment_id;
+
+        if (!orderId || gatewayAmount === null || !cfPaymentId) {
+            return res
+                .status(400)
+                .send('Malformed payment webhook.');
+        }
+
+        await prisma.$transaction(async (tx) => {
+            const order =
+                await tx.order.findUnique({
+                    where: { id: orderId },
+                });
+
+            // Unknown order: acknowledge safely so Cashfree does not
+            // endlessly retry an event that does not belong to Pluten.
+            if (!order) return;
+
+            // Idempotent webhook handling.
+            if (order.status === 'SUCCESS') return;
+
+            const expectedAmount =
+                toMoney(order.totalAmount);
+
+            if (
+                expectedAmount === null ||
+                gatewayAmount !== expectedAmount
+            ) {
                 await tx.order.update({
                     where: { id: orderId },
-                    data: { 
-                        status: 'SUCCESS',
-                        transactionId: String(cfPaymentId)
-                    }
+                    data: {
+                        status:
+                            'FLAGGED_AMOUNT_MISMATCH',
+                    },
                 });
-                console.log(`[iSevens Network] Webhook securely confirmed payment for order: ${orderId}`);
-            });
-        }
 
-        res.status(200).send('WEBHOOK_RECEIVED');
+                return;
+            }
+
+            await tx.order.update({
+                where: { id: orderId },
+                data: {
+                    status: 'SUCCESS',
+                    transactionId:
+                        String(cfPaymentId),
+                },
+            });
+        });
+
+        return res
+            .status(200)
+            .send('WEBHOOK_RECEIVED');
     } catch (error) {
-        console.error("Webhook Processing Fault:", error);
-        res.status(500).send('WEBHOOK_FAULT');
+        console.error(
+            'Webhook Processing Fault:',
+            error.message
+        );
+
+        return res
+            .status(500)
+            .send('WEBHOOK_FAULT');
     }
 };
 
-module.exports = { createOrder, verifyPayment, webhookHandler };
+module.exports = {
+    createOrder,
+    verifyPayment,
+    webhookHandler,
+};

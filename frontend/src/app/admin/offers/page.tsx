@@ -21,8 +21,8 @@ export default function OffersPage() {
     const [type, setType] = useState('PERCENTAGE');
     const [value, setValue] = useState('');
     const [status, setStatus] = useState('ACTIVE');
-    const [endAt, setEndAt] = useState('');
-
+    const [startAt, setStartAt] = useState("");
+    const [endAt, setEndAt] = useState("");
     useEffect(() => {
         fetchOffers();
     }, []);
@@ -39,15 +39,16 @@ export default function OffersPage() {
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setEditingId(null);
-        setName('');
-        setType('PERCENTAGE');
-        setValue('');
-        setStatus('ACTIVE');
-        setEndAt('');
-        setErrorMsg(null);
-    };
+  setIsModalOpen(false);
+  setEditingId(null);
+  setName("");
+  setType("PERCENTAGE");
+  setValue("");
+  setStatus("DRAFT");
+  setStartAt("");
+  setEndAt("");
+  setErrorMsg(null);
+};
 
     const handleOpenCreate = () => {
         handleCloseModal();
@@ -55,20 +56,38 @@ export default function OffersPage() {
     };
 
     const handleOpenEdit = (offer: any) => {
-        setEditingId(offer.id);
-        setName(offer.name);
-        setType(offer.type);
-        setValue(offer.value.toString());
-        setStatus(offer.status);
-        
-        if (offer.endAt) {
-            const date = new Date(offer.endAt);
-            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-            setEndAt(date.toISOString().slice(0, 16));
-        }
-        
-        setIsModalOpen(true);
-    };
+  setEditingId(offer.id);
+  setName(offer.name);
+  setType(offer.type);
+  setValue(String(offer.value));
+  setStatus(offer.status);
+
+  if (offer.startAt) {
+    const date = new Date(offer.startAt);
+    date.setMinutes(
+      date.getMinutes() -
+        date.getTimezoneOffset()
+    );
+
+    setStartAt(
+      date.toISOString().slice(0, 16)
+    );
+  }
+
+  if (offer.endAt) {
+    const date = new Date(offer.endAt);
+    date.setMinutes(
+      date.getMinutes() -
+        date.getTimezoneOffset()
+    );
+
+    setEndAt(
+      date.toISOString().slice(0, 16)
+    );
+  }
+
+  setIsModalOpen(true);
+};
 
     const deleteOffer = async (id: string) => {
         if (!confirm("CRITICAL WARNING: Are you sure you want to delete this offer?")) return;
@@ -90,15 +109,15 @@ export default function OffersPage() {
         try {
             // Injecting the required backend fields silently
             const payload = {
-                name,
-                type,
-                value: parseFloat(value),
-                status,
-                applyTo: "ALL",              
-                autoApply: true,             
-                startAt: new Date().toISOString(), 
-                endAt: new Date(endAt).toISOString()
-            };
+  name: name.trim(),
+  type,
+  value: parseFloat(value),
+  status,
+  applyTo: "ALL",
+  autoApply: status === "ACTIVE",
+  startAt: new Date(startAt).toISOString(),
+  endAt: new Date(endAt).toISOString(),
+};
 
             if (editingId) {
                 await apiClient.put(`/offers/admin/${editingId}`, payload);
@@ -260,10 +279,42 @@ export default function OffersPage() {
                             <div className="grid grid-cols-2 gap-5" style={{ marginBottom: '2rem' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', marginBottom: '0.5rem' }}>System Status</label>
-                                    <select value={status} onChange={e => setStatus(e.target.value)} style={{ width: '100%', padding: '0.8rem 1rem', background: '#050505', border: '1px solid #1a1a1a', borderRadius: '8px', color: '#fff', outline: 'none', boxShadow: 'inset 3px 3px 6px rgba(0,0,0,0.8)', cursor: 'pointer' }}>
-                                        <option value="ACTIVE">Engaged</option>
-                                        <option value="INACTIVE">Standby</option>
-                                    </select>
+                                    <select
+  value={status}
+  onChange={(e) =>
+    setStatus(e.target.value)
+  }
+>
+  <option value="DRAFT">
+    Draft
+  </option>
+
+  <option value="ACTIVE">
+    Active
+  </option>
+
+  <option value="PAUSED">
+    Paused
+  </option>
+
+  <option value="EXPIRED">
+    Expired
+  </option>
+</select>
+<div>
+  <label>
+    Start Date
+  </label>
+
+  <input
+    type="datetime-local"
+    required
+    value={startAt}
+    onChange={(e) =>
+      setStartAt(e.target.value)
+    }
+  />
+</div>
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888', marginBottom: '0.5rem' }}>Termination Date</label>

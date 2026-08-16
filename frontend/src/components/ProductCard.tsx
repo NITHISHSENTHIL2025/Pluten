@@ -34,67 +34,88 @@ export default function ProductCard({
   ========================================================= */
 
   const {
-    finalPrice,
-    activeOffer,
-  } = useMemo(() => {
+  finalPrice,
+  activeOffer,
+} = useMemo(() => {
+  const originalPrice =
+    Number(product.price);
 
-    const originalPrice =
-      Number(product.price);
+  const eligibleOffer =
+    activeOffers.find((item: any) => {
+      if (!item.autoApply) {
+        return false;
+      }
 
-    const offer =
-      activeOffers.find(
-        (item: any) =>
-          item.autoApply
-      );
+      if (item.applyTo === "ALL") {
+        return true;
+      }
 
-    if (!offer) {
-      return {
-        finalPrice: originalPrice,
-        activeOffer: null,
-      };
-    }
-
-    let discountAmount = 0;
-
-    if (
-      offer.type ===
-      "PERCENTAGE"
-    ) {
-      discountAmount =
-        originalPrice *
-        (
-          Number(offer.value) /
-          100
+      if (
+        item.applyTo === "SELECTED"
+      ) {
+        return item.products?.some(
+          (linkedProduct: any) =>
+            linkedProduct.id ===
+            product.id
         );
-    }
+      }
 
-    if (
-      offer.type ===
-      "FIXED"
-    ) {
-      discountAmount =
-        Number(offer.value);
-    }
+      return false;
+    });
 
-    const discountedPrice =
-      Math.max(
-        0,
-        originalPrice -
-          discountAmount
-      );
-
+  if (!eligibleOffer) {
     return {
       finalPrice:
-        Math.round(
-          discountedPrice
+        Number(
+          originalPrice.toFixed(2)
         ),
-      activeOffer: offer,
+      activeOffer: null,
     };
+  }
 
-  }, [
-    product.price,
-    activeOffers,
-  ]);
+  let discountAmount = 0;
+
+  if (
+    eligibleOffer.type ===
+    "PERCENTAGE"
+  ) {
+    discountAmount =
+      originalPrice *
+      (Number(
+        eligibleOffer.value
+      ) / 100);
+  }
+
+  if (
+    eligibleOffer.type ===
+    "FIXED"
+  ) {
+    discountAmount =
+      Number(
+        eligibleOffer.value
+      );
+  }
+
+  const discountedPrice =
+    Math.max(
+      0,
+      originalPrice -
+        discountAmount
+    );
+
+  return {
+    finalPrice:
+      Number(
+        discountedPrice.toFixed(2)
+      ),
+    activeOffer:
+      eligibleOffer,
+  };
+}, [
+  product.id,
+  product.price,
+  activeOffers,
+]);
 
   const originalPrice =
     Number(product.price);
@@ -105,18 +126,14 @@ export default function ProductCard({
       originalPrice;
 
   const discountPercent =
-    hasDiscount
-      ? Math.round(
-          (
-            (
-              originalPrice -
-              finalPrice
-            ) /
-            originalPrice
-          ) *
+  hasDiscount
+    ? Math.round(
+        ((originalPrice -
+          finalPrice) /
+          originalPrice) *
           100
-        )
-      : 0;
+      )
+    : 0;
 
   /* =========================================================
      CARD

@@ -85,7 +85,7 @@ model Order {
   status        String   @default("PENDING") 
   transactionId String?  
   createdAt     DateTime @default(now())
-
+  clientRequestId String? @unique
   user          User     @relation(fields: [userId], references: [id])
   product       Product  @relation(fields: [productId], references: [id])
 

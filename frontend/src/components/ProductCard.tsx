@@ -2,9 +2,7 @@
 
 import { useMemo } from "react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-
 import { useOffers } from "@/context/OfferContext";
-
 import styles from "../app/page.module.css";
 
 interface Product {
@@ -20,317 +18,142 @@ interface ProductCardProps {
   index?: number;
 }
 
-export default function ProductCard({
-  product,
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const { activeOffers, loadingOffers } = useOffers();
 
-  const {
-    activeOffers,
-    loadingOffers,
-  } = useOffers();
+  const originalPrice = Number(product.price);
 
-  /* =========================================================
-     REAL OFFER CALCULATION
-  ========================================================= */
+  const { finalPrice, activeOffer } = useMemo(() => {
+    const eligibleOffers = activeOffers
+      .filter((offer) => offer.autoApply && offer.status === "ACTIVE")
+      .filter((offer) => {
+        const appliesToProduct =
+          offer.applyTo === "ALL" ||
+          (offer.applyTo === "SELECTED" &&
+            offer.products?.some((item) => item.id === product.id));
 
-  const {
-  finalPrice,
-  activeOffer,
-} = useMemo(() => {
-  const originalPrice =
-    Number(product.price);
+        if (!appliesToProduct) return false;
 
-  const eligibleOffer =
-    activeOffers.find((item: any) => {
-      if (!item.autoApply) {
-        return false;
-      }
+        if (
+          offer.minOrderAmount !== null &&
+          Number(product.price) < Number(offer.minOrderAmount)
+        ) {
+          return false;
+        }
 
-      if (item.applyTo === "ALL") {
         return true;
-      }
+      });
 
-      if (
-        item.applyTo === "SELECTED"
-      ) {
-        return item.products?.some(
-          (linkedProduct: any) =>
-            linkedProduct.id ===
-            product.id
+    const best = eligibleOffers.reduce<{
+      offer: (typeof activeOffers)[number] | null;
+      final: number;
+    }>(
+      (bestSoFar, offer) => {
+        const base = Number(product.price);
+        let discount = 0;
+
+        if (offer.type === "PERCENTAGE") {
+          discount = base * (Number(offer.value) / 100);
+        } else {
+          discount = Number(offer.value);
+        }
+
+        const candidate = Number(
+          Math.max(0, base - discount).toFixed(2)
         );
-      }
 
-      return false;
-    });
+        if (candidate < bestSoFar.final) {
+          return { offer, final: candidate };
+        }
 
-  if (!eligibleOffer) {
-    return {
-      finalPrice:
-        Number(
-          originalPrice.toFixed(2)
-        ),
-      activeOffer: null,
-    };
-  }
-
-  let discountAmount = 0;
-
-  if (
-    eligibleOffer.type ===
-    "PERCENTAGE"
-  ) {
-    discountAmount =
-      originalPrice *
-      (Number(
-        eligibleOffer.value
-      ) / 100);
-  }
-
-  if (
-    eligibleOffer.type ===
-    "FIXED"
-  ) {
-    discountAmount =
-      Number(
-        eligibleOffer.value
-      );
-  }
-
-  const discountedPrice =
-    Math.max(
-      0,
-      originalPrice -
-        discountAmount
+        return bestSoFar;
+      },
+      { offer: null, final: Number(originalPrice.toFixed(2)) }
     );
 
-  return {
-    finalPrice:
-      Number(
-        discountedPrice.toFixed(2)
-      ),
-    activeOffer:
-      eligibleOffer,
-  };
-}, [
-  product.id,
-  product.price,
-  activeOffers,
-]);
-
-  const originalPrice =
-    Number(product.price);
+    return {
+      finalPrice: best.final,
+      activeOffer: best.offer,
+    };
+  }, [activeOffers, originalPrice, product.id, product.price]);
 
   const hasDiscount =
+    Number.isFinite(originalPrice) &&
     !!activeOffer &&
-    finalPrice <
-      originalPrice;
+    finalPrice < originalPrice;
 
   const discountPercent =
-  hasDiscount
-    ? Math.round(
-        ((originalPrice -
-          finalPrice) /
-          originalPrice) *
-          100
-      )
-    : 0;
-
-  /* =========================================================
-     CARD
-  ========================================================= */
+    hasDiscount && originalPrice > 0
+      ? Math.round(
+          ((originalPrice - finalPrice) / originalPrice) * 100
+        )
+      : 0;
 
   return (
-    <article
-      className={
-        styles.productCard
-      }
-    >
-
-      {/* =====================================================
-          IMAGE
-      ===================================================== */}
-
-      <div
-        className={
-          styles.productVisual
-        }
-      >
-
+    <article className={styles.productCard}>
+      <div className={styles.productVisual}>
         {product.thumbnail ? (
-
           <img
-            src={
-              product.thumbnail
-            }
-            alt={
-              product.title
-            }
-            className={
-              styles.cardImage
-            }
+            src={product.thumbnail}
+            alt={product.title}
+            className={styles.cardImage}
+            loading="lazy"
           />
-
         ) : (
-
-          <div
-            className={
-              styles.noImage
-            }
-          >
-            NO PREVIEW
-          </div>
-
+          <div className={styles.noImage}>NO PREVIEW</div>
         )}
 
-        {/* REAL OFFER ONLY */}
-
-        {hasDiscount &&
-          activeOffer && (
-
-            <div
-              className={
-                styles.offerBadge
-              }
-            >
-
-              <Sparkles
-                size={12}
-                strokeWidth={2.5}
-              />
-
-              <span>
-                {activeOffer.type ===
-                "PERCENTAGE"
-                  ? `${discountPercent}% OFF`
-                  : `₹${Number(
-                      activeOffer.value
-                    ).toLocaleString(
-                      "en-IN"
-                    )} OFF`}
-              </span>
-
-            </div>
-
-          )}
-
+        {hasDiscount && activeOffer && (
+          <div className={styles.offerBadge}>
+            <Sparkles size={12} strokeWidth={2.5} />
+            <span>
+              {activeOffer.type === "PERCENTAGE"
+                ? `${discountPercent}% OFF`
+                : `₹${Number(activeOffer.value).toLocaleString("en-IN")} OFF`}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* =====================================================
-          CONTENT
-      ===================================================== */}
-
-      <div
-        className={
-          styles.cardContent
-        }
-      >
-
-        {/* CATEGORY */}
-
-        <div
-          className={
-            styles.productMeta
-          }
-        >
-
-          <span>
-            {product.category ||
-              "DIGITAL PRODUCT"}
-          </span>
+      <div className={styles.cardContent}>
+        <div className={styles.productMeta}>
+          <span>{product.category || "DIGITAL PRODUCT"}</span>
 
           {hasDiscount && (
-            <span
-              className={
-                styles.saveText
-              }
-            >
+            <span className={styles.saveText}>
               SAVE {discountPercent}%
             </span>
           )}
-
         </div>
 
-        {/* TITLE */}
+        <h3 className={styles.cardTitle}>{product.title}</h3>
 
-        <h3
-          className={
-            styles.cardTitle
-          }
-        >
-          {product.title}
-        </h3>
-
-        {/* PRICE */}
-
-        <div
-          className={
-            styles.cardBottom
-          }
-        >
-
+        <div className={styles.cardBottom}>
           {loadingOffers ? (
-
             <div
-              className={
-                styles.priceSkeleton
-              }
+              className={styles.priceSkeleton}
+              aria-label="Loading price"
             />
-
           ) : (
-
-            <div
-              className={
-                styles.priceContainer
-              }
-            >
-
-              <span
-                className={
-                  styles.currentPrice
-                }
-              >
-                ₹
-                {finalPrice.toLocaleString(
-                  "en-IN"
-                )}
+            <div className={styles.priceContainer}>
+              <span className={styles.currentPrice}>
+                ₹{finalPrice.toLocaleString("en-IN")}
               </span>
 
               {hasDiscount && (
-
-                <span
-                  className={
-                    styles.oldPrice
-                  }
-                >
-                  ₹
-                  {originalPrice.toLocaleString(
-                    "en-IN"
-                  )}
+                <span className={styles.oldPrice}>
+                  ₹{originalPrice.toLocaleString("en-IN")}
                 </span>
-
               )}
-
             </div>
-
           )}
 
-          <span
-            className={
-              styles.viewLabel
-            }
-          >
+          <span className={styles.viewLabel}>
             VIEW
-
-            <ArrowUpRight
-              size={12}
-              strokeWidth={2}
-            />
+            <ArrowUpRight size={12} strokeWidth={2} />
           </span>
-
         </div>
-
       </div>
-
     </article>
   );
 }

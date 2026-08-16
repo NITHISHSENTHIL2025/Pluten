@@ -206,7 +206,7 @@ export default function AdminProductsPage() {
                                                 {product.category || 'Uncategorized'}
                                             </span>
                                         </td>
-                                        <td className={`${styles.td} font-bold text-white`}>₹{product.price.toLocaleString('en-IN')}</td>
+                                        <td className={`${styles.td} font-bold text-white`}>â‚¹{product.price.toLocaleString('en-IN')}</td>
                                         <td className={`${styles.td} text-right`}>
                                             <div className="flex justify-end gap-3">
                                                 <button onClick={() => handleOpenEdit(product)} className={`${styles.iconBtn} ${styles.iconBtnEdit}`}>

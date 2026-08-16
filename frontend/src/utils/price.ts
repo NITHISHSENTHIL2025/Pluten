@@ -3,70 +3,46 @@ export interface PriceResult {
   discountAmount: number;
 }
 
+export interface PriceOffer {
+  type: "PERCENTAGE" | "FIXED";
+  value: number;
+  status?: string;
+}
+
 export const calculateDiscount = (
   originalPrice: number,
-  offer: any
+  offer?: PriceOffer | null
 ): PriceResult => {
-  const base =
-    Number(originalPrice);
+  const base = Number(originalPrice);
 
-  if (
-    !Number.isFinite(base) ||
-    base < 0
-  ) {
-    return {
-      finalPrice: 0,
-      discountAmount: 0,
-    };
+  if (!Number.isFinite(base) || base < 0) {
+    return { finalPrice: 0, discountAmount: 0 };
   }
 
-  if (
-    !offer ||
-    offer.status !== "ACTIVE"
-  ) {
+  if (!offer || offer.status && offer.status !== "ACTIVE") {
     return {
-      finalPrice: Number(
-        base.toFixed(2)
-      ),
+      finalPrice: Number(base.toFixed(2)),
       discountAmount: 0,
     };
   }
 
   let discountAmount = 0;
 
-  if (
-    offer.type ===
-    "PERCENTAGE"
-  ) {
+  if (offer.type === "PERCENTAGE") {
     discountAmount =
-      base *
-      (Number(offer.value) / 100);
-  }
-
-  if (
-    offer.type === "FIXED"
-  ) {
-    discountAmount =
-      Number(offer.value);
+      base * (Number(offer.value) / 100);
+  } else if (offer.type === "FIXED") {
+    discountAmount = Number(offer.value);
   }
 
   discountAmount = Math.max(
     0,
-    Math.min(
-      base,
-      Number(
-        discountAmount.toFixed(2)
-      )
-    )
+    Math.min(base, Number(discountAmount.toFixed(2)))
   );
 
-  const finalPrice =
-    Number(
-      Math.max(
-        0,
-        base - discountAmount
-      ).toFixed(2)
-    );
+  const finalPrice = Number(
+    Math.max(0, base - discountAmount).toFixed(2)
+  );
 
   return {
     finalPrice,

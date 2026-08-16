@@ -98,24 +98,6 @@ export default function ProfilePage() {
            CLEAR INVALID CLIENT SESSION
         =============================================== */
 
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "user"
-        );
-
-        localStorage.removeItem(
-          "role"
-        );
-
-
-        document.cookie =
-          "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-
-        document.cookie =
-          "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
 
         router.push("/login");
@@ -166,28 +148,12 @@ export default function ProfilePage() {
          CLEAR LOCAL AUTH STATE
       =============================================== */
 
-      localStorage.removeItem(
-        "token"
-      );
-
-      localStorage.removeItem(
-        "user"
-      );
-
-      localStorage.removeItem(
-        "role"
-      );
 
 
       /* ===============================================
          CLEAR MIDDLEWARE COOKIES
       =============================================== */
 
-      document.cookie =
-        "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-
-      document.cookie =
-        "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
 
       /* ===============================================
@@ -541,7 +507,7 @@ export default function ProfilePage() {
                 styles.actionArrow
               }
             >
-              ↗
+              â†—
             </span>
 
           </button>
@@ -596,7 +562,7 @@ export default function ProfilePage() {
                 styles.actionArrow
               }
             >
-              ↗
+              â†—
             </span>
 
           </button>
@@ -659,7 +625,7 @@ export default function ProfilePage() {
           styles.bottomLabel
         }
       >
-        PLUTEN — BEYOND ORDINARY.
+        PLUTEN â€” BEYOND ORDINARY.
       </div>
 
     </main>

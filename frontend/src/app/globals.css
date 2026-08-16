@@ -1,761 +1,292 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
 
 :root {
-  --pluten-black: #000000;
-  --pluten-dark: #111111;
-
-  --pluten-white: #ffffff;
-  --pluten-paper: #f5f5f3;
-
-  --pluten-gray-100: #f1f1ef;
-  --pluten-gray-200: #e7e7e4;
-  --pluten-gray-300: #d9d9d5;
-  --pluten-gray-400: #b8b8b3;
-  --pluten-gray-500: #858580;
-  --pluten-gray-600: #666661;
-
-  --pluten-border: rgba(0, 0, 0, 0.09);
-
-  --pluten-max-width: 1440px;
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --radius-pill: 999px;
-
-  /* Production semantic aliases */
-  --pluten-surface-page: var(--pluten-paper);
-  --pluten-surface-card: var(--pluten-white);
-  --pluten-surface-subtle: var(--pluten-gray-100);
-  --pluten-text-primary: var(--pluten-black);
-  --pluten-text-secondary: var(--pluten-gray-600);
-  --pluten-text-muted: var(--pluten-gray-500);
-  --pluten-border-subtle: var(--pluten-border);
-  --pluten-border-strong: rgba(0, 0, 0, 0.16);
-  --pluten-focus-ring: rgba(17, 17, 17, 0.28);
-  --pluten-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --pluten-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.09);
-  --pluten-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
-  --pluten-z-nav: 100;
-  --pluten-z-drawer: 1000;
-  --pluten-z-modal: 9999;
+  --pluten-bg: #f6f6f4;
+  --pluten-surface: #ffffff;
+  --pluten-surface-soft: #f1f1ee;
+  --pluten-ink: #111111;
+  --pluten-muted: #6f6f6a;
+  --pluten-subtle: #9a9a94;
+  --pluten-line: rgba(17,17,17,.10);
+  --pluten-line-strong: rgba(17,17,17,.16);
+  --pluten-red: #e01919;
+  --pluten-red-dark: #b80f16;
+  --pluten-success: #1e7a48;
+  --pluten-danger: #c62828;
+  --pluten-admin-bg: #0b0b0c;
+  --pluten-admin-surface: #121214;
+  --pluten-admin-surface-2: #171719;
+  --pluten-admin-line: rgba(255,255,255,.08);
+  --pluten-admin-ink: #f5f5f5;
+  --pluten-admin-muted: #929297;
+  --pluten-radius-sm: 10px;
+  --pluten-radius-md: 16px;
+  --pluten-radius-lg: 24px;
+  --pluten-shadow-sm: 0 6px 18px rgba(0,0,0,.05);
+  --pluten-shadow-md: 0 16px 40px rgba(0,0,0,.08);
+  --pluten-shadow-lg: 0 28px 70px rgba(0,0,0,.14);
+  --pluten-content: 1240px;
+  --pluten-gutter: clamp(16px, 4vw, 48px);
+  --pluten-transition: 220ms cubic-bezier(.2,.75,.25,1);
 }
 
-* {
-  box-sizing: border-box;
-}
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
 html {
+  min-width: 320px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-html,
 body {
   margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-}
-
-body {
-  background: var(--pluten-paper);
-  color: var(--pluten-black);
-
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Display",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
+  min-width: 320px;
+  background: var(--pluten-bg);
+  color: var(--pluten-ink);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   text-rendering: optimizeLegibility;
-}
-
-body,
-button,
-input,
-textarea,
-select {
-  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
 input,
-textarea,
-select {
-  font: inherit;
-}
+select,
+textarea { font: inherit; }
 
-button {
-  border: 0;
-}
+button,
+a,
+input,
+select,
+textarea { -webkit-tap-highlight-color: transparent; }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+button { border: 0; }
+
+a { color: inherit; }
 
 img {
   max-width: 100%;
-  display: block;
-}
-
-/* =========================================================
-   ACCESSIBILITY / INTERACTION SAFETY
-========================================================= */
-
-:where(a, button, input, textarea, select, [role="button"]):focus-visible {
-  outline: 2px solid var(--pluten-focus-ring);
-  outline-offset: 3px;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:disabled,
-[aria-disabled="true"] {
-  cursor: not-allowed;
-}
-
-img {
   height: auto;
 }
 
+:focus-visible {
+  outline: 2px solid var(--pluten-ink);
+  outline-offset: 3px;
+}
+
 ::selection {
-  background: #000;
+  background: #111;
   color: #fff;
 }
 
-
-/* =========================================================
-   SCROLLBAR
-========================================================= */
-
-::-webkit-scrollbar {
-  width: 8px;
+/* Shared public navigation */
+.pluten-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: rgba(246,246,244,.82);
+  border-bottom: 1px solid var(--pluten-line);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--pluten-paper);
+.pluten-nav-inner {
+  width: min(var(--pluten-content), calc(100% - (var(--pluten-gutter) * 2)));
+  min-height: 70px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c7c7c2;
-  border-radius: 999px;
+.pluten-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #888;
+.pluten-mark {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
 }
 
-
-/* =========================================================
-   GLOBAL CONTAINER
-========================================================= */
-
-.pluten-container {
-  width: min(
-    calc(100% - 48px),
-    var(--pluten-max-width)
-  );
-
-  margin-inline: auto;
+.pluten-nav-links,
+.pluten-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-
-/* =========================================================
-   BUTTON SYSTEM
-========================================================= */
+.pluten-nav-actions { gap: 8px; }
 
 .pluten-button {
+  min-height: 42px;
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
-  gap: 10px;
-
-  min-height: 48px;
-
-  padding:
-    0 20px;
-
-  border-radius:
-    var(--radius-pill);
-
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 999px;
   cursor: pointer;
-
-  font-size: 12px;
-
-  font-weight: 500;
-
-  letter-spacing: -0.01em;
-
-  transition:
-    transform 0.35s cubic-bezier(.2,.8,.2,1),
-    background-color 0.3s ease,
-    color 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+  text-decoration: none;
+  transition: transform var(--pluten-transition), background var(--pluten-transition), border-color var(--pluten-transition), color var(--pluten-transition), box-shadow var(--pluten-transition);
+  touch-action: manipulation;
 }
 
-.pluten-button:hover {
-  transform:
-    translateY(-2px);
+.pluten-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .pluten-button-primary {
-  background:
-    var(--pluten-black);
-
-  color:
-    var(--pluten-white);
-
-  border:
-    1px solid var(--pluten-black);
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.08);
+  color: #fff;
+  background: #111;
+  box-shadow: 0 7px 20px rgba(0,0,0,.13);
 }
 
-.pluten-button-primary:hover {
-  background:
-    #1b1b1b;
-
-  box-shadow:
-    0 16px 40px rgba(0,0,0,.14);
+.pluten-button-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #232323;
 }
 
 .pluten-button-secondary {
-  background:
-    transparent;
-
-  color:
-    var(--pluten-black);
-
-  border:
-    1px solid var(--pluten-border);
+  color: #111;
+  background: rgba(255,255,255,.7);
+  border: 1px solid var(--pluten-line-strong);
 }
 
-.pluten-button-secondary:hover {
-  background:
-    var(--pluten-white);
-
-  border-color:
-    rgba(0,0,0,.2);
+.pluten-button-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #fff;
 }
 
-
-/* =========================================================
-   PREMIUM REVEAL
-========================================================= */
-
-.pluten-reveal {
-  animation:
-    plutenReveal
-    .8s cubic-bezier(.2,.8,.2,1)
-    both;
+.pluten-container {
+  width: min(var(--pluten-content), calc(100% - (var(--pluten-gutter) * 2)));
+  margin: 0 auto;
 }
 
-@keyframes plutenReveal {
+.pluten-mobile-toggle {
+  width: 44px;
+  height: 44px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #111;
+  background: rgba(255,255,255,.8);
+  border: 1px solid var(--pluten-line);
+  cursor: pointer;
+}
 
-  from {
-    opacity: 0;
-    transform:
-      translateY(20px);
+.pluten-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .pluten-nav-inner {
+    min-height: 64px;
   }
 
-  to {
-    opacity: 1;
-    transform:
-      translateY(0);
+  .pluten-nav-links {
+    display: none;
   }
 
+  .pluten-mobile-toggle {
+    display: inline-flex;
+  }
+
+  .pluten-mobile-menu {
+    position: fixed;
+    inset: 64px 0 auto 0;
+    z-index: 99;
+    display: block;
+    max-height: calc(100dvh - 64px);
+    overflow: auto;
+    padding: 16px;
+    background: rgba(250,250,248,.96);
+    border-bottom: 1px solid var(--pluten-line);
+    box-shadow: 0 24px 50px rgba(0,0,0,.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overscroll-behavior: contain;
+  }
+
+  .pluten-mobile-menu a,
+  .pluten-mobile-menu button {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #111;
+    background: transparent;
+  }
+
+  .pluten-mobile-menu a:hover,
+  .pluten-mobile-menu button:hover {
+    background: rgba(17,17,17,.05);
+  }
 }
 
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (
-  prefers-reduced-motion: reduce
-) {
-
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
-
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 640px) {
-
-  .pluten-container {
-    width:
-      min(
-        calc(100% - 32px),
-        var(--pluten-max-width)
-      );
-  }
-
-}
-/* =========================================================
-   PLUTEN NAVIGATION
-========================================================= */
-
-.pluten-nav {
-
-  position: sticky;
-
-  top: 0;
-
-  z-index: 100;
-
-  width: 100%;
-
-  background:
-    rgba(245,245,243,.88);
-
-  backdrop-filter:
-    blur(18px);
-
-  -webkit-backdrop-filter:
-    blur(18px);
-
-  border-bottom:
-    1px solid rgba(0,0,0,.06);
+@supports not (height: 100dvh) {
+  .pluten-mobile-menu { max-height: calc(100vh - 64px); }
 }
 
-
-.pluten-nav-inner {
-
-  width:
-    min(
-      calc(100% - 48px),
-      var(--pluten-max-width)
-    );
-
-  height:
-    76px;
-
-  margin-inline:
-    auto;
-
-  display:
-    grid;
-
-  grid-template-columns:
-    1fr auto 1fr;
-
-  align-items:
-    center;
+@media (max-width: 375px) {
+  :root { --pluten-gutter: 14px; }
+  .pluten-brand { font-size: 13px; }
+  .pluten-button { min-height: 44px; }
 }
-
-
-/* BRAND */
-
-.pluten-brand {
-
-  display:
-    inline-flex;
-
-  align-items:
-    center;
-
-  gap:
-    10px;
-
-  width:
-    max-content;
-
-  font-size:
-    13px;
-
-  font-weight:
-    600;
-
-  letter-spacing:
-    .16em;
-
-  transition:
-    transform .35s
-    cubic-bezier(.2,.8,.2,1);
-}
-
-.pluten-brand:hover {
-  transform:
-    translateX(3px);
-}
-
-
-.pluten-mark {
-
-  width:
-    27px;
-
-  height:
-    27px;
-
-  border:
-    1px solid #111;
-
-  border-radius:
-    50%;
-
-  display:
-    grid;
-
-  place-items:
-    center;
-
-  font-size:
-    10px;
-
-  letter-spacing:
-    0;
-
-  transition:
-    background .35s ease,
-    color .35s ease,
-    transform .45s
-    cubic-bezier(.2,.8,.2,1);
-}
-
-
-.pluten-brand:hover
-.pluten-mark {
-
-  background:
-    #111;
-
-  color:
-    #fff;
-
-  transform:
-    rotate(180deg);
-}
-
-
-/* CENTER LINKS */
-
-.pluten-nav-links {
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    32px;
-
-  font-size:
-    11px;
-
-  color:
-    #666;
-}
-
-
-.pluten-nav-links a {
-
-  position:
-    relative;
-
-  padding:
-    8px 0;
-
-  transition:
-    color .25s ease;
-}
-
-
-.pluten-nav-links a:hover {
-
-  color:
-    #000;
-}
-
-
-.pluten-nav-links a::after {
-
-  content:
-    "";
-
-  position:
-    absolute;
-
-  left:
-    0;
-
-  right:
-    0;
-
-  bottom:
-    3px;
-
-  height:
-    1px;
-
-  background:
-    #111;
-
-  transform:
-    scaleX(0);
-
-  transform-origin:
-    right;
-
-  transition:
-    transform .4s
-    cubic-bezier(.2,.8,.2,1);
-}
-
-
-.pluten-nav-links a:hover::after {
-
-  transform:
-    scaleX(1);
-
-  transform-origin:
-    left;
-}
-
-
-/* ACTIONS */
-
-.pluten-nav-actions {
-
-  justify-self:
-    end;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    18px;
-}
-
 
 .pluten-nav-icon {
-
-  width:
-    32px;
-
-  height:
-    32px;
-
-  display:
-    grid;
-
-  place-items:
-    center;
-
-  border-radius:
-    50%;
-
-  transition:
-    background .25s ease,
-    transform .3s ease;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #111;
+  background: rgba(255,255,255,.76);
+  border: 1px solid var(--pluten-line);
 }
-
-
-.pluten-nav-icon:hover {
-
-  background:
-    #fff;
-
-  transform:
-    translateY(-1px);
-}
-
-
-.pluten-mobile-toggle {
-
-  display:
-    none;
-
-  background:
-    transparent;
-
-  cursor:
-    pointer;
-}
-
-
-/* MOBILE MENU */
-
-.pluten-mobile-menu {
-
-  position:
-    fixed;
-
-  inset:
-    0;
-
-  z-index:
-    1000;
-
-  background:
-    #f5f5f3;
-
-  padding:
-    28px 24px;
-}
-
-
 .pluten-mobile-menu-top {
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    space-between;
-
-  font-size:
-    11px;
-
-  letter-spacing:
-    .16em;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
 }
-
-
-.pluten-mobile-menu-top button {
-
-  background:
-    transparent;
-
-  font-size:
-    9px;
-
-  letter-spacing:
-    .12em;
-
-  color:
-    #777;
-
-  cursor:
-    pointer;
+.pluten-reveal {
+  animation: plutenReveal 420ms cubic-bezier(.2,.75,.25,1) both;
 }
-
-
-.pluten-mobile-menu nav {
-
-  display:
-    flex;
-
-  flex-direction:
-    column;
-
-  align-items:
-    flex-start;
-
-  gap:
-    22px;
-
-  margin-top:
-    100px;
+@keyframes plutenReveal {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
 }
-
-
-.pluten-mobile-menu nav a {
-
-  font-size:
-    clamp(40px,11vw,68px);
-
-  line-height:
-    .9;
-
-  letter-spacing:
-    -.06em;
-
-  font-weight:
-    500;
-
-  transition:
-    transform .3s ease;
-}
-
-
-.pluten-mobile-menu nav a:hover {
-
-  transform:
-    translateX(8px);
-}
-
-
-/* =========================================================
-   NAV MOBILE
-========================================================= */
-
-@media (max-width: 760px) {
-
-  .pluten-nav-inner {
-
-    width:
-      calc(100% - 32px);
-
-    height:
-      68px;
-
-    grid-template-columns:
-      1fr auto;
-  }
-
-  .pluten-nav-links {
-    display:
-      none;
-  }
-
-  .pluten-mobile-toggle {
-    display:
-      grid;
-
-    place-items:
-      center;
-  }
-
-  .pluten-nav-actions {
-    gap:
-      8px;
-  }
-
-  .pluten-nav-icon:nth-child(
-    1
-  ),
-  .pluten-nav-icon:nth-child(
-    2
-  ) {
-    display:
-      none;
-  }
-
+@media (prefers-reduced-motion: reduce) {
+  .pluten-reveal { animation:none; }
 }

@@ -1,55 +1,77 @@
 // frontend/src/app/admin/settings/page.tsx
 "use client";
 
-import { useRouter } from 'next/navigation';
-import apiClient from '@/lib/apiClient';
-import { LogOut, ArrowLeft, Settings, ShieldAlert } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import apiClient from "@/lib/apiClient";
+import { LogOut, ArrowLeft, Settings, ShieldAlert, Loader2 } from "lucide-react";
 
 export default function AdminSettingsPage() {
-    const router = useRouter();
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
 
-    const handleLogout = async () => {
-        try {
-            await apiClient.post('/auth/logout');
-        } catch (error) {
-            console.error("Secure logout network fault:", error);
-        } finally {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            document.cookie = "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            window.location.href = '/';
-        }
-    };
+  const handleLogout = async () => {
+    if (loggingOut) return;
 
-    return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#111', color: '#fff', padding: '4rem 2rem', fontFamily: 'sans-serif' }}>
-            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                
-                <header style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '3rem' }}>
-                    <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <ArrowLeft size={18} /> Back
-                    </button>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Settings size={20} /> System Settings
-                    </h1>
-                </header>
+    setLoggingOut(true);
 
-                <div style={{ backgroundColor: '#161616', border: '1px solid #333', borderRadius: '12px', padding: '2rem', marginBottom: '2rem' }}>
-                    <h2 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <ShieldAlert size={18} color="#dc2626" /> Danger Zone
-                    </h2>
-                    <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                        Securely terminate your admin session. You will need to re-authenticate to access the dashboard.
-                    </p>
-                    
-                    <button 
-                        onClick={handleLogout} 
-                        style={{ width: '100%', padding: '1rem', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}
-                    >
-                        <LogOut size={18} /> Secure Logout
-                    </button>
-                </div>
+    try {
+      await apiClient.post("/auth/logout");
+    } catch (error) {
+      console.error("Secure logout network fault:", error);
+    } finally {
+      window.location.href = "/";
+    }
+  };
+
+  return (
+    <main className="min-h-[100dvh] bg-[#050505] px-4 py-8 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-3xl">
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-600">
+              PLUTEN / SYSTEM
             </div>
-        </div>
-    );
+            <h1 className="mt-2 flex items-center gap-2 text-2xl font-black tracking-tight">
+              <Settings size={22} />
+              Settings
+            </h1>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-neutral-800 px-4 text-sm font-semibold text-neutral-400 hover:text-white sm:self-auto"
+          >
+            <ArrowLeft size={17} />
+            Back
+          </button>
+        </header>
+
+        <section className="rounded-2xl border border-neutral-900 bg-[#0c0c0c] p-5 sm:p-7">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-red-950 bg-red-950/20 text-red-400">
+              <ShieldAlert size={20} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">Session security</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-500">
+                Sign out of the secure admin session. Authentication is managed by the server-side HttpOnly session cookie.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-5 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loggingOut ? <Loader2 size={18} className="animate-spin" /> : <LogOut size={18} />}
+            {loggingOut ? "Signing out" : "Secure logout"}
+          </button>
+        </section>
+      </div>
+    </main>
+  );
 }

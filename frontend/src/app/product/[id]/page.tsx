@@ -1,297 +1,474 @@
 "use client";
+
 import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
-import { Loader2, ArrowLeft, ShieldCheck, User, Check, AlertCircle, Phone, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, use } from "react";
+import type { FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Loader2,
+  ArrowLeft,
+  ShieldCheck,
+  User,
+  Check,
+  AlertCircle,
+  Phone,
+  X,
+  Sparkles,
+} from "lucide-react";
 // @ts-ignore
-import { load } from '@cashfreepayments/cashfree-js';
-import { useActiveOffer } from "@/hooks/useActiveOffer";
-import { calculateDiscount } from "@/utils/price";
-import apiClient from '@/lib/apiClient';
-import styles from './product.module.css';
+import { load } from "@cashfreepayments/cashfree-js";
+import { useOffers } from "@/context/OfferContext";
+import apiClient from "@/lib/apiClient";
+import styles from "./product.module.css";
 
 interface Product {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    thumbnail: string | null;
-    category: string;
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  thumbnail: string | null;
+  category: string;
 }
 
-export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const router = useRouter();
-    const { id } = use(params);
+export default function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const router = useRouter();
+  const { id } = use(params);
 
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isCheckingOut, setIsCheckingOut] = useState(false);
-    const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [showPhonePrompt, setShowPhonePrompt] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneError, setPhoneError] = useState("");
 
-    const [showPhonePrompt, setShowPhonePrompt] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [phoneError, setPhoneError] = useState('');
+  const checkoutRequestIdRef = useRef<string | null>(null);
+  const { activeOffers, loadingOffers } = useOffers();
 
-    const { offer } = useActiveOffer();
+  useEffect(() => {
+    let mounted = true;
 
-    const currentPrice = product ? product.price : 0;
-    const { finalPrice, discountAmount } = calculateDiscount(currentPrice, offer);
-    const hasDiscount = discountAmount > 0;
+    const fetchProduct = async () => {
+      setLoading(true);
+      setLoadError(null);
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await apiClient.get(`/products/${id}`);
-                setProduct(response.data);
-            } catch (error) {
-                console.error("Failed to load product", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProduct();
-    }, [id]);
-
-    const handleBuyClick = () => {
-        setCheckoutError(null);
-        setShowPhonePrompt(true);
+      try {
+        const response = await apiClient.get<Product>(`/products/${id}`);
+        if (mounted) setProduct(response.data);
+      } catch (error: any) {
+        console.error("Failed to load product:", error);
+        if (mounted) {
+          setProduct(null);
+          setLoadError(
+            error?.response?.data?.error ||
+              "This product could not be loaded right now."
+          );
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
 
-    const executeCheckout = async (e: React.FormEvent) => {
-        e.preventDefault();
+    fetchProduct();
 
-        const cleanedPhone = phoneNumber.replace(/\D/g, '');
-        if (cleanedPhone.length !== 10) {
-            setPhoneError("Please enter a valid 10-digit phone number.");
-            return;
-        }
-
-        setPhoneError('');
-        setShowPhonePrompt(false);
-        setIsCheckingOut(true);
-        setCheckoutError(null);
-
-        try {
-            const cashfreeMode = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
-            const cashfree = await load({
-                mode: cashfreeMode,
-            });
-
-            const clientRequestId = crypto.randomUUID();
-
-const response = await apiClient.post(
-  "/payments/create",
-  {
-    productId: product!.id,
-    customerPhone: cleanedPhone,
-    clientRequestId,
-  }
-);
-
-            const {
-  payment_session_id,
-  order_id,
-} = response.data;
-
-            // THE FIX: Change "_modal" to "_self"
-            const checkoutOptions = {
-                paymentSessionId: payment_session_id,
-                redirectTarget: "_self", 
-            };
-
-            // This will instantly navigate the user away from this page.
-            // When payment is done, Cashfree redirects them to the return_url defined in your backend.
-            await cashfree.checkout(checkoutOptions);
-
-        } catch (error: any) {
-            console.error("Gateway Initialization Error:", error);
-
-            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                router.push(`/login?redirect=/product/${id}`);
-            } else {
-                setCheckoutError(error.response?.data?.error || "Failed to connect to the payment gateway.");
-            }
-            setIsCheckingOut(false);
-        }
+    return () => {
+      mounted = false;
     };
+  }, [id]);
 
-    if (loading) {
-        return (
-            <div className={styles.productLayout}>
-    <PlutenSkeleton variant="product" />
-
-    <div>
-      <PlutenSkeleton variant="text" />
-    </div>
-  </div>
-        );
-    }
-
-    if (!product) {
-        return (
-            <div className="min-h-screen bg-[#111] flex flex-col items-center justify-center text-white">
-                <h1 className="text-2xl font-bold mb-4">Asset not found.</h1>
-                <button onClick={() => router.push('/')} className="text-pink-400 hover:underline">Return to Marketplace</button>
-            </div>
-        );
-    }
+  const eligibleOffer = useMemo(() => {
+    if (!product) return null;
 
     return (
-        <div className={styles.pageContainer}>
+      activeOffers
+        .filter((offer) => offer.autoApply && offer.status === "ACTIVE")
+        .filter((offer) => {
+          const applies =
+            offer.applyTo === "ALL" ||
+            (offer.applyTo === "SELECTED" &&
+              offer.products?.some((linked) => linked.id === product.id));
 
-            <nav className={styles.topNav}>
-                <div className={styles.brand} onClick={() => router.push('/')}>pluten</div>
-                <button onClick={() => router.push('/')} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
-                    <ArrowLeft size={18} /> Back to Market
-                </button>
-            </nav>
+          if (!applies) return false;
 
-            <main className={styles.productLayout}>
-                <div>
-                    <div className={styles.imageContainer}>
-                        {product.thumbnail ? (
-                            <img
-                                src={product.thumbnail || "/placeholder.png"}
-                                alt={product.title}
-                                className={styles.productImage}
-                            />
-                        ) : (
-                            <div className={styles.noImage}>No Preview Available</div>
-                        )}
-                    </div>
+          if (
+            offer.minOrderAmount !== null &&
+            Number(product.price) < Number(offer.minOrderAmount)
+          ) {
+            return false;
+          }
 
-                    <div className="mt-8">
-                        <h1 className={styles.title}>{product.title}</h1>
+          return true;
+        })
+        .reduce<typeof activeOffers[number] | null>((best, current) => {
+          if (!best) return current;
 
-                        <div className={styles.vendorInfo}>
-                            <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center">
-                                <User size={16} />
-                            </div>
-                            <span className="font-medium text-white">Pluten Network</span>
-                            <Check size={16} color="#00ff00" />
-                            <span className="mx-2 text-neutral-600">•</span>
-                            <span>{product.category}</span>
-                        </div>
+          const getFinal = (offer: typeof current) => {
+            const base = Number(product.price);
+            const discount =
+              offer.type === "PERCENTAGE"
+                ? base * (Number(offer.value) / 100)
+                : Number(offer.value);
+            return Math.max(0, base - discount);
+          };
 
-                        <div className={styles.description}>
-                            {product.description}
-                        </div>
-                    </div>
-                </div>
+          return getFinal(current) < getFinal(best) ? current : best;
+        }, null) ?? null
+    );
+  }, [activeOffers, product]);
 
-                <div>
-                    <div className={styles.checkoutCard}>
+  const currentPrice = product ? Number(product.price) : 0;
+  const discountAmount = eligibleOffer
+    ? eligibleOffer.type === "PERCENTAGE"
+      ? currentPrice * (Number(eligibleOffer.value) / 100)
+      : Number(eligibleOffer.value)
+    : 0;
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
-                            {hasDiscount ? (
-                                <>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', lineHeight: '1' }}>
-                                            ₹{finalPrice.toLocaleString('en-IN')}
-                                        </span>
-                                        <span style={{ backgroundColor: '#dc2626', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.875rem', fontWeight: 'bold' }}>
-                                            {offer.type === 'PERCENTAGE' ? `${offer.value}% OFF` : `₹${offer.value} OFF`}
-                                        </span>
-                                    </div>
-                                    <span style={{ fontSize: '1.25rem', color: '#666', textDecoration: 'line-through' }}>
-                                        ₹{currentPrice.toLocaleString('en-IN')}
-                                    </span>
-                                </>
-                            ) : (
-                                <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', lineHeight: '1' }}>
-                                    ₹{currentPrice.toLocaleString('en-IN')}
-                                </span>
-                            )}
-                        </div>
+  const finalPrice = Number(
+    Math.max(0, currentPrice - discountAmount).toFixed(2)
+  );
 
-                        {checkoutError && (
-                            <div className="mb-4 p-3 bg-red-950/30 border border-red-900 text-red-400 rounded-md text-sm flex items-start gap-2">
-                                <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                                <span style={{ lineHeight: '1.4' }}>{checkoutError}</span>
-                            </div>
-                        )}
+  const hasDiscount = finalPrice < currentPrice;
 
-                        <button
-                            onClick={handleBuyClick}
-                            disabled={isCheckingOut}
-                            className={styles.buyBtn}
-                        >
-                            {isCheckingOut ? <Loader2 className="animate-spin mx-auto" /> : 'Buy this'}
-                        </button>
+  const handleBuyClick = () => {
+    if (isCheckingOut || !product) return;
+    setCheckoutError(null);
+    setPhoneError("");
+    setShowPhonePrompt(true);
+  };
 
-                        <div className={styles.guarantee}>
-                            <ShieldCheck size={16} /> Secure transaction via Cashfree
-                        </div>
-                    </div>
-                </div>
-            </main>
+  const closePhonePrompt = () => {
+    if (isCheckingOut) return;
+    setShowPhonePrompt(false);
+    setPhoneError("");
+  };
 
-            {/* Premium Phone Input Modal */}
-            {showPhonePrompt && (
-                <div style={{ position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                    <div style={{ background: 'linear-gradient(180deg, #161616 0%, #0a0a0a 100%)', width: '100%', maxWidth: '400px', borderRadius: '16px', border: '1px solid #2a2a2a', boxShadow: '0 30px 60px -12px rgba(0,0,0,1), inset 0 1px 2px rgba(255,255,255,0.08)', padding: '2.5rem', position: 'relative' }}>
+  const executeCheckout = async (event: FormEvent) => {
+    event.preventDefault();
+    if (isCheckingOut || !product) return;
 
-                        <button onClick={() => setShowPhonePrompt(false)} style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: '#050505', border: '1px solid #222', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', cursor: 'pointer', boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.8)' }}>
-                            <X size={16} />
-                        </button>
+    const cleanedPhone = phoneNumber.replace(/\D/g, "");
 
-                        <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(37, 99, 235, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
-                            <Phone size={28} color="#3b82f6" />
-                        </div>
+    if (cleanedPhone.length !== 10) {
+      setPhoneError("Please enter a valid 10-digit phone number.");
+      return;
+    }
 
-                        <h2 className="text-xl font-black text-white mb-2 text-center tracking-widest uppercase">Billing Details</h2>
-                        <p className="text-gray-400 mb-6 text-sm text-center">To comply with RBI guidelines and ensure secure processing, Cashfree requires a valid billing phone number.</p>
+    if (!checkoutRequestIdRef.current) {
+      checkoutRequestIdRef.current = crypto.randomUUID();
+    }
 
-                        {phoneError && (
-                            <div style={{ padding: '10px', marginBottom: '16px', borderRadius: '8px', background: 'rgba(220, 38, 38, 0.1)', border: '1px solid rgba(220, 38, 38, 0.3)', color: '#ef4444', fontSize: '12px', textAlign: 'center' }}>
-                                {phoneError}
-                            </div>
-                        )}
+    const clientRequestId = checkoutRequestIdRef.current;
 
-                        <form onSubmit={executeCheckout}>
-                            <div style={{ position: 'relative', marginBottom: '24px' }}>
-                                <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', fontWeight: 'bold', fontSize: '16px', pointerEvents: 'none' }}>+91</span>
-                                <input
-                                    type="tel"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    maxLength={10}
-                                    placeholder="00000 00000"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px 16px 16px 56px',
-                                        background: '#000',
-                                        border: '1px solid #333',
-                                        borderRadius: '10px',
-                                        color: '#fff',
-                                        fontSize: '16px',
-                                        fontWeight: 'bold',
-                                        outline: 'none',
-                                        letterSpacing: '2px',
-                                        fontFamily: 'monospace',
-                                        transition: 'border-color 0.2s ease',
-                                        boxSizing: 'border-box' /* THE FIX: Keeps the input perfectly inside the container */
-                                    }}
-                                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                                    onBlur={(e) => e.target.style.borderColor = '#333'}
-                                />
-                            </div>
+    setPhoneError("");
+    setCheckoutError(null);
+    setIsCheckingOut(true);
+    setShowPhonePrompt(false);
 
-                            <button
-                                type="submit"
-                                style={{ width: '100%', padding: '16px', background: '#dc2626', borderRadius: '10px', color: '#fff', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
-                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
-                            >
-                                Proceed to Payment
-                            </button>
-                        </form>
-                    </div>
-                </div>
+    try {
+      const cashfree = await load({
+        mode: process.env.NODE_ENV === "production" ? "production" : "sandbox",
+      });
+
+      if (!cashfree) {
+        throw new Error("Payment gateway could not be initialized.");
+      }
+
+      const response = await apiClient.post("/payments/create", {
+        productId: product.id,
+        customerPhone: cleanedPhone,
+        clientRequestId,
+      });
+
+      const { payment_session_id, order_id, alreadyPurchased } = response.data;
+
+      if (alreadyPurchased && order_id) {
+        router.push(
+          `/payment-success?order_id=${encodeURIComponent(order_id)}`
+        );
+        return;
+      }
+
+      if (!payment_session_id) {
+        throw new Error("Payment session was not returned by the server.");
+      }
+
+      await cashfree.checkout({
+        paymentSessionId: payment_session_id,
+        redirectTarget: "_self",
+      });
+    } catch (error: any) {
+      console.error("Gateway initialization error:", error);
+      checkoutRequestIdRef.current = null;
+
+      if (
+        error?.response?.status === 401 ||
+        error?.response?.status === 403
+      ) {
+        router.push(`/login?redirect=/product/${id}`);
+        return;
+      }
+
+      setCheckoutError(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Payment could not be initialized. Please try again."
+      );
+      setShowPhonePrompt(true);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.productLayout}>
+        <PlutenSkeleton variant="product" />
+        <div>
+          <PlutenSkeleton variant="text" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <main className="min-h-[100dvh] bg-[#050505] px-6 text-white flex items-center justify-center">
+        <section className="w-full max-w-md text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-red-950 bg-red-950/20">
+            <AlertCircle size={24} className="text-red-400" />
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-600">
+            PLUTEN / PRODUCT
+          </div>
+          <h1 className="mt-2 text-2xl font-black">Product unavailable.</h1>
+          <p className="mt-3 text-sm leading-6 text-neutral-500">
+            {loadError || "This asset is no longer available."}
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-black"
+          >
+            <ArrowLeft size={17} />
+            Back to marketplace
+          </button>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <div className={styles.pageContainer}>
+      <nav className={styles.topNav}>
+        <button
+          type="button"
+          className={styles.brand}
+          onClick={() => router.push("/")}
+          aria-label="Go to Pluten home"
+        >
+          pluten
+        </button>
+
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="inline-flex min-h-11 items-center gap-2 text-neutral-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft size={18} />
+          <span>Back to Market</span>
+        </button>
+      </nav>
+
+      <main className={styles.productLayout}>
+        <div>
+          <div className={styles.imageContainer}>
+            {product.thumbnail ? (
+              <img
+                src={product.thumbnail}
+                alt={product.title}
+                className={styles.productImage}
+              />
+            ) : (
+              <div className={styles.noImage}>No Preview Available</div>
+            )}
+          </div>
+
+          <div className="mt-8">
+            <h1 className={styles.title}>{product.title}</h1>
+
+            <div className={styles.vendorInfo}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800">
+                <User size={16} />
+              </div>
+              <span className="font-medium text-white">Pluten Network</span>
+              <Check size={16} color="#00ff00" />
+              <span className="mx-2 text-neutral-600">•</span>
+              <span>{product.category}</span>
+            </div>
+
+            <div className={styles.description}>{product.description}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={styles.checkoutCard}>
+            <div className="mb-6 flex flex-col gap-2">
+              {hasDiscount ? (
+                <>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-4xl font-bold leading-none text-white sm:text-5xl">
+                      ₹{finalPrice.toLocaleString("en-IN")}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white">
+                      <Sparkles size={12} />
+                      {eligibleOffer?.type === "PERCENTAGE"
+                        ? `${eligibleOffer.value}% OFF`
+                        : `₹${Number(eligibleOffer?.value).toLocaleString("en-IN")} OFF`}
+                    </span>
+                  </div>
+                  <span className="text-lg text-neutral-600 line-through">
+                    ₹{currentPrice.toLocaleString("en-IN")}
+                  </span>
+                </>
+              ) : (
+                <span className="text-4xl font-bold leading-none text-white sm:text-5xl">
+                  ₹{currentPrice.toLocaleString("en-IN")}
+                </span>
+              )}
+            </div>
+
+            {loadingOffers && (
+              <div className="mb-4 flex items-center gap-2 text-xs text-neutral-600">
+                <Loader2 size={14} className="animate-spin" />
+                Checking current offers…
+              </div>
             )}
 
+            {checkoutError && (
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-950 bg-red-950/20 p-3 text-sm text-red-300">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{checkoutError}</span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={handleBuyClick}
+              disabled={isCheckingOut}
+              className={styles.buyBtn}
+              aria-busy={isCheckingOut}
+            >
+              {isCheckingOut ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="animate-spin" size={18} />
+                  Processing
+                </span>
+              ) : (
+                "Buy this"
+              )}
+            </button>
+
+            <div className={styles.guarantee}>
+              <ShieldCheck size={16} />
+              <span>Secure transaction via Cashfree</span>
+            </div>
+          </div>
         </div>
-    );
+      </main>
+
+      {showPhonePrompt && (
+        <div
+          data-modal="true"
+          className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/80 p-3 backdrop-blur-md sm:items-center sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="billing-details-title"
+        >
+          <div className="max-h-[calc(100dvh-24px)] w-full max-w-md overflow-y-auto rounded-2xl border border-neutral-800 bg-[#0b0b0b] p-5 shadow-2xl sm:max-h-[90dvh] sm:p-7">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-600">
+                  PLUTEN / CHECKOUT
+                </div>
+                <h2 id="billing-details-title" className="mt-1 text-xl font-black text-white">
+                  Billing details
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={closePhonePrompt}
+                disabled={isCheckingOut}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-800 text-neutral-500 hover:text-white disabled:opacity-40"
+                aria-label="Close billing details"
+              >
+                <X size={17} />
+              </button>
+            </div>
+
+            <div className="mb-6 rounded-xl border border-neutral-900 bg-black p-4">
+              <div className="flex items-start gap-3">
+                <Phone size={18} className="mt-0.5 text-neutral-500" />
+                <p className="text-sm leading-6 text-neutral-500">
+                  Enter the 10-digit phone number Cashfree should use for this payment.
+                </p>
+              </div>
+            </div>
+
+            {phoneError && (
+              <div className="mb-4 rounded-xl border border-red-950 bg-red-950/20 p-3 text-center text-xs text-red-300">
+                {phoneError}
+              </div>
+            )}
+
+            <form onSubmit={executeCheckout}>
+              <label className="block">
+                <span className="sr-only">10 digit phone number</span>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-600">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    pattern="[0-9]*"
+                    maxLength={10}
+                    placeholder="00000 00000"
+                    value={phoneNumber}
+                    onChange={(event) => {
+                      setPhoneNumber(event.target.value.replace(/\D/g, ""));
+                      setPhoneError("");
+                    }}
+                    disabled={isCheckingOut}
+                    autoFocus
+                    className="h-14 w-full rounded-xl border border-neutral-800 bg-black pl-14 pr-4 text-lg font-semibold tracking-[0.14em] text-white outline-none focus:border-neutral-600"
+                  />
+                </div>
+              </label>
+
+              <button
+                type="submit"
+                disabled={isCheckingOut || phoneNumber.length !== 10}
+                className="mt-4 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-white text-sm font-black uppercase tracking-[0.12em] text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-600"
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Processing
+                  </>
+                ) : (
+                  "Proceed to payment"
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

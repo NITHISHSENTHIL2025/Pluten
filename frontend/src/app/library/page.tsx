@@ -25,7 +25,6 @@ interface PurchasedAsset {
   id: string;
   title: string;
   thumbnail: string | null;
-  assetUrl: string | null;
 }
 
 
@@ -39,6 +38,7 @@ export default function MyLibraryPage() {
   const [assets, setAssets] = useState<PurchasedAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
 
   /* =========================================================
@@ -111,6 +111,7 @@ export default function MyLibraryPage() {
     }
 
     try {
+      setDownloadError(null);
       setDownloadingId(productId);
 
       const response =
@@ -149,8 +150,9 @@ export default function MyLibraryPage() {
         return;
       }
 
-      window.alert(
-        "Download failed. Please try again."
+      setDownloadError(
+        error?.response?.data?.error ||
+          "Download failed. Please try again."
       );
     } finally {
       setDownloadingId(null);
@@ -299,6 +301,19 @@ export default function MyLibraryPage() {
         {/* ===================================================
             LIBRARY META
         =================================================== */}
+
+        {downloadError && (
+          <div className="mb-5 flex flex-col gap-3 rounded-xl border border-red-950 bg-red-950/20 p-4 text-sm text-red-300 sm:flex-row sm:items-center sm:justify-between">
+            <div>{downloadError}</div>
+            <button
+              type="button"
+              onClick={() => setDownloadError(null)}
+              className="shrink-0 rounded-lg border border-red-900 px-3 py-2 text-xs font-bold uppercase tracking-wider text-red-200"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         <div className={styles.libraryMeta}>
 

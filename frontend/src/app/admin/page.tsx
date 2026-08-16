@@ -91,7 +91,7 @@ export default function AdminDashboard() {
                 <div className={styles.metricCard}>
                     <span className={styles.metricLabel}>Lifetime Revenue</span>
                     <span className={styles.metricValue}>
-                        ₹{data?.revenue.toLocaleString('en-IN') || '0'}
+                        â‚¹{data?.revenue.toLocaleString('en-IN') || '0'}
                     </span>
                     <span className={styles.metricTrendUp}>
                         <TrendingUp size={14} /> System Online
@@ -135,10 +135,10 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className={styles.metricCard} style={{ gridColumn: '1 / -1', minHeight: '300px' }}>
-                <span className={styles.metricLabel}>Real-Time Activity Engine</span>
-                <div className="flex items-center justify-center h-full text-gray-600 text-sm">
-                    Connecting to secure webhooks...
+            <div className={styles.metricCard} style={{ gridColumn: '1 / -1', minHeight: '180px' }}>
+                <span className={styles.metricLabel}>Operations status</span>
+                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-neutral-600">
+                    Live activity streaming is not enabled. Core order and telemetry data above remains authoritative.
                 </div>
             </div>
         </div>

@@ -1,1172 +1,267 @@
-/* =========================================================
-   PLUTEN — PROFILE
-   frontend/src/app/profile/profile.module.css
-
-   Premium white / editorial account system
-   ========================================================= */
-
 .pageContainer {
-  min-height: 100vh;
-
-  width: 100%;
-
-  position: relative;
-
-  overflow: hidden;
-
-  box-sizing: border-box;
-
-  background: #f7f7f5;
-
-  color: #111111;
-
-  padding:
-    34px
-    48px
-    80px;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Helvetica Neue",
-    Helvetica,
-    Arial,
-    sans-serif;
+  min-height: 100dvh;
+  padding-bottom: 72px;
+  background: #f5f5f2;
+  color: #111;
 }
-
-
-/* =========================================================
-   BACKGROUND GRID
-   ========================================================= */
-
-.backgroundGrid {
-  position: absolute;
-
-  inset: 0;
-
-  pointer-events: none;
-
-  opacity: 0.2;
-
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.025) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.025) 1px,
-      transparent 1px
-    );
-
-  background-size: 80px 80px;
-
-  mask-image:
-    linear-gradient(
-      to bottom,
-      transparent,
-      black 20%,
-      black 80%,
-      transparent
-    );
-}
-
-
-/* =========================================================
-   SOFT BACKGROUND GLOW
-   ========================================================= */
-
-.backgroundGlow {
-  position: absolute;
-
-  width: 700px;
-
-  height: 700px;
-
-  left: 50%;
-
-  top: 42%;
-
-  transform:
-    translate(
-      -50%,
-      -50%
-    );
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.6) 38%,
-      rgba(255, 255, 255, 0) 72%
-    );
-
-  filter: blur(14px);
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.header {
-  position: relative;
-
-  z-index: 3;
-
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  padding-bottom: 24px;
-
-  border-bottom:
-    1px solid
-    rgba(0, 0, 0, 0.08);
-}
-
-
-/* =========================================================
-   BACK BUTTON
-   ========================================================= */
-
-.backBtn {
-  appearance: none;
-
-  border: none;
-
-  background: transparent;
-
-  padding: 8px 0;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  color: #555555;
-
-  cursor: pointer;
-
-  font-family: inherit;
-
-  font-size: 13px;
-
-  font-weight: 600;
-
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-
-.backBtn:hover {
-  color: #111111;
-
-  transform:
-    translateX(-2px);
-}
-
-
-/* =========================================================
-   HEADER LABEL
-   ========================================================= */
-
-.headerLabel {
-  color: #8a8a8a;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 10px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.15em;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================================
-   CONTENT WRAPPER
-   ========================================================= */
 
 .contentWrapper {
-  position: relative;
-
-  z-index: 2;
-
-  width: 100%;
-
-  max-width: 760px;
-
-  margin:
-    0 auto;
-
-  padding-top: 86px;
+  width: min(1080px, calc(100% - 48px));
+  margin: 0 auto;
 }
 
-
-/* =========================================================
-   PAGE INTRO
-   ========================================================= */
-
-.pageIntro {
-  margin-bottom: 42px;
+.header {
+  padding: 72px 0 38px;
+  border-bottom: 1px solid rgba(17,17,17,.10);
 }
 
-
-/* =========================================================
-   EYEBROW
-   ========================================================= */
-
-.eyebrow {
+.headerLabel {
   display: block;
-
-  margin-bottom: 17px;
-
-  color: #777777;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 10px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.17em;
-
+  margin-bottom: 12px;
+  color: #8a8a84;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   PAGE TITLE
-   ========================================================= */
-
-.pageTitle {
-  margin: 0;
-
-  color: #111111;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: clamp(
-    56px,
-    8vw,
-    92px
-  );
-
-  line-height: 0.88;
-
-  font-weight: 500;
-
-  letter-spacing: -0.065em;
+.eyebrow {
+  color: #111;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-
-/* =========================================================
-   DESCRIPTION
-   ========================================================= */
-
-.pageDescription {
-  max-width: 390px;
-
-  margin:
-    25px 0 0;
-
-  color: #6f6f6f;
-
-  font-size: 14px;
-
-  line-height: 1.65;
-
-  font-weight: 500;
+.header h1 {
+  margin: 12px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(44px,7vw,72px);
+  line-height: .95;
+  letter-spacing: -.05em;
 }
-
-
-/* =========================================================
-   IDENTITY CARD
-   ========================================================= */
 
 .identityCard {
-  width: 100%;
-
-  box-sizing: border-box;
-
+  margin-top: 24px;
   display: flex;
-
   align-items: center;
-
-  gap: 26px;
-
-  padding:
-    30px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.92
-    );
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.08);
-
-  border-radius: 22px;
-
-  box-shadow:
-    0 24px 60px
-      rgba(0, 0, 0, 0.075),
-    0 7px 20px
-      rgba(0, 0, 0, 0.035),
-    inset 0 1px 0
-      rgba(255, 255, 255, 1);
-
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid rgba(17,17,17,.10);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(0,0,0,.05);
 }
-
-
-/* =========================================================
-   AVATAR
-   ========================================================= */
 
 .avatar {
-  width: 82px;
-
-  height: 82px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #ededeb
-    );
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.1);
-
-  color: #111111;
-
-  box-shadow:
-    0 10px 25px
-      rgba(0, 0, 0, 0.08),
-    inset 0 1px 0
-      rgba(255, 255, 255, 1);
+  color: #fff;
+  background: #111;
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
 }
 
-
-/* =========================================================
-   USER INFORMATION
-   ========================================================= */
-
-.userInfo {
+.identityMain {
   min-width: 0;
-
   flex: 1;
 }
 
-
-/* =========================================================
-   USER NAME
-   ========================================================= */
-
-.userInfo h2 {
-  margin: 0 0 9px;
-
-  color: #111111;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 29px;
-
-  line-height: 1;
-
-  font-weight: 500;
-
-  letter-spacing: -0.035em;
+.identityName {
+  margin: 0;
+  color: #111;
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
 }
 
-
-/* =========================================================
-   EMAIL
-   ========================================================= */
-
-.userEmail {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  margin-bottom: 16px;
-
-  color: #777777;
-
+.identityEmail {
+  margin-top: 4px;
+  color: #777;
   font-size: 13px;
-
-  line-height: 1.4;
-
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
-
-
-.userEmail span {
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   ACCOUNT BADGE
-   ========================================================= */
 
 .accountBadge {
+  flex: 0 0 auto;
+  min-height: 34px;
   display: inline-flex;
-
   align-items: center;
-
-  gap: 7px;
-
-  min-height: 30px;
-
-  box-sizing: border-box;
-
-  padding:
-    6px
-    11px;
-
+  padding: 0 11px;
   border-radius: 999px;
-
-  background: #f3f3f1;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.08);
-
-  color: #555555;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.02em;
-}
-
-
-/* Super admin */
-
-.accountBadge svg {
-  color: #111111;
-}
-
-
-/* =========================================================
-   ACTIONS SECTION
-   ========================================================= */
-
-.actionsSection {
-  margin-top: 46px;
-}
-
-
-/* =========================================================
-   SECTION LABEL
-   ========================================================= */
-
-.sectionLabel {
-  display: block;
-
-  margin-bottom: 14px;
-
-  color: #888888;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 10px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.17em;
-
+  color: #286b46;
+  background: #eef7f1;
+  border: 1px solid #d9ecdf;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   ACTION CARD
-   ========================================================= */
+.actionsSection {
+  padding: 34px 0 0;
+}
 
 .actionCard {
+  min-height: 68px;
   width: 100%;
-
-  min-height: 88px;
-
-  box-sizing: border-box;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 17px;
-
-  position: relative;
-
-  padding:
-    17px
-    19px;
-
   margin-bottom: 10px;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.08);
-
-  border-radius: 17px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.9
-    );
-
-  color: #111111;
-
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  border: 1px solid rgba(17,17,17,.09);
+  border-radius: 16px;
+  color: #111;
+  background: rgba(255,255,255,.75);
   text-align: left;
-
+  text-decoration: none;
   cursor: pointer;
-
-  font-family: inherit;
-
-  box-shadow:
-    0 10px 28px
-      rgba(0, 0, 0, 0.045),
-    inset 0 1px 0
-      rgba(255, 255, 255, 1);
-
-  transition:
-    transform 0.25s
-      cubic-bezier(
-        0.16,
-        1,
-        0.3,
-        1
-      ),
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+  transition: transform var(--pluten-transition), background var(--pluten-transition), border-color var(--pluten-transition);
 }
-
 
 .actionCard:hover {
-  transform:
-    translateY(-2px);
-
-  background: #ffffff;
-
-  box-shadow:
-    0 18px 38px
-      rgba(0, 0, 0, 0.08),
-    inset 0 1px 0
-      rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  background: #fff;
+  border-color: rgba(17,17,17,.15);
 }
-
-
-.actionCard:active {
-  transform:
-    translateY(0)
-    scale(0.995);
-}
-
-
-/* =========================================================
-   ACTION ICON
-   ========================================================= */
 
 .actionIcon {
-  width: 46px;
-
-  height: 46px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    #f3f3f1;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.08);
-
-  color: #111111;
-
-  box-shadow:
-    inset 0 1px 0
-      rgba(255, 255, 255, 1);
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #111;
+  background: #f2f2ef;
 }
-
-
-/* =========================================================
-   ACTION TEXT
-   ========================================================= */
 
 .actionText {
   min-width: 0;
-
   flex: 1;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 5px;
 }
 
-
-.actionText strong {
-  color: #111111;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 16px;
-
-  font-weight: 600;
-
-  line-height: 1.1;
-
-  letter-spacing: -0.015em;
-}
-
-
-.actionText span {
-  color: #777777;
-
-  font-size: 12px;
-
-  line-height: 1.45;
-
-  font-weight: 500;
-}
-
-
-/* =========================================================
-   ACTION ARROW
-   ========================================================= */
-
-.actionArrow {
-  flex-shrink: 0;
-
-  color: #777777;
-
-  font-size: 20px;
-
-  line-height: 1;
-
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-
-.actionCard:hover
-.actionArrow {
-  color: #111111;
-
-  transform:
-    translate(
-      2px,
-      -2px
-    );
-}
-
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-.logoutBtn {
-  width: 100%;
-
-  min-height: 54px;
-
-  margin-top: 28px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 8px;
-
-  box-sizing: border-box;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.1);
-
-  border-radius: 15px;
-
-  background: #111111;
-
-  color: #ffffff;
-
-  font-family: inherit;
-
+.actionTitle {
+  margin: 0;
   font-size: 13px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 12px 26px
-      rgba(0, 0, 0, 0.12);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+  font-weight: 800;
 }
 
-
-.logoutBtn:hover {
-  background: #222222;
-
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 16px 30px
-      rgba(0, 0, 0, 0.16);
+.actionDescription {
+  margin-top: 3px;
+  color: #777;
+  font-size: 11px;
 }
 
-
-.logoutBtn:active {
-  transform:
-    translateY(1px);
+.actionArrow {
+  color: #888;
+  transition: transform var(--pluten-transition), color var(--pluten-transition);
 }
 
-
-.logoutBtn:disabled {
-  opacity: 0.6;
-
-  cursor: wait;
-
-  transform: none;
+.actionCard:hover .actionArrow {
+  color: #111;
+  transform: translateX(2px);
 }
 
+.logoutBtn { color: #a42d2d; }
+.logoutBtn .actionIcon { color: #a42d2d; background: #fdf0f0; }
 
-/* =========================================================
-   BOTTOM LABEL
-   ========================================================= */
+.backgroundGrid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .20;
+  background-image:
+    linear-gradient(rgba(0,0,0,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.02) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.backgroundGlow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  left: 50%;
+  top: 30%;
+  z-index: 0;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.8), rgba(255,255,255,0) 68%);
+  filter: blur(20px);
+}
 
 .bottomLabel {
-  position: relative;
-
-  z-index: 2;
-
-  display: flex;
-
-  justify-content: center;
-
-  margin-top: 70px;
-
-  color: #9a9a9a;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
+  margin-top: 28px;
+  text-align: center;
+  color: #999;
   font-size: 9px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.16em;
-
+  font-weight: 800;
+  letter-spacing: .13em;
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   LOADER
-   ========================================================= */
-
 .loader {
-  min-height: 100vh;
-
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background: #f7f7f5;
-
-  color: #777777;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: #f5f5f2;
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 768px) {
-  .pageContainer {
-    padding:
-      24px
-      22px
-      60px;
-  }
-
-
-  .header {
-    padding-bottom: 18px;
-  }
-
-
+@media (max-width: 640px) {
   .contentWrapper {
-    padding-top: 60px;
+    width: calc(100% - 28px);
   }
 
-
-  .pageIntro {
-    margin-bottom: 32px;
-  }
-
-
-  .pageTitle {
-    font-size: 68px;
-  }
-
+  .header { padding: 46px 0 28px; }
+  .header h1 { font-size: clamp(42px, 14vw, 58px); }
 
   .identityCard {
-    padding: 24px;
-
-    border-radius: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 18px;
   }
 
-
-  .userInfo h2 {
-    font-size: 26px;
-  }
-
-
-  .actionsSection {
-    margin-top: 38px;
-  }
-
-
-  .bottomLabel {
-    margin-top: 50px;
-  }
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 560px) {
-  .pageContainer {
-    padding:
-      18px
-      15px
-      46px;
-  }
-
-
-  .backgroundGrid {
-    opacity: 0.13;
-
-    background-size: 55px 55px;
-  }
-
-
-  .backgroundGlow {
-    width: 430px;
-
-    height: 430px;
-  }
-
-
-  .header {
-    padding-bottom: 16px;
-  }
-
-
-  .backBtn {
-    font-size: 12px;
-  }
-
-
-  .headerLabel {
-    font-size: 8px;
-  }
-
-
-  .contentWrapper {
-    padding-top: 46px;
-  }
-
-
-  .eyebrow {
-    font-size: 9px;
-
-    margin-bottom: 14px;
-  }
-
-
-  .pageTitle {
-    font-size: 57px;
-  }
-
-
-  .pageDescription {
-    max-width: 300px;
-
-    margin-top: 20px;
-
-    font-size: 13px;
-  }
-
-
-  .identityCard {
-    flex-direction: column;
-
-    align-items: center;
-
-    text-align: center;
-
-    gap: 17px;
-
-    padding:
-      28px
-      18px;
-
-    border-radius: 20px;
-  }
-
-
-  .avatar {
-    width: 74px;
-
-    height: 74px;
-  }
-
-
-  .userInfo {
-    width: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-  }
-
-
-  .userInfo h2 {
-    font-size: 25px;
-
-    margin-bottom: 8px;
-  }
-
-
-  .userEmail {
-    justify-content: center;
-
-    max-width: 100%;
-
-    margin-bottom: 15px;
-
-    font-size: 12px;
-  }
-
-
-  .accountBadge {
-    font-size: 10px;
-  }
-
-
-  .actionsSection {
-    margin-top: 34px;
-  }
-
+  .identityMain { flex-basis: calc(100% - 74px); }
+  .accountBadge { margin-left: 74px; }
 
   .actionCard {
-    min-height: 82px;
-
-    padding:
-      15px
-      14px;
-
-    gap: 13px;
-
-    border-radius: 15px;
-  }
-
-
-  .actionIcon {
-    width: 42px;
-
-    height: 42px;
-  }
-
-
-  .actionText strong {
-    font-size: 15px;
-  }
-
-
-  .actionText span {
-    font-size: 11px;
-  }
-
-
-  .actionArrow {
-    font-size: 18px;
-  }
-
-
-  .logoutBtn {
-    min-height: 52px;
-
-    margin-top: 24px;
-  }
-
-
-  .bottomLabel {
-    margin-top: 42px;
-
-    font-size: 8px;
+    min-height: 64px;
+    padding: 0 13px;
   }
 }
 
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 380px) {
-  .pageContainer {
-    padding:
-      15px
-      12px
-      38px;
-  }
-
-
-  .headerLabel {
-    display: none;
-  }
-
-
-  .pageTitle {
-    font-size: 50px;
-  }
-
-
-  .identityCard {
-    padding:
-      24px
-      14px;
-  }
-
-
-  .actionText span {
-    display: none;
-  }
-
-
-  .actionCard {
-    min-height: 70px;
-  }
-
-
-  .bottomLabel {
-    display: none;
-  }
+@media (max-width: 375px) {
+  .identityCard { gap: 12px; }
+  .avatar { width: 52px; height: 52px; }
+  .identityMain { flex-basis: calc(100% - 64px); }
+  .accountBadge { margin-left: 64px; }
 }
 
+.pageIntro { max-width: 720px; margin-top: 16px; }
+.pageTitle { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(44px,7vw,72px); line-height:.95; letter-spacing:-.05em; color:#111; }
+.pageDescription { margin:14px 0 0; color:#777; font-size:14px; line-height:1.6; }
+.sectionLabel { margin:0 0 12px; color:#8a8a84; font-size:9px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+.userInfo { min-width:0; }
+.userEmail { margin-top:4px; color:#777; font-size:13px; overflow-wrap:anywhere; }
 
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (
-  prefers-reduced-motion: reduce
-) {
-  .actionCard,
-  .logoutBtn,
-  .backBtn,
-  .actionArrow {
-    transition: none;
-  }
+.backBtn {
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0;
+  margin-bottom:28px;
+  color:#6f6f6a;
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
 }
-
-/* =========================================================
-   INTERACTION HARDENING
-========================================================= */
-
-.backBtn:focus-visible,
-.actionCard:focus-visible,
-.logoutBtn:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 4px;
-}
+.backBtn:hover { color:#111; }

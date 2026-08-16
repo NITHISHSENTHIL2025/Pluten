@@ -1,0 +1,25 @@
+/* Final browser/device hardening. Visual primitives live in globals.css. */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; min-height: 100dvh; }
+button, a, [role="button"] { touch-action: manipulation; }
+img, svg, video { max-width: 100%; }
+input, select, textarea { max-width: 100%; }
+textarea { resize: vertical; }
+
+.admin-content,
+.admin-main-content {
+  min-width: 0;
+}
+
+.pluten-mobile-menu-top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+@media (max-width: 760px) {
+  input, select, textarea { font-size: 16px; }
+}
+@supports not (height: 100dvh) {
+  body { min-height: 100vh; }
+}

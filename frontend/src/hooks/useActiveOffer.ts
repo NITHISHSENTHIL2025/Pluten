@@ -1,29 +1,31 @@
-// frontend/src/hooks/useActiveOffer.ts
-import { useState, useEffect } from 'react';
-import apiClient from '@/lib/apiClient'; // THE FIX: Import the enterprise client
+"use client";
 
-export const useActiveOffer = () => {
-    const [offer, setOffer] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+import { useMemo } from "react";
+import { useOffers } from "@/context/OfferContext";
 
-    useEffect(() => {
-        const fetchOffer = async () => {
-            try {
-                // THE FIX: Use apiClient for versioned, cross-environment routing
-                const res = await apiClient.get('/offers/active');
-                
-                // Axios automatically parses JSON into res.data
-                const autoOffer = res.data.find((o: any) => o.autoApply);
-                setOffer(autoOffer || null);
-                
-            } catch (error) {
-                console.error("Failed to fetch active offer", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOffer();
-    }, []);
+/**
+ * Compatibility hook retained for older screens.
+ * New screens should use useOffers() directly so the app performs one
+ * global active-offer request instead of fetching the same endpoint again.
+ */
+export const useActiveOffer = (productId?: string) => {
+  const { activeOffers, loadingOffers } = useOffers();
 
-    return { offer, loading };
+  const offer = useMemo(() => {
+    return (
+      activeOffers.find((item) => {
+        if (!item.autoApply || item.status !== "ACTIVE") return false;
+        if (item.applyTo === "ALL") return true;
+        if (item.applyTo === "SELECTED" && productId) {
+          return item.products?.some((product) => product.id === productId);
+        }
+        return false;
+      }) ?? null
+    );
+  }, [activeOffers, productId]);
+
+  return {
+    offer,
+    loading: loadingOffers,
+  };
 };

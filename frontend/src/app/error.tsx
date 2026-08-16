@@ -1,126 +1,58 @@
-// frontend/src/app/error.tsx
-"use client"; // Error boundaries must be Client Components
+"use client";
 
-import { useEffect } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import Link from "next/link";
 
 export default function GlobalError({
-    error,
-    reset,
+  error,
+  reset,
 }: {
-    error: Error & { digest?: string };
-    reset: () => void;
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
-    useEffect(() => {
-        // In a production environment, you would log this to Sentry or Datadog
-        console.error("iSevens Global Telemetry Caught Error:", error);
-    }, [error]);
+  useEffect(() => {
+    console.error("Pluten UI error boundary:", error);
+  }, [error]);
 
-    return (
-        <div style={{ 
-            minHeight: '100vh', 
-            backgroundColor: '#0a0a0a', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            padding: '20px', 
-            fontFamily: 'system-ui, -apple-system, sans-serif',
-            backgroundImage: 'radial-gradient(circle at center, #1a0505 0%, #0a0a0a 100%)'
-        }}>
-            <div style={{ 
-                backgroundColor: '#111', 
-                border: '1px solid #330000', 
-                borderRadius: '16px', 
-                padding: '40px', 
-                width: '100%', 
-                maxWidth: '480px', 
-                boxShadow: '0 30px 60px -12px rgba(0,0,0,1), inset 0 1px 0 rgba(255,255,255,0.05)', 
-                textAlign: 'center' 
-            }}>
-                
-                <div style={{ 
-                    width: '64px', 
-                    height: '64px', 
-                    borderRadius: '50%', 
-                    backgroundColor: 'rgba(220, 38, 38, 0.1)', 
-                    border: '1px solid rgba(220, 38, 38, 0.3)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    margin: '0 auto 24px auto',
-                    boxShadow: '0 0 20px rgba(220, 38, 38, 0.2)'
-                }}>
-                    <AlertTriangle size={32} color="#dc2626" />
-                </div>
-
-                <h1 style={{ 
-                    fontSize: '1.5rem', 
-                    fontWeight: '900', 
-                    color: '#fff', 
-                    letterSpacing: '0.1em', 
-                    textTransform: 'uppercase',
-                    marginBottom: '12px' 
-                }}>
-                    System Disruption
-                </h1>
-
-                <p style={{ 
-                    color: '#888', 
-                    fontSize: '0.95rem', 
-                    marginBottom: '32px', 
-                    lineHeight: '1.6' 
-                }}>
-                    The ecosystem encountered an unexpected fault while processing your request. Our telemetry has logged the anomaly.
-                </p>
-
-                <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                    <button 
-                        onClick={() => reset()}
-                        style={{ 
-                            width: '100%', 
-                            backgroundColor: '#dc2626', 
-                            color: '#fff', 
-                            fontWeight: '700', 
-                            padding: '14px', 
-                            borderRadius: '8px', 
-                            border: 'none', 
-                            cursor: 'pointer', 
-                            fontSize: '0.95rem', 
-                            letterSpacing: '0.05em', 
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
-                        }}
-                    >
-                        <RefreshCw size={18} /> REINITIALIZE SEQUENCE
-                    </button>
-
-                    <Link href="/" style={{ textDecoration: 'none' }}>
-                        <button style={{ 
-                            width: '100%', 
-                            backgroundColor: 'transparent', 
-                            color: '#a3a3a3', 
-                            fontWeight: '600', 
-                            padding: '14px', 
-                            borderRadius: '8px', 
-                            border: '1px solid #333', 
-                            cursor: 'pointer', 
-                            fontSize: '0.95rem', 
-                            letterSpacing: '0.05em', 
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
-                        }}>
-                            <Home size={18} /> RETURN TO BASE
-                        </button>
-                    </Link>
-                </div>
-            </div>
+  return (
+    <main className="min-h-[100dvh] bg-[#050505] px-5 py-8 text-white flex items-center justify-center">
+      <section className="w-full max-w-md rounded-2xl border border-neutral-900 bg-[#0d0d0d] p-6 text-center shadow-2xl sm:p-10">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-red-900/70 bg-red-950/25 text-red-400">
+          <AlertTriangle size={30} />
         </div>
-    );
+
+        <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.24em] text-neutral-600">
+          PLUTEN / SYSTEM
+        </div>
+
+        <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
+          Something went wrong.
+        </h1>
+
+        <p className="mt-3 text-sm leading-6 text-neutral-500">
+          Pluten hit an unexpected error. Your account and purchases remain protected.
+        </p>
+
+        <div className="mt-8 grid gap-3">
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-black transition hover:bg-neutral-200"
+          >
+            <RefreshCw size={17} />
+            Try again
+          </button>
+
+          <Link
+            href="/"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-neutral-800 px-5 text-sm font-semibold text-neutral-300 transition hover:border-neutral-700 hover:text-white"
+          >
+            <Home size={17} />
+            Return to Pluten
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
 }

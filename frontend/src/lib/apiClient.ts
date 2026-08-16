@@ -2,6 +2,19 @@ import axios from "axios";
 
 let isRedirecting = false;
 
+const PROTECTED_PREFIXES = [
+  "/auth/me",
+  "/user/",
+  "/admin/",
+  "/payments/create",
+  "/payments/verify",
+];
+
+function isProtectedRequest(url?: string) {
+  if (!url) return false;
+  return PROTECTED_PREFIXES.some((prefix) => url.includes(prefix));
+}
+
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
@@ -13,26 +26,23 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
     if (
-      error.response?.status === 401 &&
+      status === 401 &&
+      isProtectedRequest(url) &&
       !isRedirecting &&
       typeof window !== "undefined"
     ) {
       isRedirecting = true;
 
-      // Do not store or recreate authentication tokens in JS.
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
+      const currentPath =
+        `${window.location.pathname}${window.location.search}`;
 
-      document.cookie =
-        "client_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      const redirect = encodeURIComponent(currentPath);
 
-      document.cookie =
-        "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-
-      window.location.href =
-        "/login?expired=true";
+      window.location.href = `/login?expired=true&redirect=${redirect}`;
     }
 
     return Promise.reject(error);

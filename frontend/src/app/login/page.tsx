@@ -79,87 +79,37 @@ function LoginEngine() {
 
 
         /* =====================================================
-           EXTRACT AUTH DATA
+           AUTHENTICATION RESULT
+
+           The backend now owns the JWT inside an HttpOnly cookie.
+           The browser must not copy the token into localStorage.
         ===================================================== */
 
         const userRole =
           response.data.user?.role ||
           "CUSTOMER";
 
-        const secureToken =
-          response.data.token;
-
-
-        /* =====================================================
-           STORE CLIENT AUTH
-        ===================================================== */
-
-        localStorage.setItem(
-          "token",
-          secureToken
-        );
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify(
-            response.data.user
-          )
-        );
-
-        localStorage.setItem(
-          "role",
-          userRole
-        );
-
-
-        /* =====================================================
-           MIDDLEWARE COOKIES
-        ===================================================== */
-
-        document.cookie =
-          `client_auth=true; path=/; max-age=86400; Secure; SameSite=Lax`;
-
-        document.cookie =
-          `user_role=${userRole}; path=/; max-age=86400; Secure; SameSite=Lax`;
-
-
-        /* =====================================================
-           COOKIE RACE CONDITION PROTECTION
-
-           Give the browser enough time to persist the
-           cookies before navigating.
-        ===================================================== */
-
+        /* The server has already set the secure session cookie.
+           A small navigation delay lets the browser finish the
+           cross-origin cookie write before the next request. */
         setTimeout(() => {
           if (
-            userRole ===
-              "SUPER_ADMIN" ||
-            userRole ===
-              "PRODUCT_MANAGER" ||
-            userRole ===
-              "FINANCE_MANAGER"
+            userRole === "SUPER_ADMIN" ||
+            userRole === "PRODUCT_MANAGER" ||
+            userRole === "FINANCE_MANAGER" ||
+            userRole === "CUSTOMER_SUPPORT"
           ) {
-            window.location.href =
-              "/admin/products";
-
+            window.location.href = "/admin";
             return;
           }
 
-
-          if (
-            redirectUrl &&
-            redirectUrl !== "/dashboard"
-          ) {
-            window.location.href =
-              redirectUrl;
-
+          if (redirectUrl && redirectUrl !== "/dashboard") {
+            window.location.href = redirectUrl;
             return;
           }
 
-
-          window.location.href =
-            "/";
-        }, 300);
+          window.location.href = "/";
+        }, 150);
 
       } catch (err: any) {
         console.error(

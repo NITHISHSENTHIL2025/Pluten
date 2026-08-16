@@ -1,355 +1,136 @@
-/* =========================================================
-   PLUTEN SKELETON SYSTEM
-   Premium / quiet / editorial
-========================================================= */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #e9e9e6;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+  animation: skeletonShimmer 1.35s linear infinite;
+}
+
+.lineTiny,
+.lineSmall,
+.lineMedium,
+.lineTitle,
+.textSkeleton,
+.priceSkeleton,
+.badgeSkeleton,
+.buttonSkeleton {
+  border-radius: 7px;
+  background: #e7e7e4;
+}
+
+.lineTiny { width: 22%; height: 8px; }
+.lineSmall { width: 38%; height: 10px; }
+.lineMedium { width: 64%; height: 10px; }
+.lineTitle { width: 78%; height: 20px; }
+
+.textSkeleton {
+  width: 100%;
+  height: 12px;
+  margin-top: 9px;
+}
+
+.priceSkeleton { width: 72px; height: 18px; }
+.badgeSkeleton { width: 70px; height: 26px; border-radius: 999px; }
+.buttonSkeleton { width: 100px; height: 42px; border-radius: 999px; }
 
 .productCard,
 .libraryCard,
 .profileCard,
+.profileActions,
 .tableSkeleton,
-.textSkeleton {
-  width: 100%;
-}
-
-/* =========================================================
-   BASE SKELETON SURFACE
-========================================================= */
-
-.productCard,
-.libraryCard,
-.profileCard {
+.actionSkeleton {
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  background: #ffffff;
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.035),
-    0 2px 8px rgba(0, 0, 0, 0.02);
-}
-
-/* =========================================================
-   PRODUCT
-========================================================= */
-
-.productCard {
-  overflow: hidden;
-  border-radius: 22px;
-}
-
-.productImage {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: #e9e9e6;
-  overflow: hidden;
-}
-
-.productContent {
-  padding: 22px;
-}
-
-.productBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: 28px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.priceSkeleton {
-  width: 70px;
-  height: 22px;
-  background: #d8d8d5;
-  border-radius: 5px;
-  position: relative;
-  overflow: hidden;
-}
-
-.buttonSkeleton {
-  width: 84px;
-  height: 38px;
-  background: #d8d8d5;
-  border-radius: 999px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* =========================================================
-   LIBRARY
-========================================================= */
-
-.libraryCard {
-  overflow: hidden;
+  border: 1px solid rgba(17,17,17,.08);
   border-radius: 18px;
+  background: rgba(255,255,255,.78);
 }
 
-.libraryImage {
-  position: relative;
+.productCard { display: flex; flex-direction: column; }
+.productImage {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: #e9e9e6;
+  aspect-ratio: 4 / 3;
 }
-
-.libraryContent {
-  padding: 20px;
-}
-
-.libraryFooter {
+.productContent { padding: 18px; }
+.productBottom {
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 24px;
 }
 
-/* =========================================================
-   PROFILE
-========================================================= */
-
-.profileCard {
-  padding: 30px;
-  border-radius: 22px;
+.libraryCard { display: flex; flex-direction: column; }
+.libraryImage { width: 100%; aspect-ratio: 1 / 1; }
+.libraryContent { padding: 16px; }
+.libraryFooter {
+  padding: 0 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
+.profileCard { padding: 22px; }
 .profileHeader {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 14px;
 }
-
+.profileInfo { flex: 1; min-width: 0; }
 .avatar {
-  position: relative;
-  width: 82px;
-  height: 82px;
-  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
   border-radius: 50%;
-  overflow: hidden;
-  background: #ddddda;
 }
-
-.profileInfo {
-  flex: 1;
-  min-width: 0;
-}
-
-.badgeSkeleton {
-  position: relative;
-  width: 92px;
-  height: 28px;
-  margin-top: 12px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #ddddda;
-}
-
-.profileActions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 34px;
-}
-
 .actionSkeleton {
+  min-height: 68px;
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 82px;
-  padding: 15px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
-  background: #fafaf8;
+  padding: 0 16px;
 }
-
 .actionIcon {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: 50%;
-  background: #ddddda;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex: 0 0 auto;
 }
-
-.actionText {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-/* =========================================================
-   TABLE
-========================================================= */
+.actionText { flex: 1; min-width: 0; }
 
 .tableSkeleton {
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  background: #151515;
+  width: 100%;
+  padding: 12px 0;
 }
-
 .tableRow {
   display: grid;
-  grid-template-columns: 0.8fr 2fr 0.9fr 0.7fr;
-  gap: 16px;
-  align-items: center;
-  min-height: 70px;
-  padding: 0 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tableRow:last-child {
-  border-bottom: 0;
-}
-
-.tableCell,
-.tableCellWide,
-.tableCellAction {
-  position: relative;
-  overflow: hidden;
-  height: 12px;
-  border-radius: 4px;
-  background: #292929;
-}
-
-.tableCell {
-  width: 70%;
-}
-
-.tableCellWide {
-  width: 90%;
-}
-
-.tableCellAction {
-  width: 40px;
-  height: 32px;
-  border-radius: 8px;
-}
-
-/* =========================================================
-   TEXT
-========================================================= */
-
-.textSkeleton {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: 1fr 1fr 1fr 80px;
   gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(17,17,17,.06);
 }
+.tableCell { height: 12px; }
+.tableCellWide { height: 12px; width: 80%; }
+.tableCellAction { height: 36px; width: 40px; border-radius: 10px; justify-self: end; }
 
-/* =========================================================
-   TYPOGRAPHIC BARS
-========================================================= */
-
-.lineTitle,
-.lineMedium,
-.lineSmall,
-.lineTiny {
-  position: relative;
-  overflow: hidden;
-  background: #d8d8d5;
-  border-radius: 4px;
+@keyframes skeletonShimmer {
+  100% { transform: translateX(100%); }
 }
-
-.lineTitle {
-  width: 62%;
-  height: 14px;
-  margin-top: 14px;
-}
-
-.lineMedium {
-  width: 80%;
-  height: 10px;
-  margin-top: 12px;
-}
-
-.lineSmall {
-  width: 44%;
-  height: 9px;
-}
-
-.lineTiny {
-  width: 34%;
-  height: 8px;
-}
-
-/* =========================================================
-   PREMIUM SHIMMER
-========================================================= */
-
-.shimmer {
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      100deg,
-      transparent 20%,
-      rgba(255, 255, 255, 0.22) 42%,
-      rgba(255, 255, 255, 0.65) 50%,
-      rgba(255, 255, 255, 0.22) 58%,
-      transparent 80%
-    );
-
-  transform: translateX(-120%);
-  animation:
-    plutenSkeletonShimmer
-    1.7s
-    cubic-bezier(0.22, 0.61, 0.36, 1)
-    infinite;
-}
-
-@keyframes plutenSkeletonShimmer {
-  from {
-    transform: translateX(-120%);
-  }
-
-  to {
-    transform: translateX(120%);
-  }
-}
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .shimmer {
-    animation: none;
-  }
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media (max-width: 640px) {
-  .productContent,
-  .libraryContent {
-    padding: 15px;
-  }
+  .productContent { padding: 14px; }
+  .libraryContent { padding: 13px; }
+  .libraryFooter { padding: 0 13px 13px; }
+  .tableRow { min-width: 620px; }
+}
 
-  .profileCard {
-    padding: 20px;
-  }
-
-  .profileHeader {
-    gap: 15px;
-  }
-
-  .avatar {
-    width: 66px;
-    height: 66px;
-  }
-
-  .tableRow {
-    grid-template-columns: 0.8fr 1.6fr 0.7fr;
-    gap: 10px;
-    padding: 0 14px;
-  }
-
-  .tableCellAction {
-    display: none;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after { animation: none; }
 }

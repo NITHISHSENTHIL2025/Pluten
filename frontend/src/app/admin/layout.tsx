@@ -1,115 +1,222 @@
 // frontend/src/app/admin/layout.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import axios from 'axios'; // THE FIX: Import raw axios to bypass the aggressive interceptor
+import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
-    LayoutDashboard, ShoppingCart, Users, Package,
-    Settings, ShieldAlert, Search, Loader2
-} from 'lucide-react';
-import styles from './admin.module.css';
+  LayoutDashboard,
+  ShoppingCart,
+  Users,
+  Package,
+  Settings,
+  ShieldAlert,
+  Tag,
+  Loader2,
+  Menu,
+  X,
+} from "lucide-react";
+import apiClient from "@/lib/apiClient";
+import styles from "./admin.module.css";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const router = useRouter();
-    const [authorized, setAuthorized] = useState(false);
+type AdminRole =
+  | "SUPER_ADMIN"
+  | "FINANCE_MANAGER"
+  | "PRODUCT_MANAGER"
+  | "CUSTOMER_SUPPORT";
 
-    useEffect(() => {
-        const verifyClearance = async () => {
-            try {
-                // THE FIX: Grab the token manually
-                const token = localStorage.getItem('token');
-                
-                if (!token || token === 'undefined' || token === 'null') {
-                    throw new Error("No valid token found.");
-                }
+interface MeResponse {
+  user: {
+    role: AdminRole;
+  };
+}
 
-                // THE FIX: Use raw axios so a 401 doesn't trigger the global interceptor's logout loop
-                const res = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'https://iseven.onrender.com/api/v1'}/auth/me`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
-                
-                const role = res.data.user.role;
-                
-                // Unified RBAC Policy
-                if (role !== 'SUPER_ADMIN' && role !== 'FINANCE_MANAGER' && role !== 'PRODUCT_MANAGER') {
-                    throw new Error("Insufficient Clearance");
-                }
-                
-                setAuthorized(true);
-            } catch (err) {
-                console.error("Dashboard clearance rejected.", err);
-                router.push('/login');
-            }
-        };
-        verifyClearance();
-    }, [router]);
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  roles: AdminRole[];
+}
 
-    if (!authorized) {
-        return (
-            <div className="min-h-screen bg-black flex justify-center items-center">
-                <Loader2 className="animate-spin text-red-800 w-12 h-12" />
-            </div>
-        );
-    }
+const NAV_ITEMS: NavItem[] = [
+  {
+    href: "/admin",
+    label: "Overview",
+    icon: <LayoutDashboard size={18} />,
+    roles: ["SUPER_ADMIN", "FINANCE_MANAGER"],
+  },
+  {
+    href: "/admin/orders",
+    label: "Orders",
+    icon: <ShoppingCart size={18} />,
+    roles: ["SUPER_ADMIN", "FINANCE_MANAGER"],
+  },
+  {
+    href: "/admin/customers",
+    label: "Customers",
+    icon: <Users size={18} />,
+    roles: ["SUPER_ADMIN", "CUSTOMER_SUPPORT"],
+  },
+  {
+    href: "/admin/products",
+    label: "Products",
+    icon: <Package size={18} />,
+    roles: ["SUPER_ADMIN", "PRODUCT_MANAGER"],
+  },
+  {
+    href: "/admin/offers",
+    label: "Offers",
+    icon: <Tag size={18} />,
+    roles: ["SUPER_ADMIN", "PRODUCT_MANAGER"],
+  },
+  {
+    href: "/admin/settings",
+    label: "Settings",
+    icon: <Settings size={18} />,
+    roles: ["SUPER_ADMIN"],
+  },
+];
 
+export default function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [authorized, setAuthorized] = useState(false);
+  const [role, setRole] = useState<AdminRole | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const verifyClearance = async () => {
+      try {
+        const response = await apiClient.get<MeResponse>("/auth/me");
+        const currentRole = response.data?.user?.role;
+
+        if (
+          !currentRole ||
+          ![
+            "SUPER_ADMIN",
+            "FINANCE_MANAGER",
+            "PRODUCT_MANAGER",
+            "CUSTOMER_SUPPORT",
+          ].includes(currentRole)
+        ) {
+          throw new Error("Insufficient clearance.");
+        }
+
+        if (mounted) {
+          setRole(currentRole);
+          setAuthorized(true);
+        }
+      } catch (error) {
+        console.error("Dashboard clearance rejected:", error);
+        if (mounted) router.replace("/login?redirect=/admin");
+      } finally {
+        if (mounted) setChecking(false);
+      }
+    };
+
+    verifyClearance();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const visibleItems = useMemo(() => {
+    if (!role) return [];
+    return NAV_ITEMS.filter((item) => item.roles.includes(role));
+  }, [role]);
+
+  if (checking || !authorized) {
     return (
-        <div className={styles.adminLayout}>
-            {/* The Sidebar Engine */}
-            <aside className={styles.sidebar}>
-                <div className={styles.sidebarHeader}>
-                    <ShieldAlert size={20} color="#8b0000" />
-                    <span className={styles.brandName}>iSevens</span>
-                    <span className={styles.environmentBadge}>PROD</span>
-                </div>
-
-                <nav className={styles.navGroup}>
-                    <span className={styles.navLabel}>Core Operations</span>
-
-                    <Link href="/admin" className={`${styles.navItem} ${pathname === '/admin' ? styles.navItemActive : ''}`}>
-                        <LayoutDashboard size={18} /> Overview
-                    </Link>
-                    <Link href="/admin/orders" className={`${styles.navItem} ${pathname === '/admin/orders' ? styles.navItemActive : ''}`}>
-                        <ShoppingCart size={18} /> Orders
-                    </Link>
-                    <Link href="/admin/customers" className={`${styles.navItem} ${pathname === '/admin/customers' ? styles.navItemActive : ''}`}>
-                        <Users size={18} /> Customers
-                    </Link>
-                    <Link href="/admin/products" className={`${styles.navItem} ${pathname === '/admin/products' ? styles.navItemActive : ''}`}>
-                        <Package size={18} /> Products
-                    </Link>
-                    <Link href="/admin/offers" className={`${styles.navItem} ${pathname === '/admin/offers' ? styles.navItemActive : ''}`}>
-                        <span style={{ fontSize: '16px' }}>🏷️</span> Offers
-                    </Link>
-                </nav>
-
-                <nav className={styles.navGroup} style={{ marginTop: 'auto' }}>
-                    <span className={styles.navLabel}>System</span>
-                    <Link href="/admin/settings" className={styles.navItem} prefetch={false}>
-                        <Settings size={18} /> Settings
-                    </Link>
-                </nav>
-            </aside>
-
-            {/* The Telemetry Content */}
-            <main className={styles.mainContent}>
-                <header className={styles.topbar}>
-                    <div className={styles.searchBar}>
-                        <Search size={16} />
-                        <span>Search everything...</span>
-                        <span className={styles.searchShortcut}>Ctrl K</span>
-                    </div>
-                </header>
-
-                {children}
-            </main>
+      <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center px-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <Loader2 className="animate-spin text-red-700" size={34} />
+          <span className="text-xs tracking-[0.25em] uppercase text-neutral-500">
+            Verifying secure access
+          </span>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className={`${styles.adminLayout} min-h-[100dvh]`}>
+      <button
+        type="button"
+        className="fixed left-4 top-4 z-[100] hidden max-[900px]:flex h-11 w-11 items-center justify-center rounded-xl border border-neutral-800 bg-black/80 text-white backdrop-blur-xl"
+        onClick={() => setMobileOpen((value) => !value)}
+        aria-label={mobileOpen ? "Close admin menu" : "Open admin menu"}
+        aria-expanded={mobileOpen}
+      >
+        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close admin menu overlay"
+          className="fixed inset-0 z-[80] hidden max-[900px]:block bg-black/70 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`${styles.sidebar} ${mobileOpen ? "!translate-x-0" : ""} max-[900px]:fixed max-[900px]:left-0 max-[900px]:top-0 max-[900px]:z-[90] max-[900px]:h-[100dvh] max-[900px]:transition-transform max-[900px]:duration-300 max-[900px]:-translate-x-full`}
+      >
+        <div className={styles.sidebarHeader}>
+          <ShieldAlert size={20} />
+          <span className={styles.brandName}>PLUTEN</span>
+          <span className={styles.environmentBadge}>PROD</span>
+        </div>
+
+        <nav className={styles.navGroup} aria-label="Admin navigation">
+          <span className={styles.navLabel}>Core Operations</span>
+
+          {visibleItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navItem} ${pathname === item.href ? styles.navItemActive : ""}`}
+              aria-current={pathname === item.href ? "page" : undefined}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+      </aside>
+
+      <main className={styles.mainContent}>
+        <header className={`${styles.topbar} flex items-center justify-between gap-4`}>
+          <div className="pl-[52px] max-[900px]:pl-16">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+              Mission Control
+            </span>
+            <span className="ml-3 hidden sm:inline text-[11px] text-neutral-700">
+              / secure operations
+            </span>
+          </div>
+
+          <span className="rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">
+            {role?.replaceAll("_", " ")}
+          </span>
+        </header>
+
+        {children}
+      </main>
+    </div>
+  );
 }

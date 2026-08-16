@@ -26,6 +26,7 @@ export default function StorefrontPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
   const heroLogoRef = useRef<HTMLImageElement>(null);
@@ -54,6 +55,10 @@ export default function StorefrontPage() {
         );
       } catch (error) {
         console.error("Failed to load Pluten products:", error);
+
+        if (mounted) {
+          setLoadError("Unable to load products right now.");
+        }
 
         if (mounted) {
           setProducts([]);
@@ -432,18 +437,33 @@ export default function StorefrontPage() {
 </div>
         )}
 
+        {/* ERROR */}
+
+        {!loading && loadError && (
+          <div className={styles.empty}>
+            <strong>UNABLE TO LOAD PRODUCTS.</strong>
+            <p>{loadError}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl border border-neutral-800 px-5 text-xs font-bold uppercase tracking-wider text-white"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* EMPTY */}
 
-        {!loading &&
-          displayedProducts.length === 0 && (
-            <div className={styles.empty}>
-              <strong>NO PRODUCTS YET.</strong>
+        {!loading && !loadError && displayedProducts.length === 0 && (
+          <div className={styles.empty}>
+            <strong>NO PRODUCTS YET.</strong>
 
-              <p>
-                New products are coming soon.
-              </p>
-            </div>
-          )}
+            <p>
+              New products are coming soon.
+            </p>
+          </div>
+        )}
 
         {/* REAL PRODUCTS */}
 
@@ -494,7 +514,7 @@ export default function StorefrontPage() {
           </span>
 
           <h2>
-            O̶r̶d̶i̶n̶a̶r̶y̶
+            Ordinary
           </h2>
 
           <p>

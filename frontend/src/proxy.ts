@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const isLoggedIn = request.cookies.get('client_auth')?.value === 'true';
     const userRole = request.cookies.get('user_role')?.value || 'CUSTOMER';
     const { pathname } = request.nextUrl;
@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
 
     // 2. Strict Role-Based Access Control
     if (isLoggedIn && isAdminArea) {
-        const allowedAdminRoles = ['SUPER_ADMIN', 'FINANCE_MANAGER', 'PRODUCT_MANAGER'];
+        const allowedAdminRoles = ['SUPER_ADMIN', 'FINANCE_MANAGER', 'PRODUCT_MANAGER', 'CUSTOMER_SUPPORT'];
         if (!allowedAdminRoles.includes(userRole)) {
             return NextResponse.redirect(new URL('/', request.url));
         }

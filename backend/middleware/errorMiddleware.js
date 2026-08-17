@@ -1,37 +1,36 @@
-// backend/middleware/errorMiddleware.js
-
 const errorHandler = (err, req, res, next) => {
-    // If a route hasn't set a specific error status, default to 500 (Internal Server Error)
-    let statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
-    let message = err.message || "A critical system fault occurred.";
+  const requestId = req.requestId || 'unknown';
+  let statusCode = Number.isInteger(res.statusCode) && res.statusCode >= 400 ? res.statusCode : 500;
+  let publicMessage = 'Something went wrong. Please try again.';
 
-    // --- Enterprise Error Parsing ---
+  if (err?.code === 'P2002') {
+    statusCode = 409;
+    publicMessage = 'A record with these details already exists.';
+  } else if (err?.code === 'P2025') {
+    statusCode = 404;
+    publicMessage = 'The requested record could not be found.';
+  } else if (err?.name === 'JsonWebTokenError' || err?.name === 'TokenExpiredError') {
+    statusCode = 401;
+    publicMessage = 'Your secure session is invalid or expired. Please sign in again.';
+  } else if (err?.statusCode && Number.isInteger(err.statusCode)) {
+    statusCode = err.statusCode;
+    publicMessage = err.publicMessage || publicMessage;
+  }
 
-    // 1. Handle Prisma Database Errors (e.g., Unique constraint failed like a duplicate email)
-    if (err.code === 'P2002') {
-        statusCode = 400;
-        message = `Duplicate entry detected for field: ${err.meta?.target?.join(', ')}`;
-    }
+  console.error('[PLUTEN ERROR]', {
+    requestId,
+    statusCode,
+    name: err?.name,
+    code: err?.code,
+    message: err?.message,
+    stack: process.env.NODE_ENV === 'production' ? undefined : err?.stack,
+  });
 
-    // 2. Handle Prisma Record Not Found
-    if (err.code === 'P2025') {
-        statusCode = 404;
-        message = "The requested database record could not be located.";
-    }
-
-    // 3. Handle JWT Tampering/Expiration
-    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
-        statusCode = 401;
-        message = "Secure session invalid or expired. Re-authentication required.";
-    }
-
-    // 4. Send the standardized response
-    res.status(statusCode).json({
-        success: false,
-        error: message,
-        // SECURITY: Never leak the stack trace in a production environment
-        stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-    });
+  res.status(statusCode).json({
+    success: false,
+    error: publicMessage,
+    requestId,
+  });
 };
 
 module.exports = errorHandler;

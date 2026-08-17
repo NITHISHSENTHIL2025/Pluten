@@ -1,35 +1,17 @@
 import axios from 'axios';
 
-let isRedirecting = false;
+const baseURL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
+const apiClient = axios.create({ baseURL, withCredentials: true, timeout: 20000, headers: { 'Content-Type': 'application/json' } });
 
-const apiClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    withCredentials: true,
-    timeout: 20000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') config.headers.set('X-Client-Timezone', Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+  return config;
 });
 
-apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        const status = error?.response?.status;
-        const url = typeof window !== 'undefined' ? window.location.pathname : '';
-
-        if (
-            status === 401 &&
-            typeof window !== 'undefined' &&
-            !isRedirecting &&
-            url !== '/login'
-        ) {
-            isRedirecting = true;
-            const redirect = `${window.location.pathname}${window.location.search}`;
-            window.location.replace(`/login?expired=true&redirect=${encodeURIComponent(redirect)}`);
-        }
-
-        return Promise.reject(error);
-    }
-);
+apiClient.interceptors.response.use((response) => response, (error) => {
+  const requestId = error?.response?.headers?.['x-request-id'];
+  if (requestId) error.requestId = requestId;
+  return Promise.reject(error);
+});
 
 export default apiClient;

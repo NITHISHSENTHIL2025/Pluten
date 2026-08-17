@@ -1,42 +1,53 @@
-// backend/prisma/seed.js
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
+const products = [
+  {
+    title: 'The Discipline Protocol',
+    description: 'A comprehensive digital course on mastering focus and executing at the highest level.',
+    price: 4999.0,
+    isDigital: true,
+  },
+  {
+    title: 'Financial Architecture',
+    description: 'Advanced templates and psychological frameworks for wealth accumulation.',
+    price: 7999.0,
+    isDigital: true,
+  },
+  {
+    title: 'Obsidian Workflow System',
+    description: 'The exact productivity system used by elite performers.',
+    price: 2499.0,
+    isDigital: true,
+  },
+];
+
 async function main() {
-    console.log("Initializing database seeding sequence...");
+  console.log('[PLUTEN SEED] Starting idempotent seed.');
 
-    const products = [
-        {
-            title: "The Discipline Protocol",
-            description: "A comprehensive digital course on mastering focus and executing at the highest level.",
-            price: 4999.00, // INR
-            isDigital: true
-        },
-        {
-            title: "Financial Architecture",
-            description: "Advanced templates and psychological frameworks for wealth accumulation.",
-            price: 7999.00,
-            isDigital: true
-        },
-        {
-            title: "Obsidian Workflow System",
-            description: "The exact productivity system used by elite performers.",
-            price: 2499.00,
-            isDigital: true
-        }
-    ];
+  for (const product of products) {
+    const existing = await prisma.product.findFirst({
+      where: { title: product.title },
+      select: { id: true, title: true },
+    });
 
-    for (const product of products) {
-        await prisma.product.create({ data: product });
+    if (existing) {
+      console.log(`[PLUTEN SEED] Skipping existing product: ${existing.title}`);
+      continue;
     }
 
-    console.log("Premium assets successfully injected into the ecosystem.");
+    await prisma.product.create({ data: product });
+    console.log(`[PLUTEN SEED] Created product: ${product.title}`);
+  }
+
+  console.log('[PLUTEN SEED] Complete. Existing production records were not overwritten.');
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
+  .catch((error) => {
+    console.error('[PLUTEN SEED] Failed:', error);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

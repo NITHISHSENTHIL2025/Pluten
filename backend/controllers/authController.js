@@ -1,140 +1,111 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 
-const prisma = new PrismaClient();
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
 const isProduction = process.env.NODE_ENV === 'production';
 const cookieDomain = process.env.AUTH_COOKIE_DOMAIN || (isProduction ? '.pluten.site' : undefined);
+const sessionMinutes = Math.max(5, Number(process.env.JWT_EXPIRES_MINUTES || 15));
+const sessionMaxAge = sessionMinutes * 60 * 1000;
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const sessionCookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
-    path: '/',
-    ...(cookieDomain ? { domain: cookieDomain } : {}),
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: 'lax',
+  path: '/',
+  ...(cookieDomain ? { domain: cookieDomain } : {}),
 };
 
-const clearCookieOptions = {
-    ...sessionCookieOptions,
+const uxCookieOptions = {
+  secure: isProduction,
+  sameSite: 'lax',
+  path: '/',
+  ...(cookieDomain ? { domain: cookieDomain } : {}),
 };
 
 const googleLogin = async (req, res) => {
-    try {
-        const { token } = req.body;
+  try {
+    const { token } = req.body || {};
+    if (!token || typeof token !== 'string') return res.status(400).json({ error: 'Google token is required.' });
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.JWT_SECRET) throw new Error('Authentication configuration missing.');
 
-        if (!token) {
-            return res.status(400).json({ error: 'Google token is required.' });
-        }
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
 
-        if (!process.env.GOOGLE_CLIENT_ID || !process.env.JWT_SECRET) {
-            throw new Error('Google or JWT authentication configuration is missing.');
-        }
+    const payload = ticket.getPayload() || {};
+    const { email, given_name, family_name, email_verified } = payload;
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail || !email_verified) return res.status(403).json({ error: 'Google account is not verified.' });
 
-        const ticket = await googleClient.verifyIdToken({
-            idToken: token,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
+    let user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
-        const payload = ticket.getPayload();
-        const { email, given_name, family_name, email_verified } = payload || {};
-
-        if (!email || !email_verified) {
-            return res.status(403).json({ error: 'Google account is not verified.' });
-        }
-
-        let user = await prisma.user.findUnique({ where: { email } });
-
-        if (!user) {
-            user = await prisma.user.create({
-                data: {
-                    email,
-                    firstName: given_name || null,
-                    lastName: family_name || null,
-                    authProvider: 'GOOGLE',
-                },
-            });
-        }
-
-        const jwtToken = jwt.sign(
-            {
-                id: user.id,
-                role: user.role,
-                isPremium: user.isPremium,
-                email: user.email,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
-        );
-
-        res.cookie('token', jwtToken, {
-            ...sessionCookieOptions,
-            maxAge: 15 * 60 * 1000,
-        });
-
-        // Non-authoritative UX hints only. The signed token remains the authorization source.
-        res.cookie('client_auth', 'true', {
-            secure: isProduction,
-            sameSite: 'lax',
-            path: '/',
-            ...(cookieDomain ? { domain: cookieDomain } : {}),
-            maxAge: 24 * 60 * 60 * 1000,
-        });
-
-        res.cookie('user_role', user.role, {
-            secure: isProduction,
-            sameSite: 'lax',
-            path: '/',
-            ...(cookieDomain ? { domain: cookieDomain } : {}),
-            maxAge: 24 * 60 * 60 * 1000,
-        });
-
-        return res.status(200).json({
-            success: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                isPremium: user.isPremium,
-            },
-        });
-    } catch (error) {
-        console.error('Google SSO Fault:', error);
-        return res.status(500).json({ error: 'Google authorization sequence failed.' });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          firstName: given_name || null,
+          lastName: family_name || null,
+          authProvider: 'GOOGLE',
+        },
+      });
     }
+
+    const jwtToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: `${sessionMinutes}m` }
+    );
+
+    res.cookie('token', jwtToken, { ...sessionCookieOptions, maxAge: sessionMaxAge });
+    res.cookie('client_auth', 'true', { ...uxCookieOptions, maxAge: 24 * 60 * 60 * 1000 });
+    res.cookie('user_role', user.role, { ...uxCookieOptions, maxAge: 24 * 60 * 60 * 1000 });
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isPremium: user.isPremium,
+      },
+    });
+  } catch (error) {
+    console.error('[AUTH] Google SSO fault:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Google sign-in could not be completed.' });
+  }
 };
 
 const getMe = async (req, res) => {
-    try {
-        const user = await prisma.user.findUnique({
-            where: { id: req.user.id },
-            select: {
-                id: true,
-                email: true,
-                role: true,
-                firstName: true,
-                lastName: true,
-                isPremium: true,
-            },
-        });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        firstName: true,
+        lastName: true,
+        isPremium: true,
+      },
+    });
 
-        if (!user) return res.status(404).json({ error: 'Identity not found.' });
-        return res.status(200).json({ success: true, user });
-    } catch (error) {
-        console.error('Session Verification Fault:', error.message);
-        return res.status(500).json({ error: 'Failed to verify secure session.' });
-    }
+    if (!user) return res.status(404).json({ error: 'Account not found.' });
+    return res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error('[AUTH] Session verification fault:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to verify your account session.' });
+  }
 };
 
 const logoutUser = (req, res) => {
-    res.clearCookie('token', clearCookieOptions);
-    res.clearCookie('client_auth', clearCookieOptions);
-    res.clearCookie('user_role', clearCookieOptions);
-
-    return res.status(200).json({ success: true, message: 'Secure session terminated.' });
+  res.clearCookie('token', sessionCookieOptions);
+  res.clearCookie('client_auth', uxCookieOptions);
+  res.clearCookie('user_role', uxCookieOptions);
+  return res.status(200).json({ success: true, message: 'Secure session terminated.' });
 };
 
 module.exports = { googleLogin, getMe, logoutUser };

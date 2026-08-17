@@ -1,32 +1,26 @@
-"use client";
+import type { Metadata } from 'next';
+import ProductDetailClient from './ProductDetailClient';
 
-import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
-import { useEffect, useRef, useState, use } from "react";
-import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, Check, Loader2, Phone, ShieldCheck, User, X } from "lucide-react";
-// @ts-ignore
-import { load } from "@cashfreepayments/cashfree-js";
-import { useOffers } from "@/context/OfferContext";
-import apiClient from "@/lib/apiClient";
-import styles from "./product.module.css";
+type Product = { id:string; title:string; description:string; price:number; thumbnail:string|null; category:string; originalPrice?:number; finalPrice?:number; discountAmount?:number; discountLabel?:string|null };
 
-interface Product{id:string;title:string;description:string;price:number;thumbnail:string|null;category:string;}
+async function getProduct(id:string):Promise<Product|null>{
+  const baseUrl=process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, '');
+  if(!baseUrl)return null;
+  try{const response=await fetch(`${baseUrl}/products/${encodeURIComponent(id)}`,{next:{revalidate:60,tags:[`product:${id}`]}});if(!response.ok)return null;return await response.json();}catch{return null;}
+}
 
-export default function ProductDetailPage({params}:{params:Promise<{id:string}>}){
- const router=useRouter();const {id}=use(params);
- const [product,setProduct]=useState<Product|null>(null);const [loading,setLoading]=useState(true);const [loadError,setLoadError]=useState('');const [checkoutError,setCheckoutError]=useState('');const [phoneError,setPhoneError]=useState('');const [showPhonePrompt,setShowPhonePrompt]=useState(false);const [phoneNumber,setPhoneNumber]=useState('');const [isCheckingOut,setIsCheckingOut]=useState(false);const checkoutRequestIdRef=useRef<string|null>(null);
- const {getBestOfferForProduct,loadingOffers}=useOffers();
- useEffect(()=>{let mounted=true;(async()=>{setLoading(true);setLoadError('');try{const res=await apiClient.get<Product>(`/products/${id}`);if(mounted)setProduct(res.data);}catch(err:any){if(mounted){setProduct(null);setLoadError(err?.response?.data?.error||'This product could not be loaded right now.');}}finally{if(mounted)setLoading(false);}})();return()=>{mounted=false};},[id]);
- const price=product?Number(product.price):0;const offer=product?getBestOfferForProduct(product.id,price):null;const rawDiscount=offer?(offer.type==='PERCENTAGE'?price*(Number(offer.value)/100):Number(offer.value)):0;const discount=Math.min(price,Math.max(0,rawDiscount));const finalPrice=Number(Math.max(0,price-discount).toFixed(2));const hasDiscount=discount>0;
- const buy=()=>{if(!product||isCheckingOut)return;setCheckoutError('');setPhoneError('');setShowPhonePrompt(true);};
- const checkout=async(e:React.FormEvent)=>{e.preventDefault();if(!product||isCheckingOut)return;const phone=phoneNumber.replace(/\D/g,'');if(phone.length!==10){setPhoneError('Please enter a valid 10-digit phone number.');return;}if(!checkoutRequestIdRef.current)checkoutRequestIdRef.current=crypto.randomUUID();const clientRequestId=checkoutRequestIdRef.current;setPhoneError('');setCheckoutError('');setIsCheckingOut(true);setShowPhonePrompt(false);try{const cashfree=await load({mode:process.env.NODE_ENV==='production'?'production':'sandbox'});if(!cashfree)throw new Error('Payment gateway could not be initialized.');const response=await apiClient.post('/payments/create',{productId:product.id,customerPhone:phone,clientRequestId});if(response.data?.alreadyPurchased&&response.data?.order_id){router.push(`/payment-success?order_id=${encodeURIComponent(response.data.order_id)}`);return;}if(!response.data?.payment_session_id)throw new Error('Payment session was not returned by the server.');await cashfree.checkout({paymentSessionId:response.data.payment_session_id,redirectTarget:'_self'});}catch(err:any){checkoutRequestIdRef.current=null;if(err?.response?.status===401||err?.response?.status===403){router.replace(`/login?redirect=${encodeURIComponent(`/product/${id}`)}`);return;}setCheckoutError(err?.response?.data?.error||err?.message||'Payment could not be initialized. Please try again.');setShowPhonePrompt(true);}finally{setIsCheckingOut(false);}};
- if(loading)return <main className={styles.pageContainer}><div className={styles.loading}><PlutenSkeleton variant="product"/><PlutenSkeleton variant="text"/></div></main>;
- if(!product)return <main className={styles.unavailable}><button className={styles.backButton} onClick={()=>router.push('/')}><ArrowLeft size={16}/> Back to marketplace</button><div className={styles.unavailableInner}><div className={styles.unavailableIcon}><AlertCircle size={24}/></div><p className={styles.eyebrow}>PLUTEN / PRODUCT</p><h1>Product unavailable.</h1><p>{loadError||'This asset is no longer available.'}</p></div></main>;
- return <main className={styles.pageContainer}>
-  <nav className={styles.topNav}><button className={styles.brand} onClick={()=>router.push('/')} aria-label="Pluten home">PLUTEN</button><button className={styles.backButton} onClick={()=>router.push('/')}><ArrowLeft size={16}/> Back to market</button></nav>
-  <section className={styles.productLayout}><div><div className={styles.imageContainer}>{product.thumbnail?<img src={product.thumbnail} alt="" className={styles.productImage}/>:<div className={styles.noImage}>NO PREVIEW</div>}</div><div className={styles.productInfo}><h1 className={styles.title}>{product.title}</h1><div className={styles.vendorInfo}><span className={styles.vendorIcon}><User size={15}/></span><span>Pluten Network</span><Check size={14} className={styles.verified}/><span className={styles.dot}>·</span><span>{product.category}</span></div><p className={styles.description}>{product.description}</p></div></div>
-    <aside className={styles.checkoutCard}><div className={styles.priceTop}><span className={styles.priceLabel}>Today</span>{hasDiscount?<><div className={styles.priceRow}><strong>₹{finalPrice.toLocaleString('en-IN')}</strong><span className={styles.discountPill}>{offer?.type==='PERCENTAGE'?`${offer.value}% OFF`:`₹${Number(offer?.value).toLocaleString('en-IN')} OFF`}</span></div><span className={styles.originalPrice}>₹{price.toLocaleString('en-IN')}</span></>:<strong className={styles.priceOnly}>₹{price.toLocaleString('en-IN')}</strong>}</div>{loadingOffers&&<div className={styles.offerChecking}><Loader2 size={14} className="pluten-login-spinner"/> Checking current offers</div>}{checkoutError&&<div className={styles.checkoutError}><AlertCircle size={15}/>{checkoutError}</div>}<button className={styles.buyBtn} onClick={buy} disabled={isCheckingOut}>{isCheckingOut?<><Loader2 size={17} className="pluten-login-spinner"/> Processing</>:'Buy this'}</button><div className={styles.guarantee}><ShieldCheck size={15}/> Secure transaction via Cashfree</div></aside>
-  </section>
-  {showPhonePrompt&&<div className={styles.modalOverlay}><div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="phone-title"><div className={styles.modalHeader}><div><p className={styles.modalEyebrow}>PLUTEN / CHECKOUT</p><h2 id="phone-title">Billing details</h2></div><button className={styles.modalClose} onClick={()=>!isCheckingOut&&setShowPhonePrompt(false)} aria-label="Close"><X size={18}/></button></div><p className={styles.modalText}>Use a valid 10-digit phone number for secure Cashfree processing.</p>{phoneError&&<div className={styles.phoneError}>{phoneError}</div>}<form onSubmit={checkout}><label className={styles.phoneWrap}><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel" maxLength={10} value={phoneNumber} onChange={e=>{setPhoneNumber(e.target.value.replace(/\D/g,''));setPhoneError('');}} autoFocus placeholder="00000 00000" disabled={isCheckingOut}/></label><button className={styles.payButton} type="submit" disabled={isCheckingOut||phoneNumber.length!==10}>{isCheckingOut?<><Loader2 size={17} className="pluten-login-spinner"/> Processing</>:'Proceed to payment'}</button></form></div></div>}
- </main>;
+export async function generateMetadata({params}:{params:Promise<{id:string}>}):Promise<Metadata>{
+  const {id}=await params; const product=await getProduct(id);
+  if(!product)return {title:'Product unavailable'};
+  return {title:product.title,description:product.description,alternates:{canonical:`https://pluten.site/product/${id}`},openGraph:{title:`${product.title} | Pluten`,description:product.description,url:`https://pluten.site/product/${id}`,type:'website',images:product.thumbnail?[{url:product.thumbnail,alt:product.title}]:undefined}};
+}
+
+export default async function ProductPage({params}:{params:Promise<{id:string}>}){
+  const {id}=await params; const product=await getProduct(id);
+  if(!product){return <main className="pluten-error-page"><section className="pluten-error-card"><div className="pluten-error-kicker">PLUTEN / PRODUCT</div><h1>Product unavailable.</h1><p>This product no longer exists or is temporarily unavailable.</p></section></main>;}
+  const jsonLd={
+    '@context':'https://schema.org','@type':'Product',name:product.title,description:product.description,image:product.thumbnail?[product.thumbnail]:[],sku:product.id,brand:{'@type':'Brand',name:'Pluten'},offers:{'@type':'Offer',url:`https://pluten.site/product/${id}`,priceCurrency:'INR',price:Number(product.finalPrice ?? product.price).toFixed(2),availability:'https://schema.org/InStock'},
+  };
+  const safeJson=JSON.stringify(jsonLd).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={{__html:safeJson}}/><ProductDetailClient id={id} initialProduct={product}/></>;
 }

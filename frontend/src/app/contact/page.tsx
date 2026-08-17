@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import styles from '../legal.module.css';
+
+export const metadata={title:'Contact Pluten',description:'Need help with an account, order, or digital product?'};
+
+export default function Page(){return <main className={styles.page}><div className={styles.inner}><nav className={styles.nav}><Link href="/" className={styles.brand}>PLUTEN</Link><Link href="/" className={styles.back}>Back to Pluten</Link></nav><p className={styles.eyebrow}>PLUTEN / CONTACT</p><h1 className={styles.title}>Contact Pluten.</h1><p className={styles.updated}>Need help with an account, order, or digital product?</p><article className={styles.content} dangerouslySetInnerHTML={{__html:`<h2>Support</h2><p>Email support@pluten.site and include your order reference when your request is about a purchase.</p><h2>Instagram</h2><p>For public updates and brand content, visit the official Pluten Instagram profile.</p><h2>What to include</h2><p>For technical problems, describe what you attempted, the page you were on, and the error message shown. Never send passwords, payment credentials, or authentication tokens.</p>`}} /><footer className={styles.footer}>© {new Date().getFullYear()} Pluten · support@pluten.site</footer></div></main>}

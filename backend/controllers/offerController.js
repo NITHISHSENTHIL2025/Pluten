@@ -1,383 +1,244 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
+const recordAudit = require('../utils/auditLogger');
 
-const prisma = new PrismaClient();
+const ensureCouponAvailable = async (couponCode, ignoreId = null) => {
+  const code = String(couponCode || '').trim();
+  if (!code) return null;
+  const existing = await prisma.offer.findFirst({
+    where: {
+      couponCode: { equals: code, mode: 'insensitive' },
+      ...(ignoreId ? { id: { not: ignoreId } } : {}),
+    },
+    select: { id: true, name: true },
+  });
+  return existing || null;
+};
+
+const parsePagination = (req) => {
+  const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 25));
+  return { page, limit, skip: (page - 1) * limit };
+};
+
+const parseOfferInput = (body) => ({
+  name: String(body.name || '').trim(),
+  type: body.type,
+  value: Number(body.value),
+  applyTo: body.applyTo,
+  minOrderAmount:
+    body.minOrderAmount === undefined || body.minOrderAmount === null || body.minOrderAmount === ''
+      ? null
+      : Number(body.minOrderAmount),
+  couponCode: body.couponCode ? String(body.couponCode).trim() : null,
+  autoApply: Boolean(body.autoApply),
+  status: body.status || 'DRAFT',
+  startAt: new Date(body.startAt),
+  endAt: new Date(body.endAt),
+});
+
+const validateOfferInput = ({ offerData, productIds }) => {
+  if (!offerData.name || offerData.name.length < 3) return 'Offer name is required.';
+  if (!Number.isFinite(offerData.value) || offerData.value <= 0) return 'Discount value must be greater than zero.';
+  if (offerData.type === 'PERCENTAGE' && offerData.value > 100) return 'Percentage discount cannot exceed 100%.';
+  if (!['PERCENTAGE', 'FIXED'].includes(offerData.type)) return 'Invalid discount type.';
+  if (!['ALL', 'SELECTED'].includes(offerData.applyTo)) return 'Invalid offer scope.';
+  if (offerData.minOrderAmount !== null && (!Number.isFinite(offerData.minOrderAmount) || offerData.minOrderAmount < 0)) {
+    return 'Minimum order amount must be zero or greater.';
+  }
+  if (Number.isNaN(offerData.startAt.getTime()) || Number.isNaN(offerData.endAt.getTime())) return 'Invalid offer dates.';
+  if (offerData.endAt <= offerData.startAt) return 'End date must be after the start date.';
+  if (offerData.applyTo === 'SELECTED' && (!Array.isArray(productIds) || productIds.length === 0)) {
+    return 'Selected-product offers require at least one product.';
+  }
+  return null;
+};
+
+const buildCreateData = (offerData, productIds) => ({
+  ...offerData,
+  ...(offerData.applyTo === 'SELECTED'
+    ? { products: { connect: [...new Set(productIds)].map((id) => ({ id })) } }
+    : {}),
+});
+
+const buildUpdateData = (offerData, productIds) => ({
+  ...offerData,
+  products:
+    offerData.applyTo === 'SELECTED'
+      ? { set: [...new Set(productIds)].map((id) => ({ id })) }
+      : { set: [] },
+});
+
+const offerInclude = {
+  products: {
+    select: { id: true, title: true },
+  },
+};
 
 const createOffer = async (req, res) => {
-    try {
-        const {
-            name,
-            type,
-            value,
-            applyTo,
-            minOrderAmount,
-            couponCode,
-            autoApply,
-            status,
-            startAt,
-            endAt,
-            productIds,
-        } = req.body;
+  try {
+    const offerData = parseOfferInput(req.body || {});
+    const productIds = Array.isArray(req.body?.productIds) ? req.body.productIds : [];
+    const validationError = validateOfferInput({ offerData, productIds });
+    if (validationError) return res.status(400).json({ error: validationError });
 
-        const offerData = {
-            name: name.trim(),
-            type,
-            value: Number(value),
-            applyTo,
-            minOrderAmount:
-                minOrderAmount !== undefined &&
-                minOrderAmount !== null
-                    ? Number(minOrderAmount)
-                    : null,
-            couponCode:
-                couponCode?.trim() || null,
-            autoApply: Boolean(
-                autoApply
-            ),
-            status: status || 'DRAFT',
-            startAt: new Date(startAt),
-            endAt: new Date(endAt),
-        };
+    const duplicateCoupon = await ensureCouponAvailable(offerData.couponCode);
+    if (duplicateCoupon) return res.status(409).json({ error: 'That coupon code is already in use.' });
 
-        if (
-            offerData.type ===
-                'PERCENTAGE' &&
-            offerData.value > 100
-        ) {
-            return res.status(400).json({
-                error:
-                    'Percentage discount cannot exceed 100%.',
-            });
-        }
-
-        if (
-            offerData.endAt <=
-            offerData.startAt
-        ) {
-            return res.status(400).json({
-                error:
-                    'End date must be after the start date.',
-            });
-        }
-
-        if (
-            offerData.applyTo ===
-                'SELECTED' &&
-            (!Array.isArray(productIds) ||
-                productIds.length === 0)
-        ) {
-            return res.status(400).json({
-                error:
-                    'Selected-product offers require at least one product.',
-            });
-        }
-
-        if (
-            offerData.autoApply &&
-            offerData.status === 'ACTIVE'
-        ) {
-            await prisma.offer.updateMany({
-                where: {
-                    autoApply: true,
-                    status: 'ACTIVE',
-                },
-                data: {
-                    autoApply: false,
-                },
-            });
-        }
-
-        if (
-            offerData.applyTo ===
-            'SELECTED'
-        ) {
-            offerData.products = {
-                connect: productIds.map(
-                    (id) => ({ id })
-                ),
-            };
-        }
-
-        const offer =
-            await prisma.offer.create({
-                data: offerData,
-                include: {
-                    products: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                    },
-                },
-            });
-
-        res.status(201).json(offer);
-    } catch (error) {
-        console.error(
-            'Create Offer Error:',
-            error
-        );
-
-        res.status(500).json({
-            error:
-                'Failed to create offer.',
+    const offer = await prisma.$transaction(async (tx) => {
+      if (offerData.autoApply && offerData.status === 'ACTIVE') {
+        await tx.offer.updateMany({
+          where: { autoApply: true, status: 'ACTIVE' },
+          data: { autoApply: false },
         });
-    }
+      }
+
+      return tx.offer.create({
+        data: buildCreateData(offerData, productIds),
+        include: offerInclude,
+      });
+    });
+
+    await recordAudit({
+      userId: req.user.id,
+      action: 'CREATE_OFFER',
+      entity: 'OFFER',
+      entityId: offer.id,
+      details: { name: offer.name, type: offer.type, value: offer.value, status: offer.status },
+      req,
+    });
+
+    return res.status(201).json(offer);
+  } catch (error) {
+    console.error('[OFFERS] Create error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to create offer.' });
+  }
 };
 
-const getAllOffers = async (
-    req,
-    res
-) => {
-    try {
-        const offers =
-            await prisma.offer.findMany({
-                orderBy: {
-                    createdAt: 'desc',
-                },
-                include: {
-                    products: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                    },
-                },
-            });
+const getAllOffers = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req);
+    const search = String(req.query.search || '').trim();
+    const status = String(req.query.status || '').trim();
 
-        res.json(offers);
-    } catch (error) {
-        console.error(
-            'Fetch Offers Error:',
-            error
-        );
+    const where = {
+      ...(status && ['DRAFT', 'ACTIVE', 'PAUSED', 'EXPIRED'].includes(status) ? { status } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { couponCode: { contains: search, mode: 'insensitive' } },
+              { products: { some: { title: { contains: search, mode: 'insensitive' } } } },
+            ],
+          }
+        : {}),
+    };
 
-        res.status(500).json({
-            error:
-                'Failed to fetch offers.',
-        });
-    }
+    const [offers, total] = await Promise.all([
+      prisma.offer.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: offerInclude,
+      }),
+      prisma.offer.count({ where }),
+    ]);
+
+    return res.status(200).json({
+      data: offers,
+      pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
+    });
+  } catch (error) {
+    console.error('[OFFERS] Fetch error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to fetch offers.' });
+  }
 };
 
-const getActiveOffers = async (
-    req,
-    res
-) => {
-    try {
-        const now = new Date();
-
-        const offers =
-            await prisma.offer.findMany({
-                where: {
-                    status: 'ACTIVE',
-                    startAt: {
-                        lte: now,
-                    },
-                    endAt: {
-                        gte: now,
-                    },
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                },
-                include: {
-                    products: {
-                        select: {
-                            id: true,
-                        },
-                    },
-                },
-            });
-
-        res.json(offers);
-    } catch (error) {
-        console.error(
-            'Fetch Active Offers Error:',
-            error
-        );
-
-        res.status(500).json({
-            error:
-                'Failed to fetch active offers.',
-        });
-    }
+const getActiveOffers = async (req, res) => {
+  try {
+    const now = new Date();
+    const offers = await prisma.offer.findMany({
+      where: { status: 'ACTIVE', startAt: { lte: now }, endAt: { gte: now } },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: { products: { select: { id: true } } },
+    });
+    return res.status(200).json(offers);
+  } catch (error) {
+    console.error('[OFFERS] Active fetch error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to fetch active offers.' });
+  }
 };
 
-const updateOffer = async (
-    req,
-    res
-) => {
-    try {
-        const { id } =
-            req.params;
+const updateOffer = async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ error: 'Offer ID is required.' });
 
-        const {
-            name,
-            type,
-            value,
-            applyTo,
-            minOrderAmount,
-            couponCode,
-            autoApply,
-            status,
-            startAt,
-            endAt,
-            productIds,
-        } = req.body;
+    const offerData = parseOfferInput(req.body || {});
+    const productIds = Array.isArray(req.body?.productIds) ? req.body.productIds : [];
+    const validationError = validateOfferInput({ offerData, productIds });
+    if (validationError) return res.status(400).json({ error: validationError });
 
-        const updateData = {
-            name: name.trim(),
-            type,
-            value: Number(value),
-            applyTo,
-            minOrderAmount:
-                minOrderAmount !== undefined &&
-                minOrderAmount !== null
-                    ? Number(minOrderAmount)
-                    : null,
-            couponCode:
-                couponCode?.trim() || null,
-            autoApply: Boolean(
-                autoApply
-            ),
-            status,
-            startAt: new Date(startAt),
-            endAt: new Date(endAt),
-        };
+    const duplicateCoupon = await ensureCouponAvailable(offerData.couponCode, id);
+    if (duplicateCoupon) return res.status(409).json({ error: 'That coupon code is already in use.' });
 
-        if (
-            updateData.type ===
-                'PERCENTAGE' &&
-            updateData.value > 100
-        ) {
-            return res.status(400).json({
-                error:
-                    'Percentage discount cannot exceed 100%.',
-            });
-        }
-
-        if (
-            updateData.endAt <=
-            updateData.startAt
-        ) {
-            return res.status(400).json({
-                error:
-                    'End date must be after the start date.',
-            });
-        }
-
-        if (
-            updateData.applyTo ===
-            'SELECTED'
-        ) {
-            if (
-                !Array.isArray(
-                    productIds
-                ) ||
-                productIds.length === 0
-            ) {
-                return res.status(400).json({
-                    error:
-                        'Selected-product offers require at least one product.',
-                });
-            }
-
-            updateData.products = {
-                set: productIds.map(
-                    (prodId) => ({
-                        id: prodId,
-                    })
-                ),
-            };
-        }
-
-        if (
-            updateData.applyTo ===
-            'ALL'
-        ) {
-            updateData.products = {
-                set: [],
-            };
-        }
-
-        if (
-            updateData.autoApply &&
-            updateData.status === 'ACTIVE'
-        ) {
-            await prisma.offer.updateMany({
-                where: {
-                    id: {
-                        not: id,
-                    },
-                    autoApply: true,
-                    status: 'ACTIVE',
-                },
-                data: {
-                    autoApply: false,
-                },
-            });
-        }
-
-        const offer =
-            await prisma.offer.update({
-                where: { id },
-                data: updateData,
-                include: {
-                    products: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                    },
-                },
-            });
-
-        res.json(offer);
-    } catch (error) {
-        console.error(
-            'Update Offer Error:',
-            error
-        );
-
-        res.status(500).json({
-            error:
-                'Failed to update offer.',
+    const offer = await prisma.$transaction(async (tx) => {
+      if (offerData.autoApply && offerData.status === 'ACTIVE') {
+        await tx.offer.updateMany({
+          where: { id: { not: id }, autoApply: true, status: 'ACTIVE' },
+          data: { autoApply: false },
         });
-    }
+      }
+
+      return tx.offer.update({
+        where: { id },
+        data: buildUpdateData(offerData, productIds),
+        include: offerInclude,
+      });
+    });
+
+    await recordAudit({
+      userId: req.user.id,
+      action: 'UPDATE_OFFER',
+      entity: 'OFFER',
+      entityId: id,
+      details: { name: offer.name, type: offer.type, value: offer.value, status: offer.status },
+      req,
+    });
+
+    return res.status(200).json(offer);
+  } catch (error) {
+    if (error?.code === 'P2025') return res.status(404).json({ error: 'Offer not found.' });
+    console.error('[OFFERS] Update error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to update offer.' });
+  }
 };
 
-const deleteOffer = async (
-    req,
-    res
-) => {
-    try {
-        const { id } =
-            req.params;
+const deleteOffer = async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ error: 'Offer ID is required.' });
 
-        await prisma.offer.delete({
-            where: { id },
-        });
+    const offer = await prisma.offer.findUnique({ where: { id }, select: { id: true, name: true } });
+    if (!offer) return res.status(404).json({ error: 'Offer not found.' });
 
-        res.json({
-            message:
-                'Offer deleted successfully.',
-        });
-    } catch (error) {
-        console.error(
-            'Delete Offer Error:',
-            error
-        );
+    await prisma.offer.delete({ where: { id } });
 
-        res.status(500).json({
-            error:
-                'Failed to delete offer.',
-        });
-    }
+    await recordAudit({
+      userId: req.user.id,
+      action: 'DELETE_OFFER',
+      entity: 'OFFER',
+      entityId: id,
+      details: { name: offer.name },
+      req,
+    });
+
+    return res.status(200).json({ message: 'Offer deleted successfully.' });
+  } catch (error) {
+    console.error('[OFFERS] Delete error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Failed to delete offer.' });
+  }
 };
 
-module.exports = {
-    createOffer,
-    getAllOffers,
-    getActiveOffers,
-    updateOffer,
-    deleteOffer,
-};
+module.exports = { createOffer, getAllOffers, getActiveOffers, updateOffer, deleteOffer };

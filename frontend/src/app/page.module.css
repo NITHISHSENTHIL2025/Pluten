@@ -56,7 +56,7 @@
 .stateInner { max-width: 430px; }
 .stateTitle { margin: 12px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: 32px; letter-spacing: -.04em; color: #111; }
 .stateText { margin: 10px 0 0; font-size: 14px; line-height: 1.6; color: #7a7973; }
-.stateAction { margin-top: 18px; }
+.stateAction { display:inline-flex; margin-top:18px; min-height:44px; padding:0 16px; align-items:center; justify-content:center; border-radius:999px; background:#111; color:#fff; text-decoration:none; font-size:11px; font-weight:800; }
 .principle { background: #101010; color: white; }
 .principleInner { width: min(1280px, calc(100% - 48px)); margin: 0 auto; padding: 120px 0; display: grid; grid-template-columns: .8fr 1.2fr; gap: 10vw; align-items: end; }
 .principleEyebrow { color: #8d8d86; font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
@@ -98,6 +98,18 @@
   .footerInner { min-height: 112px; flex-wrap: wrap; padding: 20px 0; }
   .footerCopyright { width: 100%; order: 3; }
 }
+
+@media (max-width: 520px) {
+  .productGrid, .loadingGrid { grid-template-columns: 1fr; gap: 14px; }
+  .cardBottom { flex-direction: row; align-items: flex-end; }
+  .viewLabel { justify-content: initial; }
+  .productMeta { padding: 16px; }
+  .cardTitle { font-size: 19px; }
+  .footerInner { flex-direction: column; align-items: flex-start; padding: 28px 0; gap: 16px; }
+  .footerLinks { flex-wrap: wrap; gap: 14px 20px; }
+  .footerCopyright { width: auto; order: initial; }
+}
+
 @media (max-width: 374px) {
   .productGrid, .loadingGrid { grid-template-columns: 1fr; }
   .cardBottom { flex-direction: row; align-items: flex-end; }

@@ -93,6 +93,8 @@ const offerSchema =
             couponCode: z
                 .string()
                 .trim()
+                .max(40, 'Coupon code is too long.')
+                .regex(/^[A-Za-z0-9_-]*$/, 'Coupon code may contain only letters, numbers, hyphens, and underscores.')
                 .optional(),
 
             autoApply: z

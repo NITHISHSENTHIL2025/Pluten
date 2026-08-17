@@ -1,25 +1,29 @@
-// backend/utils/auditLogger.js
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
+
+const getClientIp = (req) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.length) return forwarded.split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+};
 
 const recordAudit = async ({ userId, action, entity, entityId, details, req }) => {
-    try {
-        const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        
-        await prisma.auditLog.create({
-            data: {
-                userId,
-                action,
-                entity,
-                entityId,
-                details: details ? JSON.stringify(details) : null,
-                ipAddress: String(ipAddress)
-            }
-        });
-    } catch (error) {
-        // Never crash the main request if audit logging fails, but log it to console
-        console.error("[COMPLIANCE FAULT] Failed to record audit log:", error.message);
-    }
+  try {
+    await prisma.auditLog.create({
+      data: {
+        userId,
+        action,
+        entity,
+        entityId,
+        details: details ? JSON.stringify(details) : null,
+        ipAddress: getClientIp(req),
+      },
+    });
+  } catch (error) {
+    console.error('[COMPLIANCE] Failed to record audit log:', {
+      requestId: req?.requestId,
+      error: error.message,
+    });
+  }
 };
 
 module.exports = recordAudit;

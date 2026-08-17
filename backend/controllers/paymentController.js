@@ -11,6 +11,24 @@ function toMoney(value) {
   return Number(n.toFixed(2));
 }
 
+const getCashfreeMode = () => (process.env.CASHFREE_MODE === 'production' ? 'production' : 'sandbox');
+
+const quoteOrder = async (req, res) => {
+  try {
+    const { productId, couponCode } = req.body || {};
+    if (!productId || typeof productId !== 'string') return res.status(400).json({ error: 'Product ID is required.' });
+    const product = await prisma.product.findFirst({ where: { id: productId, isArchived: false, isDigital: true } });
+    if (!product) return res.status(404).json({ error: 'Digital product not found or unavailable.' });
+    const offers = await getActiveOffers();
+    const pricing = calculateProductPricing(product, offers, normalizeCoupon(couponCode));
+    if (normalizeCoupon(couponCode) && !pricing.offer) return res.status(400).json({ error: 'That coupon is invalid or no longer available for this product.' });
+    return res.status(200).json({ success: true, ...pricing });
+  } catch (error) {
+    console.error('[PAYMENT] Quote error:', { requestId: req.requestId, message: error.message });
+    return res.status(500).json({ error: 'Unable to calculate the current price.' });
+  }
+};
+
 const createOrder = async (req, res) => {
   let internalOrderId = null;
   try {
@@ -59,7 +77,14 @@ const createOrder = async (req, res) => {
     if (!response?.data?.payment_session_id) throw new Error('Cashfree did not return a payment session.');
 
     await prisma.order.update({ where: { id: internalOrderId }, data: { transactionId: String(response.data.cf_order_id || 'GATEWAY_SESSION_CREATED') } });
-    return res.status(200).json({ success: true, payment_session_id: response.data.payment_session_id, order_id: internalOrderId, amount: finalPrice });
+    return res.status(200).json({
+      success: true,
+      payment_session_id: response.data.payment_session_id,
+      order_id: internalOrderId,
+      amount: finalPrice,
+      pricing,
+      cashfree_mode: getCashfreeMode(),
+    });
   } catch (error) {
     console.error('[PAYMENT] Create order error:', { requestId: req.requestId, message: error.message, gateway: error?.response?.data });
     if (internalOrderId) {
@@ -156,4 +181,4 @@ const webhookHandler = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, verifyPayment, webhookHandler };
+module.exports = { quoteOrder, createOrder, verifyPayment, webhookHandler };

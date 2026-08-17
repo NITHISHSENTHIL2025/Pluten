@@ -75,7 +75,6 @@ button { border: 0; }
   .pluten-nav-inner { width: min(var(--pluten-content), calc(100% - 32px)); min-height: 64px; grid-template-columns: 1fr auto; }
   .pluten-nav-links { display: none; }
   .pluten-mobile-toggle { display: inline-flex; }
-  .pluten-nav-icon:first-child { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

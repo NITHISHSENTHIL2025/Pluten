@@ -33,44 +33,368 @@ button { border: 0; }
 
 ::selection { background: #111; color: #fff; }
 
+/* =========================================================
+   PLUTEN PUBLIC NAVIGATION
+   ========================================================= */
+
 .pluten-nav {
   position: sticky;
   inset-block-start: 0;
   z-index: 100;
   width: 100%;
-  background: rgba(246, 246, 243, .88);
-  border-bottom: 1px solid rgba(17,17,17,.08);
+  background: rgba(246, 246, 243, 0.88);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
   backdrop-filter: blur(18px) saturate(120%);
   -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
+
 .pluten-nav-inner {
-  width: min(var(--pluten-content), calc(100% - 48px));
+  width: min(
+    var(--pluten-content),
+    calc(100% - 48px)
+  );
+
   min-height: 72px;
+
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+
   gap: 20px;
 }
-.pluten-brand { display: inline-flex; align-items: center; gap: 11px; color: inherit; text-decoration: none; min-width: 0; }
-.pluten-mark { width: 25px; height: 25px; border-radius: 50%; display: block; background: linear-gradient(90deg, #111 0 52%, transparent 52% 58%, #111 58% 64%, transparent 64% 70%, #111 70%); box-shadow: inset -1px 0 0 rgba(255,255,255,.4); }
-.pluten-brand-name { font-size: 14px; font-weight: 800; letter-spacing: .22em; }
-.pluten-nav-links { display: flex; align-items: center; justify-content: center; gap: 28px; }
-.pluten-nav-links a { color: #4f4f4b; font-size: 13px; font-weight: 600; text-decoration: none; transition: color .2s ease; }
-.pluten-nav-links a:hover { color: #111; }
-.pluten-nav-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
-.pluten-nav-icon, .pluten-mobile-toggle { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #222; background: transparent; text-decoration: none; transition: background .2s ease, color .2s ease, transform .2s ease; }
-.pluten-nav-icon:hover, .pluten-mobile-toggle:hover { background: rgba(0,0,0,.06); }
-.pluten-mobile-toggle { display: none; cursor: pointer; }
-.pluten-mobile-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.pluten-mobile-panel { margin-left: auto; width: min(360px, 100%); height: 100%; background: #f7f7f4; padding: calc(18px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); box-shadow: -24px 0 80px rgba(0,0,0,.18); }
-.pluten-mobile-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,.08); }
-.pluten-mobile-close { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d9d9d4; border-radius: 50%; background: #fff; cursor: pointer; }
-.pluten-mobile-links { display: grid; gap: 6px; padding-top: 22px; }
-.pluten-mobile-links a { padding: 17px 8px; border-bottom: 1px solid rgba(0,0,0,.07); color: #111; text-decoration: none; font-size: 22px; font-weight: 650; letter-spacing: -.03em; }
 
-:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
 
+/* =========================================================
+   PLUTEN BRAND
+   ========================================================= */
+
+.pluten-brand {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  color: inherit;
+  text-decoration: none;
+
+  flex-shrink: 0;
+}
+
+.pluten-brand-logo {
+  width: 30px;
+  height: 30px;
+
+  display: block;
+
+  object-fit: contain;
+
+  flex: 0 0 auto;
+}
+
+.pluten-brand-name {
+  font-size: 13px;
+  font-weight: 800;
+
+  letter-spacing: 0.22em;
+
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+
+/*
+ * OLD CSS-GENERATED LOGO
+ *
+ * Intentionally disabled.
+ *
+ * The navbar now uses the real Pluten logo asset.
+ */
+.pluten-mark {
+  display: none;
+}
+
+
+/* =========================================================
+   DESKTOP TEXT NAVIGATION
+   ========================================================= */
+
+/*
+ * Products / Library text navigation has been removed.
+ *
+ * The desktop navbar now uses only the three icons:
+ *
+ * Products
+ * Profile
+ * Library
+ */
+
+.pluten-nav-links {
+  display: none;
+}
+
+
+/* =========================================================
+   NAVIGATION ACTIONS
+   ========================================================= */
+
+.pluten-nav-actions {
+  display: flex;
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 6px;
+
+  flex-shrink: 0;
+}
+
+.pluten-nav-icon,
+.pluten-mobile-toggle {
+  width: 42px;
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: #222;
+
+  background: transparent;
+
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.pluten-nav-icon:hover,
+.pluten-mobile-toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.pluten-nav-icon:active,
+.pluten-mobile-toggle:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   MOBILE MENU BUTTON
+   ========================================================= */
+
+.pluten-mobile-toggle {
+  display: none;
+
+  border: 0;
+
+  cursor: pointer;
+
+  padding: 0;
+}
+
+
+/* =========================================================
+   MOBILE OVERLAY
+   ========================================================= */
+
+.pluten-mobile-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 300;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+
+/* =========================================================
+   MOBILE PANEL
+   ========================================================= */
+
+.pluten-mobile-panel {
+  margin-left: auto;
+
+  width: min(360px, 100%);
+
+  height: 100%;
+
+  background: #f7f7f4;
+
+  padding:
+    calc(18px + env(safe-area-inset-top))
+    20px
+    calc(24px + env(safe-area-inset-bottom));
+
+  box-shadow:
+    -24px 0 80px rgba(0, 0, 0, 0.18);
+
+  overflow-y: auto;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* =========================================================
+   MOBILE HEADER
+   ========================================================= */
+
+.pluten-mobile-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding-bottom: 24px;
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   MOBILE CLOSE BUTTON
+   ========================================================= */
+
+.pluten-mobile-close {
+  width: 44px;
+  height: 44px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid #d9d9d4;
+
+  border-radius: 50%;
+
+  background: #fff;
+
+  color: #111;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.pluten-mobile-close:hover {
+  background: #f1f1ed;
+}
+
+.pluten-mobile-close:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   MOBILE LINKS
+   ========================================================= */
+
+.pluten-mobile-links {
+  display: grid;
+
+  gap: 6px;
+
+  padding-top: 22px;
+}
+
+.pluten-mobile-links a {
+  padding: 17px 8px;
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.07);
+
+  color: #111;
+
+  text-decoration: none;
+
+  font-size: 22px;
+
+  font-weight: 650;
+
+  letter-spacing: -0.03em;
+
+  transition:
+    opacity 0.2s ease,
+    padding-left 0.2s ease;
+}
+
+.pluten-mobile-links a:hover {
+  opacity: 0.65;
+  padding-left: 12px;
+}
+
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid #111;
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MOBILE BREAKPOINT
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .pluten-nav-inner {
+    width: min(
+      var(--pluten-content),
+      calc(100% - 32px)
+    );
+
+    min-height: 64px;
+
+    gap: 12px;
+  }
+
+  /*
+   * Keep Products / Profile / Library icons
+   * visible on mobile as well.
+   */
+
+  .pluten-nav-icon {
+    display: none;
+  }
+
+  /*
+   * Mobile uses the hamburger menu.
+   */
+
+  .pluten-mobile-toggle {
+    display: inline-flex;
+  }
+
+  .pluten-brand-logo {
+    width: 29px;
+    height: 29px;
+  }
+
+  .pluten-brand-name {
+    font-size: 12px;
+    letter-spacing: 0.20em;
+  }
+}
 @media (max-width: 760px) {
   .pluten-nav-inner { width: min(var(--pluten-content), calc(100% - 32px)); min-height: 64px; grid-template-columns: 1fr auto; }
   .pluten-nav-links { display: none; }

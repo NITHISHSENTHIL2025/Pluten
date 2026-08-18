@@ -3,3 +3,79 @@
 
 .embeddedNotice{display:grid;gap:10px;margin-top:26px;padding:16px;border:1px solid #e3e1da;border-radius:16px;background:#fafaf7;text-align:center;color:#65635d;font-size:12px;line-height:1.55}.embeddedNotice strong{color:#111;font-size:13px}.browserButton{min-height:46px;margin-top:4px;border-radius:999px;background:#111;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:800;cursor:pointer}.browserButton:hover{background:#1b1b1b}
 @media(max-width:480px){.googleWrap{margin-top:24px}.embeddedNotice{margin-top:22px}.browserButton{width:100%}}
+.embeddedNotice {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.embeddedNotice strong {
+  font-size: 15px;
+}
+
+.embeddedNotice > span {
+  color: #6b6963;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.browserButton {
+  min-height: 46px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.browserButton:active {
+  transform: translateY(1px);
+}
+
+.browserSecondary {
+  min-height: 40px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.browserInstructions {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.browserInstructions p {
+  margin: 0;
+  color: #65625c;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.browserInstructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #4d4b46;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.browserInstructions li + li {
+  margin-top: 4px;
+}

@@ -73,7 +73,7 @@ const createOrder = async (req, res) => {
       },
     };
 
-    const response = await Cashfree.PGCreateOrder(API_VERSION, request);
+    const response = await Cashfree.PGCreateOrder(request);
     if (!response?.data?.payment_session_id) throw new Error('Cashfree did not return a payment session.');
 
     await prisma.order.update({ where: { id: internalOrderId }, data: { transactionId: String(response.data.cf_order_id || 'GATEWAY_SESSION_CREATED') } });
@@ -88,7 +88,7 @@ const createOrder = async (req, res) => {
   } catch (error) {
     console.error('[PAYMENT] Create order error:', { requestId: req.requestId, message: error.message, gateway: error?.response?.data });
     if (internalOrderId) {
-      try { await prisma.order.updateMany({ where: { id: internalOrderId, status: 'PENDING' }, data: { transactionId: 'GATEWAY_CREATE_FAILED' } }); }
+      try { await prisma.order.updateMany({ where: { id: internalOrderId, status: 'PENDING' }, data: { status: 'FAILED', transactionId: 'GATEWAY_CREATE_FAILED' } }); }
       catch (updateError) { console.error('[PAYMENT] Failed to mark gateway create failure:', updateError.message); }
     }
     return res.status(502).json({ error: 'Payment could not be initialized. Please start checkout again.' });
@@ -103,7 +103,7 @@ const verifyPayment = async (req, res) => {
     if (!order) return res.status(404).json({ error: 'Order not found for the authenticated account.' });
     if (order.status === 'SUCCESS') return res.status(200).json({ success: true, message: 'Asset already secured.', order });
 
-    const cfResponse = await Cashfree.PGOrderFetchPayments(API_VERSION, orderId);
+    const cfResponse = await Cashfree.PGOrderFetchPayments(orderId);
     const successfulPayment = Array.isArray(cfResponse?.data) ? cfResponse.data.find((payment) => payment.payment_status === 'SUCCESS') : null;
     if (!successfulPayment) return res.status(409).json({ error: 'Payment has not been confirmed yet.', status: 'PENDING' });
 
@@ -111,7 +111,7 @@ const verifyPayment = async (req, res) => {
     const expectedAmount = toMoney(order.totalAmount);
     if (gatewayAmount === null || expectedAmount === null || gatewayAmount !== expectedAmount) {
       console.error('[SECURITY] Payment amount mismatch', { requestId: req.requestId, orderId, expectedAmount, gatewayAmount });
-      await prisma.order.update({ where: { id: orderId }, data: { status: 'FLAGGED_AMOUNT_MISMATCH' } });
+      await prisma.order.update({ where: { id: orderId }, data: { status: 'FAILED', transactionId: 'GATEWAY_AMOUNT_MISMATCH' } });
       return res.status(400).json({ error: 'Payment verification failed due to a monetary mismatch.' });
     }
 
@@ -165,13 +165,13 @@ const webhookHandler = async (req, res) => {
       const expectedAmount = toMoney(order.totalAmount);
       const cfPaymentId = payload?.data?.payment?.cf_payment_id;
       if (gatewayAmount === null || expectedAmount === null || gatewayAmount !== expectedAmount) {
-        await prisma.order.update({ where: { id: orderId }, data: { status: 'FLAGGED_AMOUNT_MISMATCH' } });
+        await prisma.order.update({ where: { id: orderId }, data: { status: 'FAILED', transactionId: 'GATEWAY_AMOUNT_MISMATCH' } });
         return res.status(200).send('WEBHOOK_RECEIVED');
       }
       if (!cfPaymentId) return res.status(400).send('Malformed payment webhook.');
       await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { status: 'SUCCESS', transactionId: String(cfPaymentId) } });
     } else if (event && /FAILED|CANCELLED|USER_DROPPED|EXPIRED/i.test(event)) {
-      await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { transactionId: `GATEWAY_${String(event).slice(0, 50)}` } });
+      await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { status: 'FAILED', transactionId: `GATEWAY_${String(event).slice(0, 50)}` } });
     }
 
     return res.status(200).send('WEBHOOK_RECEIVED');

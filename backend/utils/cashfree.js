@@ -1,19 +1,48 @@
-const { Cashfree } = require('cashfree-pg');
+const { Cashfree: CashfreeSDK } = require('cashfree-pg');
 require('dotenv').config();
 
-const appId = String(process.env.CASHFREE_APP_ID || '').trim();
-const secretKey = String(process.env.CASHFREE_SECRET_KEY || '').trim();
-const apiVersion = String(process.env.CASHFREE_API_VERSION || '2025-01-01').trim();
+const appId = String(
+  process.env.CASHFREE_APP_ID || '',
+).trim();
+
+const secretKey = String(
+  process.env.CASHFREE_SECRET_KEY || '',
+).trim();
+
+const apiVersion = String(
+  process.env.CASHFREE_API_VERSION || '2025-01-01',
+).trim();
+
+const isProduction =
+  String(process.env.CASHFREE_MODE || '')
+    .trim()
+    .toLowerCase() === 'production';
 
 if (!appId || !secretKey) {
-  console.warn('[CASHFREE] Credentials are not configured at process startup.');
+  console.warn(
+    '[CASHFREE] Credentials are not configured at process startup.',
+  );
 }
 
-Cashfree.XClientId = appId;
-Cashfree.XClientSecret = secretKey;
-Cashfree.XEnvironment = process.env.CASHFREE_MODE === 'production'
-  ? Cashfree.Environment.PRODUCTION
-  : Cashfree.Environment.SANDBOX;
-Cashfree.XApiVersion = apiVersion;
+/*
+ * cashfree-pg v6 uses an instance-based client.
+ * The v5+ Node SDK documentation shows:
+ *
+ *   new Cashfree(Cashfree.SANDBOX, clientId, clientSecret)
+ *
+ * Do not use the pre-v5 static XClientId/XEnvironment API.
+ */
+const environment = isProduction
+  ? CashfreeSDK.PRODUCTION
+  : CashfreeSDK.SANDBOX;
 
-module.exports = { Cashfree, CASHFREE_API_VERSION: apiVersion };
+const Cashfree = new CashfreeSDK(
+  environment,
+  appId,
+  secretKey,
+);
+
+module.exports = {
+  Cashfree,
+  CASHFREE_API_VERSION: apiVersion,
+};

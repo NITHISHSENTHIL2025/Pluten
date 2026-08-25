@@ -1,0 +1,776 @@
+.page {
+  min-height: 100vh;
+  background: #f7f7f3;
+  color: #111111;
+}
+
+.dashboard {
+  min-height: calc(100vh - 80px);
+  padding: 88px 0 120px;
+}
+
+.shell {
+  width: min(1380px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding-bottom: 42px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.eyebrow,
+.cardKicker {
+  color: #94948c;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+}
+
+.topbar h1 {
+  margin: 18px 0 0;
+  font-size: clamp(48px, 6vw, 82px);
+  font-weight: 550;
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+}
+
+.topbar p {
+  max-width: 550px;
+  margin: 18px 0 0;
+  color: #71716a;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refreshButton,
+.createButton,
+.primaryAction,
+.editAction,
+.viewAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 220ms ease,
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.refreshButton:hover,
+.createButton:hover,
+.primaryAction:hover,
+.editAction:hover,
+.viewAction:hover {
+  transform: translateY(-2px);
+}
+
+.refreshButton {
+  padding: 0 17px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  background: rgba(255, 255, 255, 0.45);
+  color: #222222;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.createButton {
+  padding: 0 18px;
+  color: #ffffff;
+  background: #111111;
+  box-shadow: 0 12px 28px rgba(17, 17, 17, 0.1);
+}
+
+.createButton:hover {
+  background: #222222;
+  box-shadow: 0 17px 38px rgba(17, 17, 17, 0.15);
+}
+
+.loadingCard,
+.authCard,
+.errorCard {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 48px;
+  padding: 32px;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.loadingIcon,
+.authIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  color: #111111;
+  background: #ecece7;
+}
+
+.loadingCard div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.loadingCard strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.loadingCard span {
+  color: #7b7b74;
+  font-size: 13px;
+}
+
+.authCard {
+  align-items: flex-start;
+  padding: 44px;
+}
+
+.authCopy h2,
+.errorCard h2,
+.emptyContent h2 {
+  margin: 12px 0 0;
+  font-size: clamp(34px, 4vw, 55px);
+  font-weight: 550;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+.authCopy p,
+.errorCard p,
+.emptyContent p {
+  max-width: 620px;
+  margin: 20px 0 0;
+  color: #71716a;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.primaryAction {
+  width: fit-content;
+  margin-top: 28px;
+  padding: 0 19px;
+  color: #ffffff;
+  background: #111111;
+  border: 0;
+}
+
+.primaryAction:hover {
+  background: #242424;
+  box-shadow: 0 15px 35px rgba(17, 17, 17, 0.12);
+}
+
+.errorCard {
+  justify-content: space-between;
+}
+
+.errorCard .primaryAction {
+  flex: 0 0 auto;
+}
+
+.emptyState {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+  gap: 80px;
+  align-items: center;
+  margin-top: 56px;
+  padding: 60px;
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.11);
+  border-radius: 30px;
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(255, 255, 255, 0.95),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #efefea 0%,
+      #f8f8f4 48%,
+      #ededE7 100%
+    );
+}
+
+.emptyVisual {
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.12),
+      transparent 45%
+    ),
+    #111111;
+}
+
+.emptyVisualInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: #ffffff;
+}
+
+.emptyVisualInner span {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.emptyVisualInner svg {
+  opacity: 0.92;
+}
+
+.emptyVisualInner small {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+.emptyContent {
+  max-width: 670px;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 46px;
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.summaryRow > div {
+  min-height: 150px;
+  padding: 30px;
+}
+
+.summaryRow > div + div {
+  border-left: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.summaryRow span {
+  display: block;
+  color: #92928a;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.2em;
+}
+
+.summaryRow strong {
+  display: block;
+  margin-top: 18px;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.portfolioCard,
+.addCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.11);
+  border-radius: 24px;
+  background: #fbfbf8;
+}
+
+.portfolioCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.portfolioCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 25px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.09);
+}
+
+.cardIdentity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 13px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  color: #fff;
+  background: #111;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cardNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cardNameRow h2 {
+  overflow: hidden;
+  margin: 0;
+  color: #121212;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardIdentity p {
+  margin: 6px 0 0;
+  color: #808079;
+  font-size: 12px;
+}
+
+.publishedBadge,
+.draftBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.publishedBadge {
+  color: #0e6d4a;
+  background: rgba(26, 155, 106, 0.09);
+}
+
+.draftBadge {
+  color: #77776f;
+  background: #eeeeE9;
+}
+
+.cardNumber {
+  overflow: hidden;
+  max-width: 160px;
+  color: #a1a199;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portfolioCardBody {
+  padding: 20px;
+}
+
+.previewMock {
+  min-height: 330px;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(255, 255, 255, 0.08),
+      transparent 26%
+    ),
+    linear-gradient(
+      145deg,
+      #151515,
+      #0d0d0d
+    );
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 300ms ease;
+}
+
+.portfolioCard:hover .previewMock {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(17, 17, 17, 0.13);
+}
+
+.previewTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.previewHero {
+  padding-top: 55px;
+}
+
+.previewHero > span {
+  display: block;
+  font-size: clamp(35px, 4vw, 57px);
+  font-weight: 550;
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+}
+
+.previewHero strong {
+  display: block;
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 14px;
+  font-weight: 450;
+}
+
+.previewHero small {
+  display: block;
+  max-width: 360px;
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.33);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.previewStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 45px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+.previewStats span {
+  display: block;
+}
+
+.previewStats span + span {
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.previewStats strong {
+  display: block;
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.previewStats small {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.26);
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+}
+
+.portfolioCardMeta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 15px;
+  background: #f4f4ef;
+}
+
+.portfolioCardMeta > div {
+  padding: 15px;
+}
+
+.portfolioCardMeta > div + div {
+  border-left: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.portfolioCardMeta span {
+  display: block;
+  color: #a1a199;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.17em;
+}
+
+.portfolioCardMeta strong {
+  display: block;
+  margin-top: 8px;
+  color: #393934;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.portfolioCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding: 17px 20px 20px;
+  border-top: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.editAction,
+.viewAction {
+  min-height: 42px;
+  padding: 0 15px;
+}
+
+.editAction {
+  color: #ffffff;
+  background: #111111;
+}
+
+.editAction:hover {
+  background: #242424;
+}
+
+.viewAction {
+  color: #222222;
+  border: 1px solid rgba(17, 17, 17, 0.13);
+  background: #ffffff;
+}
+
+.privateLabel {
+  color: #999990;
+  font-size: 11px;
+}
+
+.addCard {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 160px;
+  padding: 25px;
+  color: #1a1a1a;
+  transition:
+    transform 280ms ease,
+    background 280ms ease,
+    box-shadow 280ms ease;
+}
+
+.addCard:hover {
+  transform: translateY(-4px);
+  background: #ffffff;
+  box-shadow: 0 20px 45px rgba(17, 17, 17, 0.07);
+}
+
+.addIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 15px;
+  background: #efefe9;
+}
+
+.addCard > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.addCard strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.addCard span {
+  color: #86867f;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.addCard > svg {
+  color: #888880;
+}
+
+.spin {
+  animation: spin 850ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1050px) {
+  .emptyState {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .portfolioGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .previewMock {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 800px) {
+  .dashboard {
+    padding-top: 62px;
+  }
+
+  .shell {
+    width: min(100% - 30px, 680px);
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .refreshButton,
+  .createButton {
+    flex: 1;
+  }
+
+  .summaryRow {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryRow > div + div {
+    border-left: 0;
+    border-top: 1px solid rgba(17, 17, 17, 0.12);
+  }
+
+  .emptyState {
+    padding: 28px;
+    border-radius: 22px;
+  }
+
+  .emptyVisual {
+    min-height: 260px;
+  }
+
+  .portfolioCardTop {
+    flex-direction: column;
+  }
+
+  .cardNumber {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .refreshButton,
+  .createButton {
+    width: 100%;
+  }
+
+  .authCard,
+  .errorCard {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 26px;
+  }
+
+  .errorCard {
+    gap: 20px;
+  }
+
+  .primaryAction {
+    width: 100%;
+  }
+
+  .portfolioCardFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .editAction,
+  .viewAction {
+    width: 100%;
+  }
+
+  .previewMock {
+    min-height: 250px;
+    padding: 18px;
+  }
+
+  .previewHero {
+    padding-top: 38px;
+  }
+
+  .previewHero > span {
+    font-size: 42px;
+  }
+
+  .previewStats {
+    margin-top: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refreshButton,
+  .createButton,
+  .primaryAction,
+  .editAction,
+  .viewAction,
+  .previewMock,
+  .addCard {
+    transition: none;
+  }
+
+  .spin {
+    animation: none;
+  }
+}

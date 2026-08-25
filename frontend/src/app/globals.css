@@ -1,3 +1,5 @@
+/* frontend/src/app/globals.css */
+
 :root {
   --pluten-black: #0a0a0a;
   --pluten-ink: #111111;
@@ -14,241 +16,526 @@
   --pluten-content: 1280px;
 }
 
-* { box-sizing: border-box; }
-html { min-width: 320px; scroll-behavior: smooth; }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
   background: var(--pluten-paper);
   color: var(--pluten-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Segoe UI",
+    sans-serif;
+
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
-button, input, textarea, select { font: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-img { max-width: 100%; }
-button { border: 0; }
 
-::selection { background: #111; color: #fff; }
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  border: 0;
+}
+
+::selection {
+  background: #111;
+  color: #fff;
+}
 
 /* =========================================================
-   PLUTEN PUBLIC NAVIGATION
-   ========================================================= */
+   PLUTEN PREMIUM PUBLIC NAVIGATION
+========================================================= */
 
 .pluten-nav {
   position: sticky;
-  inset-block-start: 0;
-  z-index: 100;
+  top: 0;
+  z-index: 1000;
+
   width: 100%;
-  background: rgba(246, 246, 243, 0.88);
-  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
+
+  background:
+    rgba(246, 246, 243, 0.88);
+
+  border-bottom:
+    1px solid rgba(17, 17, 17, 0.075);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(135%);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(135%);
 }
 
 .pluten-nav-inner {
-  width: min(
-    var(--pluten-content),
-    calc(100% - 48px)
-  );
+  width:
+    min(
+      var(--pluten-content),
+      calc(100% - 48px)
+    );
 
   min-height: 72px;
 
   margin: 0 auto;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
 
-  gap: 20px;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 34px;
 }
 
-
 /* =========================================================
-   PLUTEN BRAND
-   ========================================================= */
+   BRAND
+========================================================= */
 
 .pluten-brand {
   display: inline-flex;
+
   align-items: center;
 
   gap: 10px;
 
   min-width: 0;
 
-  color: inherit;
+  color: #111;
+
   text-decoration: none;
 
   flex-shrink: 0;
 }
 
+.pluten-brand-mark {
+  width: 29px;
+  height: 29px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+      rgba(17, 17, 17, 0.08);
+
+  border-radius: 50%;
+
+  background: #fff;
+
+  box-shadow:
+    0 3px 12px
+      rgba(0, 0, 0, 0.05);
+}
+
 .pluten-brand-logo {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 
   display: block;
 
   object-fit: contain;
-
-  flex: 0 0 auto;
 }
 
 .pluten-brand-name {
-  font-size: 13px;
-  font-weight: 800;
+  color: #111;
 
-  letter-spacing: 0.22em;
+  font-size: 12px;
+
+  font-weight: 850;
+
+  letter-spacing: 0.23em;
 
   line-height: 1;
 
   white-space: nowrap;
 }
 
-
-/*
- * OLD CSS-GENERATED LOGO
- *
- * Intentionally disabled.
- *
- * The navbar now uses the real Pluten logo asset.
- */
 .pluten-mark {
   display: none;
 }
 
-
 /* =========================================================
-   DESKTOP TEXT NAVIGATION
-   ========================================================= */
-
-/*
- * Products / Library text navigation has been removed.
- *
- * The desktop navbar now uses only the three icons:
- *
- * Products
- * Profile
- * Library
- */
+   DESKTOP NAVIGATION
+========================================================= */
 
 .pluten-nav-links {
-  display: none;
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
 }
 
+.pluten-nav-link {
+  position: relative;
+
+  min-height: 38px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  color: #65635d;
+
+  text-decoration: none;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.pluten-nav-link:hover {
+  color: #111;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  transform:
+    translateY(-1px);
+}
+
+.pluten-nav-link:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   PORTFOLIO MAKER
+========================================================= */
+
+.pluten-nav-portfolio {
+  padding: 0 13px;
+
+  border:
+    1px solid
+      rgba(17, 17, 17, 0.09);
+
+  background:
+    rgba(255, 255, 255, 0.54);
+
+  color: #111;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.8);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pluten-nav-portfolio:hover {
+  background: #fff;
+
+  border-color:
+    rgba(17, 17, 17, 0.16);
+
+  box-shadow:
+    0 8px 22px
+      rgba(0, 0, 0, 0.07);
+}
+
+.pluten-nav-new {
+  height: 16px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0 6px;
+
+  border-radius: 999px;
+
+  background: #111;
+
+  color: #fff;
+
+  font-size: 6.5px;
+
+  font-weight: 850;
+
+  letter-spacing: 0.11em;
+
+  line-height: 1;
+}
 
 /* =========================================================
    NAVIGATION ACTIONS
-   ========================================================= */
+========================================================= */
 
 .pluten-nav-actions {
   display: flex;
+
   align-items: center;
 
   justify-content: flex-end;
 
-  gap: 6px;
+  gap: 8px;
 
   flex-shrink: 0;
 }
 
-.pluten-nav-icon,
-.pluten-mobile-toggle {
-  width: 42px;
-  height: 42px;
+.pluten-nav-icon {
+  width: 35px;
+  height: 35px;
 
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
+  border:
+    1px solid
+      rgba(17, 17, 17, 0.07);
 
   border-radius: 50%;
 
-  color: #222;
+  background:
+    rgba(255, 255, 255, 0.45);
 
-  background: transparent;
+  color: #4d4c47;
 
   text-decoration: none;
 
   transition:
+    transform 0.2s ease,
     background 0.2s ease,
     color 0.2s ease,
-    transform 0.2s ease;
+    border-color 0.2s ease;
 }
 
-.pluten-nav-icon:hover,
-.pluten-mobile-toggle:hover {
-  background: rgba(0, 0, 0, 0.06);
+.pluten-nav-icon:hover {
+  transform:
+    translateY(-1px);
+
+  background: #fff;
+
+  border-color:
+    rgba(17, 17, 17, 0.13);
+
+  color: #111;
 }
 
-.pluten-nav-icon:active,
-.pluten-mobile-toggle:active {
-  transform: scale(0.94);
+.pluten-nav-icon:active {
+  transform: scale(0.95);
 }
 
+.pluten-nav-icon:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
+
+.pluten-nav-login {
+  margin-left: 4px;
+
+  color: #25241f;
+
+  text-decoration: none;
+
+  font-size: 10px;
+
+  font-weight: 750;
+
+  white-space: nowrap;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+.pluten-nav-login:hover {
+  opacity: 0.56;
+}
+
+.pluten-nav-login:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
 
 /* =========================================================
    MOBILE MENU BUTTON
-   ========================================================= */
+========================================================= */
 
 .pluten-mobile-toggle {
   display: none;
 
-  border: 0;
+  width: 40px;
+  height: 40px;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+      rgba(17, 17, 17, 0.08);
+
+  border-radius: 50%;
+
+  background: #111;
+
+  color: #fff;
 
   cursor: pointer;
 
-  padding: 0;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
+.pluten-mobile-toggle:hover {
+  transform: scale(1.04);
+  background: #202020;
+}
+
+.pluten-mobile-toggle:active {
+  transform: scale(0.95);
+}
+
+.pluten-mobile-toggle:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
 
 /* =========================================================
    MOBILE OVERLAY
-   ========================================================= */
+========================================================= */
 
 .pluten-mobile-overlay {
   position: fixed;
+
   inset: 0;
 
-  z-index: 300;
+  z-index: 3000;
 
-  background: rgba(0, 0, 0, 0.45);
+  display: flex;
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  justify-content: flex-end;
+
+  background:
+    rgba(0, 0, 0, 0.36);
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
 }
-
 
 /* =========================================================
    MOBILE PANEL
-   ========================================================= */
+========================================================= */
 
 .pluten-mobile-panel {
-  margin-left: auto;
-
-  width: min(360px, 100%);
+  width:
+    min(
+      430px,
+      94vw
+    );
 
   height: 100%;
 
-  background: #f7f7f4;
+  display: flex;
+
+  flex-direction: column;
 
   padding:
-    calc(18px + env(safe-area-inset-top))
-    20px
-    calc(24px + env(safe-area-inset-bottom));
-
-  box-shadow:
-    -24px 0 80px rgba(0, 0, 0, 0.18);
+    calc(
+      20px +
+      env(safe-area-inset-top)
+    )
+    22px
+    calc(
+      20px +
+      env(safe-area-inset-bottom)
+    );
 
   overflow-y: auto;
 
   -webkit-overflow-scrolling: touch;
-}
 
+  background: #f7f7f4;
+
+  border-left:
+    1px solid
+      rgba(17, 17, 17, 0.07);
+
+  box-shadow:
+    -26px 0 80px
+      rgba(0, 0, 0, 0.18);
+}
 
 /* =========================================================
    MOBILE HEADER
-   ========================================================= */
+========================================================= */
 
 .pluten-mobile-header {
   display: flex;
@@ -257,28 +544,28 @@ button { border: 0; }
 
   justify-content: space-between;
 
-  padding-bottom: 24px;
+  padding-bottom: 22px;
 
   border-bottom:
-    1px solid rgba(0, 0, 0, 0.08);
+    1px solid
+      rgba(17, 17, 17, 0.08);
 }
 
-
-/* =========================================================
-   MOBILE CLOSE BUTTON
-   ========================================================= */
-
 .pluten-mobile-close {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
 
   display: inline-flex;
 
   align-items: center;
+
   justify-content: center;
 
+  padding: 0;
+
   border:
-    1px solid #d9d9d4;
+    1px solid
+      #d9d9d4;
 
   border-radius: 50%;
 
@@ -289,8 +576,8 @@ button { border: 0; }
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .pluten-mobile-close:hover {
@@ -301,113 +588,800 @@ button { border: 0; }
   transform: scale(0.94);
 }
 
+.pluten-mobile-close:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
 
 /* =========================================================
    MOBILE LINKS
-   ========================================================= */
+========================================================= */
 
 .pluten-mobile-links {
   display: grid;
 
-  gap: 6px;
+  gap: 0;
 
-  padding-top: 22px;
+  padding-top: 16px;
 }
 
-.pluten-mobile-links a {
-  padding: 17px 8px;
+.pluten-mobile-link {
+  min-height: 72px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 0 4px;
 
   border-bottom:
-    1px solid rgba(0, 0, 0, 0.07);
+    1px solid
+      rgba(17, 17, 17, 0.07);
 
   color: #111;
 
   text-decoration: none;
 
-  font-size: 22px;
-
-  font-weight: 650;
-
-  letter-spacing: -0.03em;
-
   transition:
-    opacity 0.2s ease,
-    padding-left 0.2s ease;
+    padding-left 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.pluten-mobile-links a:hover {
-  opacity: 0.65;
-  padding-left: 12px;
+.pluten-mobile-link:hover {
+  padding-left: 9px;
 }
 
-
-/* =========================================================
-   FOCUS
-   ========================================================= */
-
-:focus-visible {
-  outline: 2px solid #111;
+.pluten-mobile-link:focus-visible {
+  outline:
+    2px solid #111;
 
   outline-offset: 3px;
 }
 
+.pluten-mobile-link-left {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+}
+
+.pluten-mobile-number {
+  width: 18px;
+
+  color: #a19e96;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+.pluten-mobile-portfolio {
+  min-height: 88px;
+
+  border-top:
+    1px solid
+      rgba(17, 17, 17, 0.07);
+}
+
+.pluten-mobile-portfolio-text {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.pluten-mobile-portfolio-text > span {
+  font-size: 17px;
+
+  font-weight: 760;
+
+  letter-spacing: -0.025em;
+}
+
+.pluten-mobile-portfolio-text small {
+  color: #77746d;
+
+  font-size: 10px;
+
+  line-height: 1.45;
+}
 
 /* =========================================================
-   MOBILE BREAKPOINT
-   ========================================================= */
+   MOBILE FOOTER
+========================================================= */
+
+.pluten-mobile-footer {
+  display: grid;
+
+  grid-template-columns:
+    0.8fr
+    1.2fr;
+
+  gap: 10px;
+
+  margin-top: auto;
+
+  padding-top: 22px;
+}
+
+.pluten-mobile-login,
+.pluten-mobile-portfolio-button {
+  min-height: 49px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border-radius: 999px;
+
+  text-decoration: none;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+.pluten-mobile-login {
+  border:
+    1px solid
+      #d8d7d1;
+
+  background: #fff;
+
+  color: #111;
+}
+
+.pluten-mobile-portfolio-button {
+  background: #111;
+
+  color: #fff;
+}
+
+.pluten-mobile-login:focus-visible,
+.pluten-mobile-portfolio-button:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
+
+.pluten-mobile-caption {
+  margin-top: 14px;
+
+  color: #a19d96;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+
+  text-align: center;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   GLOBAL FOCUS
+========================================================= */
+
+:focus-visible {
+  outline:
+    2px solid #111;
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1080px) {
+  .pluten-nav-inner {
+    width:
+      min(
+        var(--pluten-content),
+        calc(100% - 34px)
+      );
+
+    gap: 20px;
+  }
+
+  .pluten-nav-links {
+    gap: 4px;
+  }
+
+  .pluten-nav-link {
+    padding: 0 9px;
+    font-size: 9px;
+  }
+
+  .pluten-nav-icon {
+    width: 33px;
+    height: 33px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 760px) {
   .pluten-nav-inner {
-    width: min(
-      var(--pluten-content),
-      calc(100% - 32px)
-    );
+    width:
+      min(
+        var(--pluten-content),
+        calc(100% - 32px)
+      );
 
     min-height: 64px;
+
+    grid-template-columns:
+      1fr auto;
 
     gap: 12px;
   }
 
-  /*
-   * Keep Products / Profile / Library icons
-   * visible on mobile as well.
-   */
-
-  .pluten-nav-icon {
+  .pluten-nav-links {
     display: none;
   }
 
-  /*
-   * Mobile uses the hamburger menu.
-   */
+  .pluten-nav-icon,
+  .pluten-nav-login {
+    display: none;
+  }
 
   .pluten-mobile-toggle {
     display: inline-flex;
   }
 
+  .pluten-brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+
   .pluten-brand-logo {
-    width: 29px;
-    height: 29px;
+    width: 19px;
+    height: 19px;
   }
 
   .pluten-brand-name {
-    font-size: 12px;
-    letter-spacing: 0.20em;
+    font-size: 11px;
+
+    letter-spacing: 0.2em;
   }
 }
-@media (max-width: 760px) {
-  .pluten-nav-inner { width: min(var(--pluten-content), calc(100% - 32px)); min-height: 64px; grid-template-columns: 1fr auto; }
-  .pluten-nav-links { display: none; }
-  .pluten-mobile-toggle { display: inline-flex; }
-}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+  }
 }
 
-.pluten-login-spinner{animation:plutenSpin .85s linear infinite;color:#111}
-@keyframes plutenSpin{to{transform:rotate(360deg)}}
-.pluten-auth-fallback{min-height:100dvh;display:grid;place-items:center;background:#f6f6f3;color:#111}
-.ps-page{min-height:100dvh;background:#0a0a0a;color:#fff;display:grid;place-items:center;padding:20px}.ps-card{width:min(560px,100%);padding:28px;border:1px solid #252525;border-radius:24px;background:#101010;box-shadow:0 35px 100px rgba(0,0,0,.45)}.ps-kicker{color:#6c6c66;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-align:center}.ps-state,.ps-success{text-align:center;padding:48px 12px}.ps-state h1,.ps-success h1{margin:20px 0 0;font-family:Georgia,"Times New Roman",serif;font-size:36px;letter-spacing:-.04em}.ps-state p,.ps-success p{max-width:420px;margin:12px auto 0;color:#888;font-size:14px;line-height:1.65}.ps-icon{color:#aaa}.ps-spin{animation:plutenSpin .85s linear infinite}.ps-round{width:72px;height:72px;margin:0 auto;display:grid;place-items:center;border-radius:50%;border:1px solid #303030}.ps-green{color:#6bd28f;background:#112118;border-color:#254732}.ps-red{color:#ef7f83;background:#241214;border-color:#522327}.ps-amber{color:#e2bc6b;background:#241f12;border-color:#4b3d20}.ps-note{display:block;margin-top:20px;color:#62625d;font-size:11px}.ps-reference{margin:28px 0 0;padding:14px;text-align:left;border:1px solid #222;border-radius:12px;background:#0b0b0b}.ps-reference span{display:block;color:#66665f;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.ps-reference strong{display:block;margin-top:6px;color:#c7c7c1;font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}.ps-actions{display:grid;gap:10px;margin-top:18px}.ps-button{min-height:50px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800;cursor:pointer}.ps-primary{background:#fff;color:#111}.ps-light{background:#fff;color:#111}.ps-outline{background:transparent;border:1px solid #303030;color:#bbb}.ps-button:disabled{opacity:.55;cursor:not-allowed}.pluten-error-page{min-height:100dvh;display:grid;place-items:center;padding:24px;background:#f6f6f3;color:#111}.pluten-error-card{width:min(460px,100%);padding:34px;border:1px solid #deded8;border-radius:22px;background:#fff;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.08)}.pluten-error-icon{width:58px;height:58px;margin:0 auto 18px;display:grid;place-items:center;border-radius:50%;background:#fff4f4;border:1px solid #ecd2d2;color:#b54248}.pluten-error-kicker{color:#88867f;font-size:9px;font-weight:800;letter-spacing:.18em}.pluten-error-card h1{margin:16px 0 0;font-family:Georgia,"Times New Roman",serif;font-size:36px;letter-spacing:-.04em}.pluten-error-card p{margin:10px auto 0;color:#77746e;font-size:14px;line-height:1.6}.pluten-error-actions{display:grid;gap:10px;margin-top:24px}.pluten-error-primary,.pluten-error-secondary{min-height:50px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:12px;font-weight:800}.pluten-error-primary{background:#111;color:#fff}.pluten-error-secondary{border:1px solid #d8d7d1;background:#fff;color:#333}
-.pluten-route-loading{min-height:100dvh;display:grid;place-items:center;gap:12px;background:#f6f6f3;color:#777;font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.pluten-route-loading-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#111;color:#fff;font-family:Georgia,"Times New Roman",serif;font-size:20px}.pluten-error-actions a{text-decoration:none}.formField input:focus-visible,.formField button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* =========================================================
+   LOGIN / AUTH
+========================================================= */
+
+.pluten-login-spinner {
+  animation:
+    plutenSpin
+    0.85s
+    linear
+    infinite;
+
+  color: #111;
+}
+
+@keyframes plutenSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pluten-auth-fallback {
+  min-height: 100dvh;
+
+  display: grid;
+
+  place-items: center;
+
+  background: #f6f6f3;
+
+  color: #111;
+}
+
+/* =========================================================
+   PAYMENT SUCCESS / STATUS
+========================================================= */
+
+.ps-page {
+  min-height: 100dvh;
+
+  background: #0a0a0a;
+
+  color: #fff;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 20px;
+}
+
+.ps-card {
+  width:
+    min(
+      560px,
+      100%
+    );
+
+  padding: 28px;
+
+  border:
+    1px solid #252525;
+
+  border-radius: 24px;
+
+  background: #101010;
+
+  box-shadow:
+    0 35px 100px
+      rgba(
+        0,
+        0,
+        0,
+        0.45
+      );
+}
+
+.ps-kicker {
+  color: #6c6c66;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2em;
+
+  text-transform: uppercase;
+
+  text-align: center;
+}
+
+.ps-state,
+.ps-success {
+  text-align: center;
+
+  padding: 48px 12px;
+}
+
+.ps-state h1,
+.ps-success h1 {
+  margin: 20px 0 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 36px;
+
+  letter-spacing: -0.04em;
+}
+
+.ps-state p,
+.ps-success p {
+  max-width: 420px;
+
+  margin: 12px auto 0;
+
+  color: #888;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+}
+
+.ps-icon {
+  color: #aaa;
+}
+
+.ps-spin {
+  animation:
+    plutenSpin
+    0.85s
+    linear
+    infinite;
+}
+
+.ps-round {
+  width: 72px;
+  height: 72px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid #303030;
+
+  border-radius: 50%;
+}
+
+.ps-green {
+  color: #6bd28f;
+
+  background: #112118;
+
+  border-color: #254732;
+}
+
+.ps-red {
+  color: #ef7f83;
+
+  background: #241214;
+
+  border-color: #522327;
+}
+
+.ps-amber {
+  color: #e2bc6b;
+
+  background: #241f12;
+
+  border-color: #4b3d20;
+}
+
+.ps-note {
+  display: block;
+
+  margin-top: 20px;
+
+  color: #62625d;
+
+  font-size: 11px;
+}
+
+.ps-reference {
+  margin: 28px 0 0;
+
+  padding: 14px;
+
+  text-align: left;
+
+  border:
+    1px solid #222;
+
+  border-radius: 12px;
+
+  background: #0b0b0b;
+}
+
+.ps-reference span {
+  display: block;
+
+  color: #66665f;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+
+  text-transform: uppercase;
+}
+
+.ps-reference strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #c7c7c1;
+
+  font-size: 11px;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  overflow-wrap: anywhere;
+}
+
+.ps-actions {
+  display: grid;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.ps-button {
+  min-height: 50px;
+
+  padding: 0 16px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.ps-primary {
+  background: #fff;
+  color: #111;
+}
+
+.ps-light {
+  background: #fff;
+  color: #111;
+}
+
+.ps-outline {
+  background: transparent;
+
+  border:
+    1px solid #303030;
+
+  color: #bbb;
+}
+
+.ps-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   ERROR PAGE
+========================================================= */
+
+.pluten-error-page {
+  min-height: 100dvh;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 24px;
+
+  background: #f6f6f3;
+
+  color: #111;
+}
+
+.pluten-error-card {
+  width:
+    min(
+      460px,
+      100%
+    );
+
+  padding: 34px;
+
+  border:
+    1px solid #deded8;
+
+  border-radius: 22px;
+
+  background: #fff;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 60px
+      rgba(
+        0,
+        0,
+        0,
+        0.08
+      );
+}
+
+.pluten-error-icon {
+  width: 58px;
+  height: 58px;
+
+  margin:
+    0 auto 18px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #fff4f4;
+
+  border:
+    1px solid #ecd2d2;
+
+  color: #b54248;
+}
+
+.pluten-error-kicker {
+  color: #88867f;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+}
+
+.pluten-error-card h1 {
+  margin: 16px 0 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 36px;
+
+  letter-spacing: -0.04em;
+}
+
+.pluten-error-card p {
+  margin:
+    10px auto 0;
+
+  color: #77746e;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.pluten-error-actions {
+  display: grid;
+
+  gap: 10px;
+
+  margin-top: 24px;
+}
+
+.pluten-error-primary,
+.pluten-error-secondary {
+  min-height: 50px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.pluten-error-primary {
+  background: #111;
+  color: #fff;
+}
+
+.pluten-error-secondary {
+  border:
+    1px solid #d8d7d1;
+
+  background: #fff;
+
+  color: #333;
+}
+
+.pluten-error-actions a {
+  text-decoration: none;
+}
+
+/* =========================================================
+   ROUTE LOADING
+========================================================= */
+
+.pluten-route-loading {
+  min-height: 100dvh;
+
+  display: grid;
+
+  place-items: center;
+
+  gap: 12px;
+
+  background: #f6f6f3;
+
+  color: #777;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+.pluten-route-loading-mark {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #111;
+
+  color: #fff;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 20px;
+}
+
+/* =========================================================
+   FORM FOCUS
+========================================================= */
+
+.formField input:focus-visible,
+.formField button:focus-visible {
+  outline:
+    2px solid #fff;
+
+  outline-offset: 2px;
+}

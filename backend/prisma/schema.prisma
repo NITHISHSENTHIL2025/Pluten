@@ -9,9 +9,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ------------------------------------------------------
-// iSevens Core Schema - Mission Control Upgraded
-// ------------------------------------------------------
+// ======================================================
+// PLUTEN CORE
+// ======================================================
 
 enum Role {
   SUPER_ADMIN
@@ -28,115 +28,523 @@ enum OrderStatus {
   REFUNDED
 }
 
+// ======================================================
+// PORTFOLIO ENUMS
+// ======================================================
+
+enum PortfolioStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+  SUSPENDED
+  DELETED
+}
+
+enum PortfolioVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum ProjectStatus {
+  COMPLETED
+  IN_PROGRESS
+  PLANNED
+}
+
+enum ExperienceType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  FREELANCE
+  CONTRACT
+  VOLUNTEER
+  OTHER
+}
+
+// ======================================================
+// USER
+// ======================================================
+
 model User {
-  id             String    @id @default(uuid())
-  email          String    @unique
-  
-  firstName      String?
-  lastName       String?
-  role           Role      @default(CUSTOMER)
-  isPremium      Boolean   @default(false)
+  id    String @id @default(uuid())
+  email String @unique
 
- 
-  authProvider   String    @default("LOCAL") // Can be "LOCAL" or "GOOGLE"
+  firstName String?
+  lastName  String?
+  role      Role    @default(CUSTOMER)
+  isPremium Boolean @default(false)
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  orders         Order[]
-  auditLogs      AuditLog[] 
-  downloadLogs   DownloadLog[]
+  authProvider String @default("LOCAL")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders       Order[]
+  auditLogs    AuditLog[]
+  downloadLogs DownloadLog[]
+
+  // Portfolio ownership
+  portfolios Portfolio[]
 
   @@index([role])
   @@index([email])
 }
 
+// ======================================================
+// PRODUCT
+// ======================================================
+
 model Product {
-  id          String      @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String
-  price       Decimal     
-  isDigital   Boolean     @default(true)
-  category    String      @default("Uncategorized") 
-  
-  thumbnail   String?     
-  assetUrl    String?     
-  
-  // THE FIX: Soft Deletion Switch
-  isArchived  Boolean     @default(false)
-  
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  
-  orders      Order[]     
-  offers      Offer[]
-  downloadLogs DownloadLog[] // <-- Link to the new tracking table
+  price       Decimal
+  isDigital   Boolean @default(true)
+  category    String  @default("Uncategorized")
+
+  thumbnail String?
+  assetUrl  String?
+
+  isArchived Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders       Order[]
+  offers       Offer[]
+  downloadLogs DownloadLog[]
 
   @@index([category])
   @@index([createdAt])
-  @@index([isArchived]) // Added index for faster filtering
+  @@index([isArchived])
 }
 
+// ======================================================
+// ORDER
+// ======================================================
+
 model Order {
-  id            String   @id @default(uuid())
-  userId        String
-  productId     String
-  totalAmount   Decimal  @default(0) 
-  status        String   @default("PENDING") 
-  transactionId String?  
-  createdAt     DateTime @default(now())
-  clientRequestId String? @unique
-  user          User     @relation(fields: [userId], references: [id])
-  product       Product  @relation(fields: [productId], references: [id])
+  id              String   @id @default(uuid())
+  userId          String
+  productId       String
+  totalAmount     Decimal  @default(0)
+  status          String   @default("PENDING")
+  transactionId   String?
+  createdAt       DateTime @default(now())
+  clientRequestId String?  @unique
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@index([userId])
   @@index([status])
   @@index([createdAt])
 }
 
+// ======================================================
+// OFFERS
+// ======================================================
+
 model Offer {
-  id             String    @id @default(uuid())
+  id             String   @id @default(uuid())
   name           String
-  type           String    
-  value          Decimal   
-  applyTo        String    
-  minOrderAmount Decimal?  
-  couponCode     String?   @unique
-  autoApply      Boolean   @default(true)
-  status         String    @default("DRAFT") 
+  type           String
+  value          Decimal
+  applyTo        String
+  minOrderAmount Decimal?
+  couponCode     String?  @unique
+  autoApply      Boolean  @default(true)
+  status         String   @default("DRAFT")
   startAt        DateTime
   endAt          DateTime
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  products       Product[] 
+  products Product[]
 
   @@index([status, autoApply])
   @@index([startAt, endAt])
 }
 
+// ======================================================
+// ======================================================
+// PLUTEN PORTFOLIO SYSTEM
+// ======================================================
+// ======================================================
+
 // ------------------------------------------------------
-// Enterprise Compliance
+// Portfolio
 // ------------------------------------------------------
+
+model Portfolio {
+  id String @id @default(uuid())
+
+  // Ownership
+  userId String
+
+  // Public identity
+  username String @unique
+  slug     String @unique
+
+  // Publishing
+  status     PortfolioStatus     @default(DRAFT)
+  visibility PortfolioVisibility @default(PRIVATE)
+
+  // Security / recovery
+  editTokenHash String? @unique
+
+  // Profile
+  fullName          String
+  professionalTitle String?
+  tagline           String?
+  bio               String?
+  email             String?
+  phone             String?
+  location          String?
+  website           String?
+
+  // Optional professional data
+  availability      String?
+  yearsOfExperience Int?
+
+  // Portfolio presentation
+  template        String @default("premium-editorial")
+  templateVersion Int    @default(1)
+
+  // SEO / publishing metadata
+  publishedAt     DateTime?
+  lastPublishedAt DateTime?
+
+  // Soft deletion / lifecycle
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projects       PortfolioProject[]
+  experiences    PortfolioExperience[]
+  education      PortfolioEducation[]
+  skills         PortfolioSkill[]
+  certifications PortfolioCertification[]
+  achievements   PortfolioAchievement[]
+  socialLinks    PortfolioSocialLink[]
+
+  seo      PortfolioSEO?
+  settings PortfolioSettings?
+
+  @@index([userId])
+  @@index([status])
+  @@index([visibility])
+  @@index([publishedAt])
+  @@index([updatedAt])
+}
+
+// ------------------------------------------------------
+// Projects
+// ------------------------------------------------------
+
+model PortfolioProject {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  title            String
+  shortDescription String?
+  description      String?
+
+  role String?
+
+  technologies String[]
+  projectUrl   String?
+  githubUrl    String?
+
+  status ProjectStatus @default(COMPLETED)
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  featured  Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, sortOrder])
+  @@index([portfolioId, featured])
+}
+
+// ------------------------------------------------------
+// Professional Experience
+// ------------------------------------------------------
+
+model PortfolioExperience {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  company  String
+  position String
+
+  type ExperienceType @default(FULL_TIME)
+
+  location String?
+
+  description  String?
+  achievements String[]
+
+  startDate DateTime
+  endDate   DateTime?
+  current   Boolean   @default(false)
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, sortOrder])
+  @@index([portfolioId, current])
+}
+
+// ------------------------------------------------------
+// Education
+// ------------------------------------------------------
+
+model PortfolioEducation {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  institution  String
+  degree       String?
+  fieldOfStudy String?
+
+  location String?
+
+  description  String?
+  achievements String[]
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  current Boolean @default(false)
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, sortOrder])
+}
+
+// ------------------------------------------------------
+// Skills
+// ------------------------------------------------------
+
+model PortfolioSkill {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  category String
+  name     String
+
+  level      Int?
+  yearsOfUse Float?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, category])
+  @@index([portfolioId, sortOrder])
+}
+
+// ------------------------------------------------------
+// Certifications
+// ------------------------------------------------------
+
+model PortfolioCertification {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  name   String
+  issuer String?
+
+  credentialId  String?
+  credentialUrl String?
+
+  issueDate  DateTime?
+  expiryDate DateTime?
+
+  description String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, sortOrder])
+}
+
+// ------------------------------------------------------
+// Achievements
+// ------------------------------------------------------
+
+model PortfolioAchievement {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  title       String
+  description String?
+
+  organization String?
+  date         DateTime?
+
+  url String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, sortOrder])
+}
+
+// ------------------------------------------------------
+// Social / Professional Links
+// ------------------------------------------------------
+
+model PortfolioSocialLink {
+  id String @id @default(uuid())
+
+  portfolioId String
+
+  platform String
+  label    String?
+
+  url String
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([portfolioId, platform])
+  @@index([portfolioId, sortOrder])
+}
+
+// ------------------------------------------------------
+// SEO
+// ------------------------------------------------------
+
+model PortfolioSEO {
+  id String @id @default(uuid())
+
+  portfolioId String @unique
+
+  title       String?
+  description String?
+
+  keywords String[]
+
+  ogTitle       String?
+  ogDescription String?
+  ogImage       String?
+
+  canonicalUrl String?
+
+  noIndex Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------
+// Portfolio Settings
+// ------------------------------------------------------
+
+model PortfolioSettings {
+  id String @id @default(uuid())
+
+  portfolioId String @unique
+
+  showEmail    Boolean @default(true)
+  showPhone    Boolean @default(false)
+  showLocation Boolean @default(true)
+
+  showProjects       Boolean @default(true)
+  showExperience     Boolean @default(true)
+  showEducation      Boolean @default(true)
+  showSkills         Boolean @default(true)
+  showCertifications Boolean @default(true)
+  showAchievements   Boolean @default(true)
+  showSocialLinks    Boolean @default(true)
+
+  showBranding Boolean @default(true)
+
+  contactEnabled Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+// ======================================================
+// ENTERPRISE COMPLIANCE
+// ======================================================
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  userId      String   
-  action      String   
-  entity      String   
-  entityId    String   
-  details     String?  
-  ipAddress   String?  
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([entity, entityId])
   @@index([createdAt])
 }
 
-// Anti-Piracy Tracking
+// ======================================================
+// ANTI-PIRACY TRACKING
+// ======================================================
+
 model DownloadLog {
   id        String   @id @default(uuid())
   userId    String
@@ -144,8 +552,8 @@ model DownloadLog {
   ipAddress String?
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@index([userId])
   @@index([productId])

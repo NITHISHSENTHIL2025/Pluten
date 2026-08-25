@@ -3,6 +3,7 @@ import { ArrowDown, RefreshCw } from 'lucide-react';
 import PlutenNav from '@/components/PlutenNav';
 import ProductCard from '@/components/ProductCard';
 import styles from './page.module.css';
+import PortfolioShowcase from "@/components/PortfolioShowcase";
 
 interface Product {
   id: string; title: string; category: string; description: string; price: number; thumbnail: string | null; createdAt: string;
@@ -60,7 +61,20 @@ export default async function StorefrontPage() {
           ) : <div className={styles.productGrid}>{products.map((product) => <ProductCard key={product.id} product={product} />)}</div>}
         </div>
       </section>
+      <section
+        id="products"
+        className={styles.productsSection}
+      >
+        {/* your existing products section */}
+      </section>
 
+      <PortfolioShowcase />
+
+      <section
+        className={styles.principle}
+      >
+        {/* existing Useful section */}
+      </section>
       <section className={styles.principle}><div className={styles.principleInner}><div><p className={styles.principleEyebrow}>02 / THE PLUTEN WAY</p><h2 className={styles.principleTitle}>Useful.</h2></div><p className={styles.principleCopy}>We believe useful products should move you forward. No noise. No filler. Just things worth building, buying and learning.</p></div></section>
 
       <footer className={styles.footer}><div className={styles.footerInner}>

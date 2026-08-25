@@ -171,7 +171,7 @@ const webhookHandler = async (req, res) => {
       if (!cfPaymentId) return res.status(400).send('Malformed payment webhook.');
       await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { status: 'SUCCESS', transactionId: String(cfPaymentId) } });
     } else if (event && /FAILED|CANCELLED|USER_DROPPED|EXPIRED/i.test(event)) {
-      await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { transactionId: `GATEWAY_${String(event).slice(0, 50)}` } });
+      await prisma.order.updateMany({ where: { id: orderId, status: 'PENDING' }, data: { status: 'FAILED', transactionId: `GATEWAY_${String(event).slice(0, 50)}` } });
     }
 
     return res.status(200).send('WEBHOOK_RECEIVED');

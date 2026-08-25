@@ -18,6 +18,7 @@ import {
   Check,
   ExternalLink,
   Mail,
+  Globe,
   MapPin,
   Menu,
   Phone,

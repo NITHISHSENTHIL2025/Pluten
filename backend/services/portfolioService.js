@@ -277,6 +277,65 @@ function serializePortfolio(portfolio) {
   };
 }
 
+function serializePublicPortfolio(portfolio) {
+  const serialized = serializePortfolio(portfolio);
+  const settings = portfolio.settings || {};
+
+  if (
+    settings.contactEnabled === false ||
+    settings.showEmail === false
+  ) {
+    serialized.email = null;
+  }
+
+  if (
+    settings.contactEnabled === false ||
+    settings.showPhone === false
+  ) {
+    serialized.phone = null;
+  }
+
+  if (
+    settings.contactEnabled === false ||
+    settings.showLocation === false
+  ) {
+    serialized.location = null;
+  }
+
+  if (settings.contactEnabled === false) {
+    serialized.website = null;
+  }
+
+  if (settings.showProjects === false) {
+    serialized.projects = [];
+  }
+
+  if (settings.showExperience === false) {
+    serialized.experiences = [];
+  }
+
+  if (settings.showEducation === false) {
+    serialized.education = [];
+  }
+
+  if (settings.showSkills === false) {
+    serialized.skills = [];
+  }
+
+  if (settings.showCertifications === false) {
+    serialized.certifications = [];
+  }
+
+  if (settings.showAchievements === false) {
+    serialized.achievements = [];
+  }
+
+  if (settings.showSocialLinks === false) {
+    serialized.socialLinks = [];
+  }
+
+  return serialized;
+}
 const portfolioInclude = {
   projects: {
     orderBy: {
@@ -1778,7 +1837,7 @@ async function getPublicPortfolio(username) {
     throw error;
   }
 
-  return serializePortfolio(portfolio);
+  return serializePublicPortfolio(portfolio);
 }
 
 module.exports = {

@@ -1,7 +1,11 @@
+// frontend/src/components/PlutenNav.tsx
+
 "use client";
 
 import Link from "next/link";
 import {
+  BriefcaseBusiness,
+  ChevronRight,
   Compass,
   LibraryBig,
   Menu,
@@ -15,8 +19,7 @@ import {
 } from "react";
 
 export default function PlutenNav() {
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const menuButtonRef =
     useRef<HTMLButtonElement | null>(null);
@@ -26,12 +29,6 @@ export default function PlutenNav() {
 
   const menuPanelRef =
     useRef<HTMLDivElement | null>(null);
-
-  /*
-   * ---------------------------------------------------------
-   * MOBILE MENU EFFECTS
-   * ---------------------------------------------------------
-   */
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -45,22 +42,13 @@ export default function PlutenNav() {
       closeButtonRef.current?.focus();
     }, 0);
 
-    const onKeyDown = (
-      event: KeyboardEvent
-    ) => {
-      /*
-       * Escape closes the menu.
-       */
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         setMenuOpen(false);
         return;
       }
 
-      /*
-       * Keep keyboard focus inside
-       * the mobile navigation panel.
-       */
       if (
         event.key !== "Tab" ||
         !menuPanelRef.current
@@ -68,35 +56,23 @@ export default function PlutenNav() {
         return;
       }
 
-      const focusable =
-        Array.from(
-          menuPanelRef.current.querySelectorAll<HTMLElement>(
-            'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])'
-          )
-        ).filter(
-          (element) =>
-            !element.hasAttribute(
-              "disabled"
-            ) &&
-            element.getAttribute(
-              "aria-hidden"
-            ) !== "true"
-        );
+      const focusable = Array.from(
+        menuPanelRef.current.querySelectorAll<HTMLElement>(
+          'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !==
+            "true",
+      );
 
       if (!focusable.length) return;
 
-      const first =
-        focusable[0];
-
+      const first = focusable[0];
       const last =
-        focusable[
-          focusable.length - 1
-        ];
+        focusable[focusable.length - 1];
 
-      /*
-       * Shift + Tab from first
-       * goes to last.
-       */
       if (
         event.shiftKey &&
         document.activeElement === first
@@ -106,9 +82,6 @@ export default function PlutenNav() {
         return;
       }
 
-      /*
-       * Tab from last goes to first.
-       */
       if (
         !event.shiftKey &&
         document.activeElement === last
@@ -118,43 +91,26 @@ export default function PlutenNav() {
       }
     };
 
-    window.addEventListener(
-      "keydown",
-      onKeyDown
-    );
+    window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      window.clearTimeout(
-        focusTimer
-      );
+      window.clearTimeout(focusTimer);
 
       document.body.style.overflow =
         previousOverflow;
 
       window.removeEventListener(
         "keydown",
-        onKeyDown
+        onKeyDown,
       );
     };
   }, [menuOpen]);
 
-
-  /*
-   * Return focus to the menu button
-   * after closing the mobile menu.
-   */
   useEffect(() => {
     if (!menuOpen) {
       menuButtonRef.current?.focus();
     }
   }, [menuOpen]);
-
-
-  /*
-   * ---------------------------------------------------------
-   * MENU CONTROLS
-   * ---------------------------------------------------------
-   */
 
   const openMenu = () => {
     setMenuOpen(true);
@@ -164,112 +120,81 @@ export default function PlutenNav() {
     setMenuOpen(false);
   };
 
-
-  /*
-   * Close when clicking the dark
-   * overlay outside the panel.
-   */
   const handleOverlayMouseDown = (
-    event: React.MouseEvent<HTMLDivElement>
+    event: React.MouseEvent<HTMLDivElement>,
   ) => {
     if (
-      event.target ===
-      event.currentTarget
+      event.target === event.currentTarget
     ) {
       closeMenu();
     }
   };
 
-
-  /*
-   * ---------------------------------------------------------
-   * RENDER
-   * ---------------------------------------------------------
-   */
-
   return (
     <>
-      {/* =====================================================
-          DESKTOP / PUBLIC NAVBAR
-      ===================================================== */}
-
       <header className="pluten-nav">
         <div className="pluten-nav-inner">
-
-          {/* =================================================
-              PLUTEN BRAND
-
-              Uses the real Pluten logo asset instead
-              of the old CSS-generated .pluten-mark.
-          ================================================= */}
-
           <Link
             href="/"
             className="pluten-brand"
             aria-label="Pluten home"
           >
-            <img
-              src="/favicon.ico"
-              alt="Pluten"
-              className="pluten-brand-logo"
-            />
+            <span className="pluten-brand-mark">
+              <img
+                src="/favicon.ico"
+                alt=""
+                className="pluten-brand-logo"
+              />
+            </span>
 
             <span className="pluten-brand-name">
               PLUTEN
             </span>
           </Link>
 
-
-          {/* =================================================
-              DESKTOP TEXT NAVIGATION
-
-              Intentionally empty.
-
-              Products / Library text has been removed.
-              Navigation is now represented by icons.
-          ================================================= */}
-
           <nav
             className="pluten-nav-links"
             aria-label="Primary navigation"
-          />
-
-
-          {/* =================================================
-              NAVIGATION ACTIONS
-          ================================================= */}
-
-          <div className="pluten-nav-actions">
-
-            {/* Products */}
+          >
             <Link
               href="/#products"
-              className="pluten-nav-icon"
-              aria-label="Browse products"
-              title="Products"
+              className="pluten-nav-link"
             >
               <Compass
-                size={18}
-                strokeWidth={1.7}
+                size={15}
+                strokeWidth={1.8}
+                aria-hidden="true"
               />
+
+              <span>Products</span>
             </Link>
 
-
-            {/* Profile */}
             <Link
-              href="/profile"
-              className="pluten-nav-icon"
-              aria-label="Profile"
-              title="Profile"
+              href="/portfolio"
+              className="pluten-nav-link pluten-nav-portfolio"
             >
-              <UserRound
-                size={18}
-                strokeWidth={1.7}
+              <BriefcaseBusiness
+                size={15}
+                strokeWidth={1.8}
+                aria-hidden="true"
               />
+
+              <span>Portfolio Maker</span>
+
+              <span className="pluten-nav-new">
+                NEW
+              </span>
             </Link>
 
+            <Link
+              href="/services/portfolio"
+              className="pluten-nav-link"
+            >
+              Services
+            </Link>
+          </nav>
 
-            {/* Digital Library */}
+          <div className="pluten-nav-actions">
             <Link
               href="/library"
               className="pluten-nav-icon"
@@ -277,13 +202,27 @@ export default function PlutenNav() {
               title="Digital library"
             >
               <LibraryBig
-                size={18}
+                size={17}
                 strokeWidth={1.7}
+                aria-hidden="true"
               />
             </Link>
 
+            <Link
+              href="/profile"
+              className="pluten-nav-icon"
+              aria-label="Profile"
+              title="Profile"
+            >
+              <UserRound
+                size={17}
+                strokeWidth={1.7}
+                aria-hidden="true"
+              />
+            </Link>
 
-            {/* Mobile menu */}
+            
+
             <button
               ref={menuButtonRef}
               type="button"
@@ -294,19 +233,14 @@ export default function PlutenNav() {
               aria-controls="pluten-mobile-menu"
             >
               <Menu
-                size={21}
+                size={20}
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
             </button>
-
           </div>
         </div>
       </header>
-
-
-      {/* =====================================================
-          MOBILE NAVIGATION
-      ===================================================== */}
 
       {menuOpen && (
         <div
@@ -314,40 +248,32 @@ export default function PlutenNav() {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          onMouseDown={
-            handleOverlayMouseDown
-          }
+          onMouseDown={handleOverlayMouseDown}
         >
-
           <div
             ref={menuPanelRef}
             className="pluten-mobile-panel"
             id="pluten-mobile-menu"
           >
-
-            {/* =================================================
-                MOBILE HEADER
-            ================================================= */}
-
             <div className="pluten-mobile-header">
-
               <Link
                 href="/"
                 className="pluten-brand"
                 onClick={closeMenu}
                 aria-label="Pluten home"
               >
-                <img
-                  src="/favicon.ico"
-                  alt="Pluten"
-                  className="pluten-brand-logo"
-                />
+                <span className="pluten-brand-mark">
+                  <img
+                    src="/favicon.ico"
+                    alt=""
+                    className="pluten-brand-logo"
+                  />
+                </span>
 
                 <span className="pluten-brand-name">
                   PLUTEN
                 </span>
               </Link>
-
 
               <button
                 ref={closeButtonRef}
@@ -359,47 +285,139 @@ export default function PlutenNav() {
                 <X
                   size={20}
                   strokeWidth={1.8}
+                  aria-hidden="true"
                 />
               </button>
-
             </div>
-
-
-            {/* =================================================
-                MOBILE LINKS
-
-                Keep these because mobile needs
-                accessible text navigation.
-            ================================================= */}
 
             <nav
               className="pluten-mobile-links"
               aria-label="Mobile navigation"
             >
-
               <Link
                 href="/#products"
                 onClick={closeMenu}
+                className="pluten-mobile-link"
               >
-                Products
+                <span className="pluten-mobile-link-left">
+                  <span className="pluten-mobile-number">
+                    01
+                  </span>
+
+                  <span>Products</span>
+                </span>
+
+                <ChevronRight
+                  size={17}
+                  strokeWidth={1.7}
+                  aria-hidden="true"
+                />
+              </Link>
+
+              <Link
+                href="/portfolio"
+                onClick={closeMenu}
+                className="pluten-mobile-link pluten-mobile-portfolio"
+              >
+                <span className="pluten-mobile-link-left">
+                  <span className="pluten-mobile-number">
+                    02
+                  </span>
+
+                  <span className="pluten-mobile-portfolio-text">
+                    <span>
+                      Portfolio Maker
+                    </span>
+
+                    <small>
+                      Build your professional presence
+                    </small>
+                  </span>
+                </span>
+
+                <ChevronRight
+                  size={17}
+                  strokeWidth={1.7}
+                  aria-hidden="true"
+                />
+              </Link>
+
+              <Link
+                href="/services/portfolio"
+                onClick={closeMenu}
+                className="pluten-mobile-link"
+              >
+                <span className="pluten-mobile-link-left">
+                  <span className="pluten-mobile-number">
+                    03
+                  </span>
+
+                  <span>Services</span>
+                </span>
+
+                <ChevronRight
+                  size={17}
+                  strokeWidth={1.7}
+                  aria-hidden="true"
+                />
               </Link>
 
               <Link
                 href="/library"
                 onClick={closeMenu}
+                className="pluten-mobile-link"
               >
-                Digital Library
+                <span className="pluten-mobile-link-left">
+                  <span className="pluten-mobile-number">
+                    04
+                  </span>
+
+                  <span>Digital Library</span>
+                </span>
+
+                <ChevronRight
+                  size={17}
+                  strokeWidth={1.7}
+                  aria-hidden="true"
+                />
               </Link>
 
               <Link
                 href="/profile"
                 onClick={closeMenu}
+                className="pluten-mobile-link"
               >
-                Profile
-              </Link>
+                <span className="pluten-mobile-link-left">
+                  <span className="pluten-mobile-number">
+                    05
+                  </span>
 
+                  <span>Profile</span>
+                </span>
+
+                <ChevronRight
+                  size={17}
+                  strokeWidth={1.7}
+                  aria-hidden="true"
+                />
+              </Link>
             </nav>
 
+            <div className="pluten-mobile-footer">
+              
+
+              <Link
+                href="/portfolio"
+                className="pluten-mobile-portfolio-button"
+                onClick={closeMenu}
+              >
+                Portfolio Maker
+              </Link>
+            </div>
+
+            <div className="pluten-mobile-caption">
+              PLUTEN / BEYOND ORDINARY
+            </div>
           </div>
         </div>
       )}

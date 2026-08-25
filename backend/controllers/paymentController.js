@@ -88,7 +88,7 @@ const createOrder = async (req, res) => {
   } catch (error) {
     console.error('[PAYMENT] Create order error:', { requestId: req.requestId, message: error.message, gateway: error?.response?.data });
     if (internalOrderId) {
-      try { await prisma.order.updateMany({ where: { id: internalOrderId, status: 'PENDING' }, data: { transactionId: 'GATEWAY_CREATE_FAILED' } }); }
+      try { await prisma.order.updateMany({ where: { id: internalOrderId, status: 'PENDING' }, data: { status: 'FAILED', transactionId: 'GATEWAY_CREATE_FAILED' } }); }
       catch (updateError) { console.error('[PAYMENT] Failed to mark gateway create failure:', updateError.message); }
     }
     return res.status(502).json({ error: 'Payment could not be initialized. Please start checkout again.' });
@@ -111,7 +111,7 @@ const verifyPayment = async (req, res) => {
     const expectedAmount = toMoney(order.totalAmount);
     if (gatewayAmount === null || expectedAmount === null || gatewayAmount !== expectedAmount) {
       console.error('[SECURITY] Payment amount mismatch', { requestId: req.requestId, orderId, expectedAmount, gatewayAmount });
-      await prisma.order.update({ where: { id: orderId }, data: { status: 'FLAGGED_AMOUNT_MISMATCH' } });
+      await prisma.order.update({ where: { id: orderId }, data: { status: 'FAILED', transactionId: 'GATEWAY_AMOUNT_MISMATCH' } });
       return res.status(400).json({ error: 'Payment verification failed due to a monetary mismatch.' });
     }
 
@@ -165,7 +165,7 @@ const webhookHandler = async (req, res) => {
       const expectedAmount = toMoney(order.totalAmount);
       const cfPaymentId = payload?.data?.payment?.cf_payment_id;
       if (gatewayAmount === null || expectedAmount === null || gatewayAmount !== expectedAmount) {
-        await prisma.order.update({ where: { id: orderId }, data: { status: 'FLAGGED_AMOUNT_MISMATCH' } });
+        await prisma.order.update({ where: { id: orderId }, data: { status: 'FAILED', transactionId: 'GATEWAY_AMOUNT_MISMATCH' } });
         return res.status(200).send('WEBHOOK_RECEIVED');
       }
       if (!cfPaymentId) return res.status(400).send('Malformed payment webhook.');

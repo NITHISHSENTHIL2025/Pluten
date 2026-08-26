@@ -1,5 +1,8 @@
 "use client";
-
+import PortfolioTemplateSelector, {
+  type PortfolioTemplateId,
+} from "../../PortfolioTemplateSelector";
+import OrbitTemplatePreview from "../../OrbitTemplatePreview";
 import {
   ArrowLeft,
   ArrowRight,
@@ -50,6 +53,7 @@ type SectionId =
   | "certifications"
   | "achievements"
   | "social"
+  | "template"
   | "review";
 
 type ProjectForm = {
@@ -186,6 +190,12 @@ const SECTIONS: {
     label: "Social",
     description: "Professional profiles.",
     icon: Link2,
+  },
+  {
+    id: "template",
+    label: "Template",
+    description: "Choose how your portfolio is presented.",
+    icon: Sparkles,
   },
   {
     id: "review",
@@ -485,6 +495,9 @@ export default function PortfolioEditorPage() {
   const [socialLinks, setSocialLinks] =
     useState<SocialForm[]>([]);
 
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<PortfolioTemplateId>("premium-editorial");
+
   const markDirty = useCallback(() => {
     setDirty(true);
     setMessage("");
@@ -514,6 +527,12 @@ export default function PortfolioEditorPage() {
       const data = response.portfolio;
 
       setPortfolio(data);
+
+      setSelectedTemplate(
+        data.template === "orbit"
+          ? "orbit"
+          : "premium-editorial",
+      );
 
       setName(data.fullName || "");
       setUsername(data.username || "");
@@ -991,7 +1010,7 @@ projectUrl:
         ),
 
       template:
-        "premium-editorial",
+        selectedTemplate,
 
       templateVersion:
         1,
@@ -1048,7 +1067,95 @@ projectUrl:
       certifications,
       achievements,
       socialLinks,
+      selectedTemplate,
       portfolio?.status,
+    ],
+  );
+
+  const previewPortfolio = useMemo(
+    () => ({
+      fullName: name.trim() || "Your Name",
+      professionalTitle:
+        title.trim() || "Creative Technologist",
+      tagline: tagline.trim(),
+      bio: bio.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      location: location.trim(),
+      website: website.trim(),
+      projects: projects.map((item, index) => ({
+        id: item.id || `project-${index}`,
+        title: item.title.trim() || "Untitled project",
+        description: item.description.trim(),
+        shortDescription: item.description.trim(),
+        role: item.role.trim(),
+        technologies: item.technologies,
+        githubUrl: item.githubUrl.trim(),
+        liveUrl: item.liveUrl.trim(),
+        projectUrl: item.liveUrl.trim(),
+        startDate: item.startDate,
+        endDate: item.endDate,
+        featured: item.featured,
+      })),
+      experiences: experiences.map((item, index) => ({
+        id: item.id || `experience-${index}`,
+        company: item.company.trim(),
+        position: item.position.trim(),
+        employmentType: item.employmentType,
+        type: item.employmentType,
+        location: item.location.trim(),
+        startDate: item.startDate,
+        endDate: item.endDate,
+        currentlyWorking: item.currentlyWorking,
+        current: item.currentlyWorking,
+        description: item.description.trim(),
+        responsibilities: item.responsibilities,
+        achievements: item.achievements,
+      })),
+      education: education.map((item, index) => ({
+        id: item.id || `education-${index}`,
+        institution: item.institution.trim(),
+        degree: item.degree.trim(),
+        field: item.field.trim(),
+        fieldOfStudy: item.field.trim(),
+        location: item.location.trim(),
+        startDate: item.startDate,
+        endDate: item.endDate,
+        currentlyStudying: item.currentlyStudying,
+        current: item.currentlyStudying,
+        grade: item.grade.trim(),
+        coursework: item.coursework,
+        achievements: item.achievements,
+      })),
+      skills: skills.map((item, index) => ({
+        id: item.id || `skill-${index}`,
+        name: item.name.trim(),
+        category: item.category,
+        level: item.level,
+        yearsOfExperience: item.yearsOfExperience,
+        yearsOfUse: item.yearsOfExperience,
+      })),
+      socialLinks: socialLinks.map((item, index) => ({
+        id: item.id || `social-${index}`,
+        platform: item.platform,
+        label: item.label.trim() || item.platform,
+        url: item.url.trim(),
+      })),
+    }),
+    [
+      name,
+      title,
+      tagline,
+      bio,
+      email,
+      phone,
+      location,
+      website,
+      projects,
+      experiences,
+      education,
+      skills,
+      socialLinks,
     ],
   );
 
@@ -1362,7 +1469,7 @@ projectUrl:
           />
 
           <span>
-            Loading your portfolio…
+            Loading your portfolioâ€¦
           </span>
         </div>
       </main>
@@ -1888,6 +1995,32 @@ projectUrl:
           )}
 
           {activeSection ===
+  "template" && (
+  <div
+    className={
+      styles.templateSelection
+    }
+  >
+    <PortfolioTemplateSelector
+      selected={
+        selectedTemplate
+      }
+      portfolio={
+        previewPortfolio
+      }
+      onChange={(
+        template,
+      ) => {
+        setSelectedTemplate(
+          template,
+        );
+        markDirty();
+      }}
+    />
+  </div>
+)}
+
+          {activeSection ===
             "review" && (
             <ReviewSection
               name={name}
@@ -1929,19 +2062,71 @@ projectUrl:
           )}
         </section>
 
-        <PreviewPanel
-          name={name}
-          username={slugify(username)}
-          title={title}
-          tagline={tagline}
-          bio={bio}
-          location={location}
-          email={email}
-          projects={projects}
-          experiences={experiences}
-          skills={skills}
-          socialLinks={socialLinks}
-        />
+        {selectedTemplate ===
+"orbit" ? (
+  <aside
+    className={
+      styles.orbitPreviewPanel
+    }
+  >
+    <div
+      className={
+        styles.previewHeader
+      }
+    >
+      <div>
+        <span>
+          LIVE PREVIEW
+        </span>
+
+        <strong>
+          Orbit
+        </strong>
+      </div>
+
+      <span
+        className={
+          styles.liveDot
+        }
+      >
+        LIVE
+      </span>
+    </div>
+
+    <div
+      className={
+        styles.orbitPreviewStage
+      }
+    >
+      <OrbitTemplatePreview
+  portfolio={previewPortfolio}
+/>
+
+    </div>
+  </aside>
+) : (
+  <PreviewPanel
+    name={name}
+    username={slugify(
+      username,
+    )}
+    title={title}
+    tagline={tagline}
+    bio={bio}
+    location={location}
+    email={email}
+    projects={
+      projects
+    }
+    experiences={
+      experiences
+    }
+    skills={skills}
+    socialLinks={
+      socialLinks
+    }
+  />
+)}
       </div>
     </main>
   );

@@ -50,6 +50,12 @@ function normalizeText(value, max = 5000) {
   return result ? result.slice(0, max) : null;
 }
 
+function validationError(message) {
+  const error = new Error(message);
+  error.statusCode = 422;
+  return error;
+}
+
 function normalizeStringArray(value, maxItems = 50, maxLength = 300) {
   if (!Array.isArray(value)) return [];
 
@@ -109,12 +115,10 @@ function validateUsername(username) {
 
   if (!/^[a-z0-9][a-z0-9-_]{2,29}$/.test(username)) {
     const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+      'Username may contain lowercase letters, numbers, hyphens, and underscores only.',
+    );
+    error.statusCode = 422;
+    throw error;
   }
 
   if (RESERVED_USERNAMES.has(username)) {
@@ -397,13 +401,7 @@ function normalizeProject(project, index) {
     );
 
   if (!description) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Project ${index + 1}: description is required.`);
   }
 
   return {
@@ -444,35 +442,17 @@ function normalizeExperience(item, index) {
   const position = normalizeText(item.position, 200);
 
   if (!company) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Experience ${index + 1}: company is required.`);
   }
 
   if (!position) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Experience ${index + 1}: position is required.`);
   }
 
   const startDate = parseDate(item.startDate);
 
   if (!startDate) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Experience ${index + 1}: start date is required.`);
   }
 
   return {
@@ -497,13 +477,7 @@ function normalizeEducation(item, index) {
   const institution = normalizeText(item.institution, 220);
 
   if (!institution) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Education ${index + 1}: institution is required.`);
   }
 
   return {
@@ -528,13 +502,7 @@ function normalizeSkill(item, index) {
   const name = normalizeText(item.name, 120);
 
   if (!name) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Skill ${index + 1}: name is required.`);
   }
 
   const level =
@@ -548,13 +516,7 @@ throw error;
     level !== null &&
     (!Number.isInteger(level) || level < 0 || level > 100)
   ) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Skill ${index + 1}: level must be an integer from 0 to 100.`);
   }
 
   const yearsOfUse =
@@ -568,13 +530,7 @@ throw error;
     yearsOfUse !== null &&
     (!Number.isFinite(yearsOfUse) || yearsOfUse < 0 || yearsOfUse > 100)
   ) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Skill ${index + 1}: years of use must be between 0 and 100.`);
   }
 
   return {
@@ -590,13 +546,7 @@ function normalizeCertification(item, index) {
   const name = normalizeText(item.name, 250);
 
   if (!name) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Certification ${index + 1}: name is required.`);
   }
 
   return {
@@ -617,13 +567,7 @@ function normalizeAchievement(item, index) {
   const title = normalizeText(item.title, 250);
 
   if (!title) {
-   const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+   throw validationError(`Achievement ${index + 1}: title is required.`);
   }
 
   return {
@@ -640,25 +584,13 @@ function normalizeSocialLink(item, index) {
   const platform = normalizeText(item.platform, 80);
 
   if (!platform) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Social link ${index + 1}: platform is required.`);
   }
 
   const url = normalizeOptionalUrl(item.url);
 
   if (!url) {
-    const error = new Error(
-  `Project ${index + 1}: title is required.`,
-);
-
-error.statusCode = 422;
-
-throw error;
+    throw validationError(`Social link ${index + 1}: URL is required.`);
   }
 
   return {
@@ -1289,6 +1221,14 @@ async function replaceChildren(tx, portfolioId, payload) {
   }
 }
 
+function publicSiteUrl() {
+  return String(
+    process.env.PUBLIC_SITE_URL ||
+      process.env.FRONTEND_URL ||
+      'https://pluten.site',
+  ).replace(/\/$/, '');
+}
+
 function seoData(payload, username) {
   return {
     title:
@@ -1329,7 +1269,7 @@ function seoData(payload, username) {
     canonicalUrl:
       normalizeOptionalUrl(
         payload.seo.canonicalUrl,
-      ) || `https://pluten.site/p/${username}`,
+      ) || `${publicSiteUrl()}/p/${username}`,
 
     noIndex: true,
   };
@@ -1437,7 +1377,18 @@ async function getPortfolioForUser(userId, portfolioId) {
   return serializePortfolio(portfolio);
 }
 
+function withPortfolioDatabaseErrors(error) {
+  if (error?.code === 'P2002') {
+    const conflict = new Error('That username is already taken.');
+    conflict.statusCode = 409;
+    return conflict;
+  }
+  return error;
+}
+
 async function createPortfolio(userId, body) {
+  try {
+
   const payload = preparePayload(body);
 
   const existing = await prisma.portfolio.findFirst({
@@ -1457,15 +1408,6 @@ async function createPortfolio(userId, body) {
     error.statusCode = 409;
     throw error;
   }
-
-  const existingUserCount = await prisma.portfolio.count({
-    where: {
-      userId,
-      status: {
-        not: 'DELETED',
-      },
-    },
-  });
 
   const created = await prisma.$transaction(async (tx) => {
     const portfolio = await tx.portfolio.create({
@@ -1527,14 +1469,17 @@ async function createPortfolio(userId, body) {
   return {
     portfolio: serializePortfolio(result),
     created: true,
-    portfolioLimitWarning:
-      existingUserCount >= 0
-        ? null
-        : null,
+    portfolioLimitWarning: null,
   };
+
+  } catch (error) {
+    throw withPortfolioDatabaseErrors(error);
+  }
 }
 
 async function updatePortfolio(userId, portfolioId, body) {
+  try {
+
   const payload = preparePayload(body);
 
   const current = await prisma.portfolio.findFirst({
@@ -1658,6 +1603,10 @@ async function updatePortfolio(userId, portfolioId, body) {
     portfolio: serializePortfolio(result),
     created: false,
   };
+
+  } catch (error) {
+    throw withPortfolioDatabaseErrors(error);
+  }
 }
 
 async function deletePortfolio(userId, portfolioId) {
@@ -1772,7 +1721,7 @@ async function publishPortfolio(userId, portfolioId) {
 
   return {
     portfolio: serializePortfolio(updated),
-    url: `https://pluten.site/p/${updated.username}`,
+    url: `${publicSiteUrl()}/p/${updated.username}`,
   };
 }
 

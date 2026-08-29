@@ -115,3 +115,137 @@
   .cardBottom { flex-direction: row; align-items: flex-end; }
   .viewLabel { justify-content: initial; }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / STOREFRONT
+   - 2-column product grid on every supported phone size
+   - tighter cards without sacrificing tap targets
+   - keeps desktop composition intact
+========================================================= */
+
+.productGrid,
+.loadingGrid {
+  align-items: stretch;
+}
+
+@media (max-width: 640px) {
+  .sectionInner {
+    width: min(100% - 24px, 1280px);
+    padding: 58px 0 76px;
+  }
+
+  .sectionHeader {
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .sectionEyebrow {
+    font-size: 9px;
+  }
+
+  .sectionTitle {
+    font-size: clamp(34px, 10.5vw, 48px);
+  }
+
+  .sectionMeta {
+    font-size: 11px;
+  }
+
+  .productGrid,
+  .loadingGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .productCard {
+    border-radius: 16px;
+  }
+
+  .productVisual {
+    aspect-ratio: 4 / 5;
+  }
+
+  .productMeta {
+    padding: 11px 10px 12px;
+  }
+
+  .productCategory {
+    margin-bottom: 7px;
+    font-size: 7px;
+    letter-spacing: 0.13em;
+  }
+
+  .cardTitle {
+    min-height: 2.25em;
+    font-size: clamp(15px, 4.35vw, 18px);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+
+  .cardBottom {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .priceBlock {
+    gap: 5px;
+  }
+
+  .currentPrice {
+    font-size: 14px;
+  }
+
+  .originalPrice {
+    font-size: 9px;
+  }
+
+  .viewLabel {
+    font-size: 8px;
+    gap: 2px;
+  }
+
+  .offerBadge {
+    top: 8px;
+    left: 8px;
+    padding: 6px 7px;
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 380px) {
+  .productGrid,
+  .loadingGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .productCard {
+    border-radius: 14px;
+  }
+
+  .productMeta {
+    padding: 10px 9px 11px;
+  }
+
+  .productCategory {
+    font-size: 6.5px;
+  }
+
+  .cardTitle {
+    font-size: 14px;
+  }
+
+  .currentPrice {
+    font-size: 13px;
+  }
+
+  .originalPrice {
+    font-size: 8px;
+  }
+
+  .viewLabel {
+    font-size: 7px;
+  }
+}

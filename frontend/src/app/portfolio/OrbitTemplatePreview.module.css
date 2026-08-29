@@ -53,3 +53,28 @@
 @media (max-width: 640px) {
   .previewFrame { width: min(100%, 250px); border-radius: 22px; }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / PREVIEW FRAME
+========================================================= */
+
+.preview {
+  min-width: 0;
+  min-height: 0;
+}
+
+.previewFrame {
+  flex: 0 0 auto;
+  max-width: 100%;
+  max-height: calc(100% - 8px);
+}
+
+@media (max-width: 640px) {
+  .previewFrame {
+    width: min(82vw, 250px);
+    border-radius: 20px;
+    box-shadow:
+      0 20px 54px rgba(17, 17, 17, 0.19),
+      0 0 0 4px rgba(255, 255, 255, 0.22);
+  }
+}

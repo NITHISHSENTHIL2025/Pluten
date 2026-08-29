@@ -384,3 +384,214 @@
     animation: none !important;
   }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / ORBIT PORTFOLIO
+   Mobile rule: same composition, proportionally smaller.
+   Do not redesign the portfolio into a separate mobile UI.
+========================================================= */
+
+@media (max-width: 900px) {
+  .stage {
+    min-height: calc(100dvh - 72px);
+  }
+
+  .card {
+    width: min(78vw, 570px);
+    aspect-ratio: 780 / 620;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    width: calc(100% - 24px);
+  }
+
+  .identity {
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 29px;
+    height: 29px;
+  }
+
+  .stage {
+    width: 100%;
+    min-height: calc(100dvh - 62px);
+    padding-top: 10px;
+    padding-bottom: 74px;
+  }
+
+  .heading {
+    width: calc(100% - 24px);
+    min-height: 94px;
+  }
+
+  .headingNormal {
+    font-size: clamp(34px, 9.7vw, 56px);
+  }
+
+  .headingMedium {
+    font-size: clamp(31px, 8.8vw, 51px);
+  }
+
+  .headingLong {
+    font-size: clamp(27px, 7.7vw, 43px);
+  }
+
+  .headingExtraLong {
+    font-size: clamp(24px, 6.8vw, 37px);
+  }
+
+  .heading p {
+    max-width: 320px;
+    font-size: 8px;
+  }
+
+  .orbit {
+    width: 100vw;
+    height: min(57vh, 430px);
+    min-height: 340px;
+  }
+
+  .ringOuter {
+    width: min(124vw, 500px);
+    height: min(124vw, 500px);
+  }
+
+  .ringInner {
+    width: min(78vw, 315px);
+    height: min(78vw, 315px);
+  }
+
+  .card {
+    width: min(88vw, 420px);
+    aspect-ratio: 780 / 620;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 18px 18px 12px;
+    border-radius: 24px;
+  }
+
+  .cardTop,
+  .cardBottom {
+    font-size: 6px;
+  }
+
+  .cardContent {
+    padding: 17px 7px 14px 2px;
+  }
+
+  .sectionIcon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 11px;
+  }
+
+  .innerLabel {
+    margin-bottom: 7px;
+    font-size: 5.5px;
+  }
+
+  .cardTitleNormal {
+    font-size: clamp(28px, 7.7vw, 42px);
+  }
+
+  .cardTitleMedium {
+    font-size: clamp(25px, 6.9vw, 38px);
+  }
+
+  .cardTitleLong {
+    font-size: clamp(21px, 5.9vw, 32px);
+  }
+
+  .cardTitleExtraLong {
+    font-size: clamp(18px, 5.1vw, 28px);
+  }
+
+  .role {
+    margin-top: 7px;
+    font-size: 8px;
+  }
+
+  .description {
+    margin-top: 9px;
+    font-size: 8px;
+    line-height: 1.5;
+  }
+
+  .aboutText {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .contentAbout .aboutScroll {
+    max-height: 46%;
+  }
+
+  .contentProject .descriptionScroll,
+  .standardContent .descriptionScroll {
+    max-height: 36%;
+  }
+
+  .skillsScroll {
+    max-height: 62%;
+  }
+
+  .connectTitle {
+    font-size: clamp(29px, 8vw, 38px);
+  }
+
+  .connectList {
+    gap: 5px;
+    margin-top: 12px;
+  }
+
+  .connectList a {
+    min-height: 31px;
+    grid-template-columns: 14px minmax(0, 1fr) 11px;
+    gap: 5px;
+    padding-inline: 8px;
+    font-size: 6px;
+  }
+
+  .navigation {
+    bottom: 14px;
+    gap: 8px;
+  }
+
+  .arrow {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 380px) {
+  .orbit {
+    height: min(54vh, 390px);
+    min-height: 320px;
+  }
+
+  .card {
+    width: 91vw;
+    border-radius: 22px;
+    padding: 16px 16px 11px;
+  }
+
+  .cardContent {
+    padding-top: 14px;
+  }
+
+  .navigation {
+    bottom: 11px;
+  }
+
+  .arrow {
+    width: 34px;
+    height: 34px;
+  }
+}

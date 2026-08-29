@@ -1440,3 +1440,42 @@ textarea {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / GLOBAL
+========================================================= */
+
+:root {
+  --pluten-safe-inline: 12px;
+}
+
+body {
+  overflow-x: clip;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+img,
+video {
+  height: auto;
+}
+
+@media (max-width: 760px) {
+  .pluten-nav-inner {
+    width: calc(100% - 24px);
+  }
+
+  .pluten-mobile-panel {
+    width: min(430px, 96vw);
+    padding-inline: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .pluten-mobile-panel {
+    padding-inline: 14px;
+  }
+}

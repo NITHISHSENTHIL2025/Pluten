@@ -774,3 +774,220 @@
     animation: none;
   }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / PORTFOLIO DASHBOARD
+========================================================= */
+
+@media (max-width: 1050px) {
+  .portfolioGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .portfolioCardTop {
+    gap: 12px;
+    padding: 19px;
+  }
+
+  .portfolioCardBody {
+    padding: 14px;
+  }
+
+  .previewMock {
+    min-height: 290px;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 680px) {
+  .shell {
+    width: min(100% - 24px, 680px);
+  }
+
+  .dashboard {
+    padding: 58px 0 84px;
+  }
+
+  .topbar h1 {
+    font-size: clamp(38px, 10.5vw, 58px);
+  }
+
+  .topbar p {
+    font-size: 13px;
+  }
+
+  .portfolioGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .portfolioCard {
+    border-radius: 18px;
+  }
+
+  .portfolioCardTop {
+    padding: 12px;
+  }
+
+  .cardIdentity {
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  .cardNameRow {
+    gap: 6px;
+  }
+
+  .cardNameRow h2 {
+    font-size: 13px;
+  }
+
+  .cardIdentity p {
+    margin-top: 4px;
+    font-size: 9px;
+  }
+
+  .publishedBadge,
+  .draftBadge {
+    padding: 5px 6px;
+    font-size: 6px;
+  }
+
+  .cardNumber {
+    max-width: 90px;
+    font-size: 6px;
+  }
+
+  .portfolioCardBody {
+    padding: 9px;
+  }
+
+  .previewMock {
+    min-height: 220px;
+    padding: 13px;
+    border-radius: 14px;
+  }
+
+  .previewHero {
+    padding-top: 34px;
+  }
+
+  .previewHero > span {
+    font-size: clamp(25px, 7vw, 39px);
+  }
+
+  .previewHero strong {
+    margin-top: 9px;
+    font-size: 9px;
+  }
+
+  .previewHero small {
+    margin-top: 8px;
+    font-size: 7px;
+  }
+
+  .previewStats {
+    margin-top: 25px;
+    padding-top: 12px;
+  }
+
+  .previewStats span + span {
+    padding-left: 9px;
+  }
+
+  .previewStats strong {
+    font-size: 17px;
+  }
+
+  .previewStats small {
+    margin-top: 4px;
+    font-size: 6px;
+  }
+
+  .portfolioCardMeta {
+    margin-top: 9px;
+    border-radius: 12px;
+  }
+
+  .portfolioCardMeta > div {
+    padding: 9px;
+  }
+
+  .portfolioCardMeta span {
+    font-size: 6px;
+  }
+
+  .portfolioCardMeta strong {
+    margin-top: 5px;
+    font-size: 9px;
+  }
+
+  .portfolioCardFooter {
+    gap: 7px;
+    padding: 10px 9px 11px;
+  }
+
+  .editAction,
+  .viewAction {
+    min-height: 35px;
+    padding-inline: 10px;
+    font-size: 9px;
+  }
+
+  .privateLabel {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  .portfolioGrid {
+    gap: 8px;
+  }
+
+  .portfolioCardTop {
+    padding: 10px;
+  }
+
+  .portfolioCardBody {
+    padding: 8px;
+  }
+
+  .previewMock {
+    min-height: 190px;
+    padding: 11px;
+  }
+
+  .previewHero > span {
+    font-size: 25px;
+  }
+
+  .previewHero strong {
+    font-size: 8px;
+  }
+
+  .previewHero small {
+    font-size: 6.5px;
+  }
+
+  .previewStats {
+    margin-top: 18px;
+  }
+
+  .previewStats strong {
+    font-size: 15px;
+  }
+
+  .editAction,
+  .viewAction {
+    min-height: 33px;
+    padding-inline: 8px;
+    font-size: 8px;
+  }
+}

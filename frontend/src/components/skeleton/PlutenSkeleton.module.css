@@ -1,3 +1,24 @@
 .shimmer{width:100%;height:100%;border-radius:inherit;background:linear-gradient(100deg,#ededeb 8%,#f6f6f3 18%,#ededeb 33%);background-size:200% 100%;animation:shimmer 1.35s ease-in-out infinite}@keyframes shimmer{to{background-position:-200% 0}}.productCard{overflow:hidden;border:1px solid #deded8;border-radius:18px;background:#fff}.productImage{aspect-ratio:1;background:#ecece8}.productContent{padding:17px;display:grid;gap:10px}.lineSmall,.lineMedium,.lineTitle,.lineTiny,.priceSkeleton{height:10px;border-radius:999px;background:#ecece8;overflow:hidden}.lineSmall{width:30%}.lineMedium{width:68%}.lineTitle{width:88%;height:19px}.lineTiny{width:28%;height:8px}.productBottom{display:flex;justify-content:space-between;gap:10px;margin-top:7px}.priceSkeleton{width:72px}.buttonSkeleton{width:90px;height:38px;border-radius:999px;background:#ecece8;overflow:hidden}.libraryCard{overflow:hidden;border:1px solid #deded8;border-radius:18px;background:#fff}.libraryImage{aspect-ratio:1;background:#ecece8}.libraryContent{padding:16px}.libraryFooter{display:flex;justify-content:space-between;gap:10px;margin-top:18px;align-items:center}.profileCard{padding:26px;border:1px solid #deded8;border-radius:22px;background:#fff}.profileHeader{display:flex;align-items:center;gap:16px}.avatar{width:64px;height:64px;aspect-ratio:1;border-radius:50%;overflow:hidden;background:#ecece8}.profileInfo{flex:1;display:grid;gap:9px}.badgeSkeleton{width:100px;height:25px;border-radius:999px;background:#ecece8;overflow:hidden}.profileActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.actionSkeleton{height:78px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid #e2e1dc;border-radius:15px}.actionIcon{width:38px;height:38px;border-radius:11px;background:#ecece8;overflow:hidden}.actionText{display:grid;gap:8px;flex:1}.tableSkeleton{display:grid;border:1px solid #242424;border-radius:16px;overflow:hidden;background:#111}.tableRow{display:grid;grid-template-columns:1fr 2fr 1fr .7fr;gap:14px;padding:15px;border-bottom:1px solid #191919}.tableCell,.tableCellWide,.tableCellAction{height:13px;border-radius:999px;background:#1b1b1b;overflow:hidden}.tableCellWide{width:80%}.tableCellAction{width:50%}.textSkeleton{display:grid;gap:11px;padding:20px;border:1px solid #deded8;border-radius:18px;background:#fff}.textSkeleton .lineTitle{height:24px}.textSkeleton .lineMedium{height:12px}.textSkeleton .lineSmall{height:10px}
 @media(max-width:640px){.profileActions{grid-template-columns:1fr}.productContent{padding:13px}.libraryContent{padding:13px}}
 @media(prefers-reduced-motion:reduce){.shimmer{animation:none}}
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / SKELETON
+========================================================= */
+
+@media (max-width: 640px) {
+  .productCard,
+  .libraryCard {
+    border-radius: 15px;
+  }
+
+  .productImage,
+  .libraryImage {
+    aspect-ratio: 4 / 5;
+  }
+
+  .productContent,
+  .libraryContent {
+    padding: 10px;
+  }
+}

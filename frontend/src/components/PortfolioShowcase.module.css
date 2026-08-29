@@ -797,3 +797,89 @@
     transition: none;
   }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / SHOWCASE
+   Mobile keeps the portfolio reel at the requested 16:9 ratio.
+========================================================= */
+
+@media (max-width: 900px) {
+  .stage {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 70px 14px 82px;
+  }
+
+  .stage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  .media,
+  .video {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stageTop {
+    padding: 12px 13px;
+    font-size: 7px;
+  }
+
+  .playButton {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stageCta {
+    bottom: 40px;
+  }
+
+  .cta {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 9px;
+  }
+
+  .stageControls {
+    bottom: 12px;
+    gap: 7px;
+  }
+
+  .arrowButton {
+    width: 25px;
+    height: 25px;
+  }
+
+  .progressItem,
+  .progressActive {
+    width: 18px;
+  }
+
+  .progressActive {
+    width: 28px;
+  }
+}
+
+@media (max-width: 380px) {
+  .section {
+    padding-inline: 12px;
+  }
+
+  .stage {
+    border-radius: 14px;
+  }
+
+  .stageCta {
+    bottom: 37px;
+  }
+}

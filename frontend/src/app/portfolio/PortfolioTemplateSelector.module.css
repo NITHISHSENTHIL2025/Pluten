@@ -389,3 +389,236 @@
     font-size: 40px;
   }
 }
+
+/* =========================================================
+   PLUTEN RESPONSIVE QUALITY LAYER / TEMPLATE SELECTOR
+   Keep the two core templates side-by-side on phones.
+   The previews scale down; the layout does not collapse.
+========================================================= */
+
+.options {
+  align-items: stretch;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.visual {
+  flex: 0 0 auto;
+}
+
+.optionBottom {
+  min-width: 0;
+}
+
+.optionBottom > div:first-child {
+  min-width: 0;
+}
+
+.optionBottom h3,
+.optionBottom p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 800px) {
+  .options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .optionTop {
+    min-height: 40px;
+    padding-inline: 11px;
+  }
+
+  .optionMeta {
+    font-size: 6px;
+  }
+
+  .selectedPill {
+    min-height: 20px;
+    padding-inline: 7px;
+    font-size: 6px;
+  }
+
+  .visual {
+    height: clamp(145px, 30vw, 190px);
+  }
+
+  .editorialVisual {
+    padding: 16px;
+  }
+
+  .editorialMark {
+    left: 16px;
+    bottom: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .editorialText {
+    right: 16px;
+  }
+
+  .orbitRing {
+    width: 74%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .orbitRingSmall {
+    width: 48%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .orbitCore {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .orbitCardLeft,
+  .orbitCardRight {
+    width: 54px;
+    height: 88px;
+    border-radius: 12px;
+  }
+
+  .optionBottom {
+    align-items: center;
+    gap: 8px;
+    padding: 12px 11px 12px;
+  }
+
+  .optionBottom h3 {
+    font-size: clamp(13px, 3.7vw, 17px);
+  }
+
+  .optionBottom p {
+    margin-top: 4px;
+    font-size: 8px;
+    line-height: 1.45;
+  }
+
+  .optionIcon {
+    width: 31px;
+    height: 31px;
+    flex-basis: 31px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .title {
+    font-size: clamp(30px, 8.8vw, 40px);
+  }
+
+  .description {
+    font-size: 11px;
+  }
+
+  .count {
+    font-size: 7px;
+  }
+
+  .options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .option {
+    border-radius: 16px;
+  }
+
+  .optionTop {
+    min-height: 36px;
+    padding-inline: 9px;
+  }
+
+  .selectedPill {
+    min-height: 18px;
+    padding-inline: 6px;
+  }
+
+  .visual {
+    height: clamp(122px, 32vw, 160px);
+  }
+
+  .editorialVisual {
+    padding: 12px;
+  }
+
+  .editorialLines {
+    gap: 4px;
+    margin-top: 7px;
+  }
+
+  .editorialLines span {
+    height: 1px;
+  }
+
+  .editorialMark {
+    left: 12px;
+    bottom: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .editorialText {
+    right: 12px;
+  }
+
+  .optionBottom {
+    align-items: flex-start;
+    padding: 10px 9px;
+  }
+
+  .optionBottom h3 {
+    font-size: 12px;
+  }
+
+  .optionBottom p {
+    font-size: 7px;
+  }
+
+  .optionIcon {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+}
+
+@media (max-width: 360px) {
+  .options {
+    gap: 7px;
+  }
+
+  .option {
+    border-radius: 14px;
+  }
+
+  .visual {
+    height: 116px;
+  }
+
+  .optionBottom {
+    padding: 9px 8px;
+  }
+
+  .optionBottom h3 {
+    font-size: 11px;
+  }
+
+  .optionBottom p {
+    font-size: 6.5px;
+  }
+}

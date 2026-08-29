@@ -41,7 +41,14 @@ const Cashfree = new CashfreeSDK(
   appId,
   secretKey,
 );
-
+console.log('[CASHFREE CONFIG]', {
+  mode: isProduction ? 'production' : 'sandbox',
+  appIdPresent: Boolean(appId),
+  secretPresent: Boolean(secretKey),
+  appIdLength: appId.length,
+  secretLength: secretKey.length,
+  apiVersion,
+});
 module.exports = {
   Cashfree,
   CASHFREE_API_VERSION: apiVersion,

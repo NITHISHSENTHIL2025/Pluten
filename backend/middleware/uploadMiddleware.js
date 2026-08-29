@@ -47,11 +47,14 @@ const multerUpload = multer({
   fileFilter,
 });
 
-const unlinkIfExists = (filePath) => {
+const unlinkIfExists = async (filePath) => {
+  if (!filePath) return;
   try {
-    if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    await fs.promises.unlink(filePath);
   } catch (error) {
-    console.error('[UPLOAD] Temp cleanup failed:', error.message);
+    if (error?.code !== 'ENOENT') {
+      console.error('[UPLOAD] Temp cleanup failed:', error.message);
+    }
   }
 };
 
@@ -87,12 +90,34 @@ const deleteUploadedS3Key = async (key) => {
 
 const cloudinaryPublicIdFromUrl = (url) => {
   if (!url || typeof url !== 'string') return null;
-  const marker = '/upload/';
-  const index = url.indexOf(marker);
-  if (index === -1) return null;
-  let publicId = url.slice(index + marker.length).split('?')[0];
-  publicId = publicId.replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
-  return publicId || null;
+
+  try {
+    const parsed = new URL(url);
+    const configuredCloud = String(
+      process.env.CLOUDINARY_CLOUD_NAME || '',
+    ).trim();
+
+    if (
+      parsed.protocol !== 'https:' ||
+      parsed.hostname !== 'res.cloudinary.com' ||
+      (configuredCloud && !parsed.pathname.startsWith(`/${configuredCloud}/`))
+    ) {
+      return null;
+    }
+
+    const marker = '/upload/';
+    const index = parsed.pathname.indexOf(marker);
+    if (index === -1) return null;
+
+    let publicId = parsed.pathname
+      .slice(index + marker.length)
+      .replace(/^v\d+\//, '')
+      .replace(/\.[a-z0-9]+$/i, '');
+
+    return publicId || null;
+  } catch {
+    return null;
+  }
 };
 
 const destroyCloudinaryUrl = async (url) => {
@@ -108,7 +133,11 @@ const cleanupRequestUploads = async (req) => {
     ...(uploaded.cloudinaryUrls || []).map(destroyCloudinaryUrl),
     ...(uploaded.s3Keys || []).map(deleteUploadedS3Key),
   ]);
-  for (const group of Object.values(req.files || {})) for (const file of group) unlinkIfExists(file.path);
+  await Promise.allSettled(
+    Object.values(req.files || {})
+      .flat()
+      .map((file) => unlinkIfExists(file.path)),
+  );
 };
 
 const validateParsedFiles = async (req) => {
@@ -125,12 +154,19 @@ const upload = {
     const middleware = multerUpload.fields(fields);
     return (req, res, next) => {
       middleware(req, res, async (err) => {
-        if (err) return res.status(400).json({ error: err.message });
+        if (err) {
+          await cleanupRequestUploads(req);
+          return res.status(400).json({ error: err.message });
+        }
         if (!req.files) return next();
 
         res.on('finish', () => {
           if (!req.uploadCommitted) {
-            for (const group of Object.values(req.files || {})) for (const file of group) unlinkIfExists(file.path);
+            void Promise.allSettled(
+              Object.values(req.files || {})
+                .flat()
+                .map((file) => unlinkIfExists(file.path)),
+            );
           }
         });
 
@@ -161,7 +197,7 @@ const upload = {
           });
           file.location = result.secure_url;
           uploadedCloudinaryUrls.push(result.secure_url);
-          unlinkIfExists(file.path);
+          await unlinkIfExists(file.path);
         }
       }
 
@@ -177,7 +213,7 @@ const upload = {
           }));
           file.key = key;
           uploadedS3Keys.push(key);
-          unlinkIfExists(file.path);
+          await unlinkIfExists(file.path);
         }
       }
 

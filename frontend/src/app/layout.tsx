@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './pluten-hardening.css';
+import AuthHeartbeat from '@/components/AuthHeartbeat';
+import SessionExpiryNotice from '@/components/SessionExpiryNotice';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://pluten.site'),
@@ -27,5 +29,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', colorScheme: 'light' };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><AuthHeartbeat /><SessionExpiryNotice />{children}</body></html>;
 }

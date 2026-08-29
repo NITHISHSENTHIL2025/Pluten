@@ -86,6 +86,26 @@ const createOrder = async (req, res) => {
       cashfree_mode: getCashfreeMode(),
     });
   } catch (error) {
+    if (error?.code === 'P2002' && error?.meta?.target?.includes?.('clientRequestId')) {
+      const existing = await prisma.order.findFirst({
+        where: { userId: req.user.id, clientRequestId },
+        select: { id: true, status: true, transactionId: true },
+      }).catch(() => null);
+
+      if (existing?.status === 'SUCCESS') {
+        return res.status(200).json({
+          success: true,
+          alreadyPurchased: true,
+          order_id: existing.id,
+        });
+      }
+
+      return res.status(409).json({
+        error: 'This checkout attempt is already being processed.',
+        order_id: existing?.id || null,
+      });
+    }
+
     console.error('[PAYMENT] Create order error:', { requestId: req.requestId, message: error.message, gateway: error?.response?.data });
     if (internalOrderId) {
       try { await prisma.order.updateMany({ where: { id: internalOrderId, status: 'PENDING' }, data: { status: 'FAILED', transactionId: 'GATEWAY_CREATE_FAILED' } }); }

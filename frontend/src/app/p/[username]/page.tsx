@@ -24,27 +24,27 @@ export default async function PublicPortfolioPage({
     notFound();
   }
 
+  let response;
+
   try {
-    const response = await getPublicPortfolio(cleanUsername);
-    const portfolio = response?.portfolio as Portfolio | undefined;
-
-    if (!response?.success || !portfolio) {
-      notFound();
-    }
-
-    if (
-      portfolio.status !== "PUBLISHED" ||
-      portfolio.visibility !== "PUBLIC"
-    ) {
-      notFound();
-    }
-
-    if (portfolio.template === "orbit") {
-      return <OrbitPortfolio portfolio={portfolio} />;
-    }
-
-    return <PortfolioExperience portfolio={portfolio} />;
+    response = await getPublicPortfolio(cleanUsername);
   } catch {
     notFound();
   }
+
+  const portfolio = response?.portfolio as Portfolio | undefined;
+
+  if (!response?.success || !portfolio) {
+    notFound();
+  }
+
+  if (portfolio.status !== "PUBLISHED" || portfolio.visibility !== "PUBLIC") {
+    notFound();
+  }
+
+  if (portfolio.template === "orbit") {
+    return <OrbitPortfolio portfolio={portfolio} />;
+  }
+
+  return <PortfolioExperience portfolio={portfolio} />;
 }

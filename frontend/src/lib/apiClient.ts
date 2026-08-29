@@ -1,3 +1,5 @@
+export const SESSION_EXPIRED_EVENT = "pluten:session-expired";
+
 import axios from "axios";
 
 const baseURL = (
@@ -10,7 +12,6 @@ const apiClient = axios.create({
   timeout: 15000,
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json",
   },
 });
 
@@ -29,11 +30,15 @@ apiClient.interceptors.response.use(
     const requestId =
       error?.response?.headers?.["x-request-id"];
 
+    if (error?.response?.status === 401 && typeof window !== "undefined") {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
+
     if (requestId) {
       error.requestId = requestId;
     }
 
-    console.error("[API ERROR]", {
+    if (!axios.isCancel(error)) console.error("[API ERROR]", {
       status: error?.response?.status,
       method: error?.config?.method,
       url: error?.config?.url,

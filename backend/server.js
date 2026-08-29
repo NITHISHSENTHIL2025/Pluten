@@ -76,11 +76,20 @@ app.use(cookieParser());
 |--------------------------------------------------------------------------
 */
 
+const configuredOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://pluten.site',
-  'https://www.pluten.site',
-].filter(Boolean);
+  ...configuredOrigins,
+  ...(isProduction
+    ? ['https://pluten.site', 'https://www.pluten.site']
+    : ['http://localhost:3000']),
+].filter(
+  (origin, index, values) =>
+    values.indexOf(origin) === index,
+);
 
 app.use(
   cors({

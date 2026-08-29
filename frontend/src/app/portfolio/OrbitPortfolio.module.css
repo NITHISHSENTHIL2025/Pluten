@@ -340,3 +340,47 @@
 @media (prefers-reduced-motion: reduce) {
   .card,.arrow,.primaryButton,.secondaryButton,.connectList a { transition:none; }
 }
+
+
+/* V1 long-content safety */
+.card,
+.cardInner,
+.cardContent,
+.cardBody,
+.cardHeader {
+  min-width: 0;
+}
+
+.card * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cardDescription,
+.description,
+.cardBody {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .orbit {
+    max-width: 100%;
+    overflow: clip;
+  }
+
+  .card {
+    transform-style: flat;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardActive,
+  .card * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

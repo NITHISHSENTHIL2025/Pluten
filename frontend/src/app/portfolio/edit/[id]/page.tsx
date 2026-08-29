@@ -23,6 +23,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { getApiErrorStatus } from "@/lib/errors";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -55,6 +56,12 @@ type SectionId =
   | "social"
   | "template"
   | "review";
+
+type EditorDraft = {
+  version: 1;
+  savedAt: string;
+  payload: CreatePortfolioPayload;
+};
 
 type ProjectForm = {
   id?: string;
@@ -307,6 +314,22 @@ function joinLines(value: string[]) {
   return value.join("\n");
 }
 
+
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === "object" && error !== null) {
+    const candidate = error as {
+      response?: { data?: { error?: unknown; message?: unknown } };
+      message?: unknown;
+    };
+    const apiError = candidate.response?.data?.error;
+    const apiMessage = candidate.response?.data?.message;
+    if (typeof apiError === "string" && apiError.trim()) return apiError;
+    if (typeof apiMessage === "string" && apiMessage.trim()) return apiMessage;
+    if (typeof candidate.message === "string" && candidate.message.trim()) return candidate.message;
+  }
+  return fallback;
+}
+
 function formatDate(value?: string | null) {
   if (!value) {
     return "";
@@ -423,6 +446,8 @@ export default function PortfolioEditorPage() {
     params.id || "",
   );
 
+  const draftStorageKey = `pluten:portfolio-draft:${portfolioId}`;
+
   const [portfolio, setPortfolio] =
     useState<Portfolio | null>(null);
 
@@ -503,6 +528,25 @@ export default function PortfolioEditorPage() {
     setMessage("");
     setError("");
   }, []);
+
+  const persistDraft = useCallback(
+    (draftPayload: CreatePortfolioPayload) => {
+      try {
+        const draft: EditorDraft = {
+          version: 1,
+          savedAt: new Date().toISOString(),
+          payload: draftPayload,
+        };
+        window.localStorage.setItem(
+          draftStorageKey,
+          JSON.stringify(draft),
+        );
+      } catch (error) {
+        console.warn("[PORTFOLIO] Local draft persistence failed", error);
+      }
+    },
+    [draftStorageKey],
+  );
 
   const load = useCallback(async () => {
     if (!portfolioId) {
@@ -720,16 +764,130 @@ export default function PortfolioEditorPage() {
         ),
       );
 
-      setDirty(false);
-      setMessage("");
-    } catch (err: any) {
+      try {
+        const rawDraft = window.localStorage.getItem(
+          draftStorageKey,
+        );
+
+        if (rawDraft) {
+          const draft = JSON.parse(rawDraft) as Partial<EditorDraft>;
+          const draftTime = Date.parse(String(draft.savedAt || ""));
+          const serverTime = Date.parse(String(data.updatedAt || ""));
+
+          if (draft.version === 1 && Number.isFinite(draftTime) && draftTime > serverTime && draft.payload) {
+            const draftPayload = draft.payload;
+            setName(draftPayload.fullName || "");
+            setUsername(draftPayload.username || "");
+            setTitle(draftPayload.professionalTitle || "");
+            setTagline(draftPayload.tagline || "");
+            setBio(draftPayload.bio || "");
+            setEmail(draftPayload.email || "");
+            setPhone(draftPayload.phone || "");
+            setLocation(draftPayload.location || "");
+            setWebsite(draftPayload.website || "");
+            setSelectedTemplate(
+              draftPayload.template === "orbit"
+                ? "orbit"
+                : "premium-editorial",
+            );
+            setProjects(
+              (draftPayload.projects || []).map((item) => ({
+                id: item.id,
+                title: item.title || "",
+                description: item.description || "",
+                role: item.role || "",
+                technologies: item.technologies || [],
+                githubUrl: item.githubUrl || "",
+                liveUrl: item.liveUrl || item.projectUrl || "",
+                startDate: item.startDate || "",
+                endDate: item.endDate || "",
+                featured: Boolean(item.featured),
+              })),
+            );
+            setExperiences(
+              (draftPayload.experiences || []).map((item) => ({
+                id: item.id,
+                company: item.company || "",
+                position: item.position || "",
+                employmentType: item.employmentType || item.type || "FULL_TIME",
+                location: item.location || "",
+                startDate: item.startDate || "",
+                endDate: item.endDate || "",
+                currentlyWorking: Boolean(item.currentlyWorking ?? item.current),
+                description: item.description || "",
+                responsibilities: item.responsibilities || [],
+                achievements: item.achievements || [],
+              })),
+            );
+            setEducation(
+              (draftPayload.education || []).map((item) => ({
+                id: item.id,
+                institution: item.institution || "",
+                degree: item.degree || "",
+                field: item.field || item.fieldOfStudy || "",
+                location: item.location || "",
+                startDate: item.startDate || "",
+                endDate: item.endDate || "",
+                currentlyStudying: Boolean(item.currentlyStudying ?? item.current),
+                grade: item.grade || "",
+                coursework: item.coursework || [],
+                achievements: item.achievements || [],
+              })),
+            );
+            setSkills(
+              (draftPayload.skills || []).map((item) => ({
+                id: item.id,
+                name: item.name || "",
+                category: item.category || "OTHER",
+                level: item.level ?? null,
+                yearsOfExperience: item.yearsOfExperience ?? item.yearsOfUse ?? null,
+              })),
+            );
+            setCertifications(
+              (draftPayload.certifications || []).map((item) => ({
+                id: item.id,
+                name: item.name || "",
+                issuer: item.issuer || "",
+                issueDate: item.issueDate || "",
+                expiryDate: item.expiryDate || "",
+                credentialId: item.credentialId || "",
+                credentialUrl: item.credentialUrl || "",
+              })),
+            );
+            setAchievements(
+              (draftPayload.achievements || []).map((item) => ({
+                id: item.id,
+                title: item.title || "",
+                description: item.description || "",
+                organization: item.organization || "",
+                date: item.date || "",
+                credentialUrl: item.credentialUrl || "",
+              })),
+            );
+            setSocialLinks(
+              (draftPayload.socialLinks || []).map((item) => ({
+                id: item.id,
+                platform: item.platform || "OTHER",
+                label: item.label || item.platform || "",
+                url: item.url || "",
+              })),
+            );
+            setDirty(true);
+            setMessage("Recovered unsaved changes from this device.");
+          }
+        }
+      } catch (draftError) {
+        console.warn("[PORTFOLIO] Local draft recovery failed", draftError);
+      }
+
+    } catch (err: unknown) {
       console.error(
         "Portfolio editor load error:",
         err,
       );
 
       if (
-        err?.response?.status === 401
+        getApiErrorStatus(err) === 401
       ) {
         router.replace(
           `/login?redirect=${encodeURIComponent(
@@ -740,10 +898,10 @@ export default function PortfolioEditorPage() {
       }
 
       setError(
-        err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          err?.message ||
+        getApiErrorMessage(
+          err,
           "Unable to load this portfolio.",
+        ),
       );
     } finally {
       setLoading(false);
@@ -1072,6 +1230,16 @@ projectUrl:
     ],
   );
 
+  useEffect(() => {
+    if (!dirty || !portfolioId) return;
+
+    const timer = window.setTimeout(() => {
+      persistDraft(payload);
+    }, 900);
+
+    return () => window.clearTimeout(timer);
+  }, [dirty, payload, persistDraft, portfolioId]);
+
   const previewPortfolio = useMemo(
     () => ({
       fullName: name.trim() || "Your Name",
@@ -1135,6 +1303,23 @@ projectUrl:
         yearsOfExperience: item.yearsOfExperience,
         yearsOfUse: item.yearsOfExperience,
       })),
+      certifications: certifications.map((item, index) => ({
+        id: item.id || `certification-${index}`,
+        name: item.name.trim(),
+        issuer: item.issuer.trim(),
+        issueDate: item.issueDate || null,
+        expiryDate: item.expiryDate || null,
+        credentialId: item.credentialId.trim(),
+        credentialUrl: item.credentialUrl.trim(),
+      })),
+      achievements: achievements.map((item, index) => ({
+        id: item.id || `achievement-${index}`,
+        title: item.title.trim(),
+        description: item.description.trim(),
+        organization: item.organization.trim(),
+        date: item.date || null,
+        credentialUrl: item.credentialUrl.trim(),
+      })),
       socialLinks: socialLinks.map((item, index) => ({
         id: item.id || `social-${index}`,
         platform: item.platform,
@@ -1155,6 +1340,8 @@ projectUrl:
       experiences,
       education,
       skills,
+      certifications,
+      achievements,
       socialLinks,
     ],
   );
@@ -1241,6 +1428,8 @@ projectUrl:
       }
 
       try {
+        persistDraft(payload);
+
         if (shouldPublish) {
           setPublishing(true);
         } else {
@@ -1298,6 +1487,11 @@ projectUrl:
         }
 
         setDirty(false);
+        try {
+          window.localStorage.removeItem(draftStorageKey);
+        } catch {
+          // Ignore local draft cleanup failures.
+        }
 
         if (
           shouldPublish
@@ -1309,14 +1503,14 @@ projectUrl:
               )}`;
           }, 700);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(
           "Portfolio save error:",
           err,
         );
 
         if (
-          err?.response?.status === 401
+          getApiErrorStatus(err) === 401
         ) {
           router.replace(
             `/login?redirect=${encodeURIComponent(
@@ -1328,10 +1522,10 @@ projectUrl:
         }
 
         setError(
-          err?.response?.data?.error ||
-            err?.response?.data?.message ||
-            err?.message ||
+          getApiErrorMessage(
+            err,
             "Unable to save your portfolio.",
+          ),
         );
       } finally {
         setSaving(false);
@@ -1344,6 +1538,8 @@ projectUrl:
       payload,
       username,
       router,
+      persistDraft,
+      draftStorageKey,
     ],
   );
 
@@ -1469,7 +1665,7 @@ projectUrl:
           />
 
           <span>
-            Loading your portfolioâ€¦
+            Loading your portfolio…
           </span>
         </div>
       </main>

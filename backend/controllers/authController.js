@@ -125,6 +125,36 @@ const getMe = async (req, res) => {
   }
 };
 
+const refreshSession = async (req, res) => {
+  try {
+    if (!req.user?.id || !process.env.JWT_SECRET) {
+      return res.status(401).json({ error: 'Secure session required.' });
+    }
+
+    const jwtToken = jwt.sign(
+      { id: req.user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: `${sessionMinutes}m` },
+    );
+
+    res.cookie('token', jwtToken, {
+      ...sessionCookieOptions,
+      maxAge: sessionMaxAge,
+    });
+
+    return res.status(200).json({
+      success: true,
+      expiresInMinutes: sessionMinutes,
+    });
+  } catch (error) {
+    console.error('[AUTH] Session refresh fault:', {
+      requestId: req.requestId,
+      message: error.message,
+    });
+    return res.status(500).json({ error: 'Session could not be refreshed.' });
+  }
+};
+
 const logoutUser = (req, res) => {
   res.clearCookie('token', sessionCookieOptions);
   res.clearCookie('client_auth', uxCookieOptions);
@@ -132,4 +162,4 @@ const logoutUser = (req, res) => {
   return res.status(200).json({ success: true, message: 'Secure session terminated.' });
 };
 
-module.exports = { googleLogin, getMe, logoutUser };
+module.exports = { googleLogin, getMe, refreshSession, logoutUser };

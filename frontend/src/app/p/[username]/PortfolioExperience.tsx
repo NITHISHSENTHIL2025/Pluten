@@ -193,8 +193,7 @@ function TiltCard({
   const raf = useRef<number | null>(null);
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
-
-  const animate = useCallback(() => {
+  const animate = useCallback(function animateFrame() {
     const node = shellRef.current;
     if (!node) return;
 
@@ -208,7 +207,7 @@ function TiltCard({
       Math.abs(target.current.x - current.current.x) > 0.02 ||
       Math.abs(target.current.y - current.current.y) > 0.02
     ) {
-      raf.current = requestAnimationFrame(animate);
+      raf.current = requestAnimationFrame(animateFrame);
     } else {
       current.current.x = 0;
       current.current.y = 0;

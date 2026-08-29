@@ -341,19 +341,6 @@ export default function OrbitPortfolio({
   const pointerStart = useRef<number | null>(null);
   const pointerDelta = useRef(0);
 
-  useEffect(() => {
-  if (
-    items.length > 0 &&
-    activeIndex >= items.length
-  ) {
-    setActiveIndex(
-      items.length - 1,
-    );
-  }
-}, [
-  activeIndex,
-  items.length,
-]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -420,10 +407,14 @@ export default function OrbitPortfolio({
     pointerDelta.current = 0;
 
     if (Math.abs(delta) < 55) return;
-    delta < 0 ? next() : previous();
+    if (delta < 0) next();
+    else previous();
   };
 
-  const activeItem = items[activeIndex] || items[0];
+  const safeActiveIndex = items.length
+    ? Math.min(activeIndex, items.length - 1)
+    : 0;
+  const activeItem = items[safeActiveIndex] || items[0];
   if (!activeItem) return null;
 
   return (
@@ -555,7 +546,7 @@ export default function OrbitPortfolio({
         <footer className={styles.footer}>
           <span>{clean(portfolio.location)}</span>
           <span>
-            {String(activeIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+            {String(safeActiveIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
           </span>
           <span>{clean(portfolio.email)}</span>
         </footer>

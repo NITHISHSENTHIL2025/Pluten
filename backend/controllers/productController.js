@@ -119,7 +119,7 @@ const createProduct = async (req, res) => {
     await recordAudit({ userId: req.user.id, action: 'CREATE_PRODUCT', entity: 'PRODUCT', entityId: newProduct.id, details: { title: newProduct.title, price: newProduct.price }, req });
     res.status(201).json({ message: 'Product created.', product: newProduct });
   } catch (error) {
-    if (req.uploadCommitted) await cleanupRequestUploads(req);
+    if (req.uploadCommitted && !req.dbMutationCommitted) await cleanupRequestUploads(req);
     console.error('[PRODUCTS] Create error:', { requestId: req.requestId, message: error.message });
     res.status(500).json({ error: 'Failed to create product.' });
   }
@@ -144,7 +144,7 @@ const updateProduct = async (req, res) => {
     await recordAudit({ userId: req.user.id, action: 'UPDATE_PRODUCT', entity: 'PRODUCT', entityId: id, details: { title: updatedProduct.title, price: updatedProduct.price, category: updatedProduct.category }, req });
     res.status(200).json({ message: 'Product updated.', product: updatedProduct });
   } catch (error) {
-    if (req.uploadCommitted) await cleanupRequestUploads(req);
+    if (req.uploadCommitted && !req.dbMutationCommitted) await cleanupRequestUploads(req);
     console.error('[PRODUCTS] Update error:', { requestId: req.requestId, message: error.message });
     res.status(500).json({ error: 'Failed to update product.' });
   }

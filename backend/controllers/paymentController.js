@@ -1,5 +1,9 @@
 const prisma = require('../lib/prisma');
-const { Cashfree, CASHFREE_API_VERSION } = require('../utils/cashfree');
+const {
+  createOrder: cashfreeCreateOrder,
+  fetchPayments: cashfreeFetchPayments,
+  CASHFREE_API_VERSION,
+} = require('../utils/cashfree');
 const { getActiveOffers, calculateProductPricing, normalizeCoupon } = require('../services/pricingService');
 const crypto = require('crypto');
 
@@ -73,7 +77,7 @@ const createOrder = async (req, res) => {
       },
     };
 
-    const response = await Cashfree.PGCreateOrder(request);
+    const response = await cashfreeCreateOrder(request);
     if (!response?.data?.payment_session_id) throw new Error('Cashfree did not return a payment session.');
 
     await prisma.order.update({ where: { id: internalOrderId }, data: { transactionId: String(response.data.cf_order_id || 'GATEWAY_SESSION_CREATED') } });
@@ -123,7 +127,7 @@ const verifyPayment = async (req, res) => {
     if (!order) return res.status(404).json({ error: 'Order not found for the authenticated account.' });
     if (order.status === 'SUCCESS') return res.status(200).json({ success: true, message: 'Asset already secured.', order });
 
-    const cfResponse = await Cashfree.PGOrderFetchPayments(orderId);
+    const cfResponse = await cashfreeFetchPayments(orderId);
     const successfulPayment = Array.isArray(cfResponse?.data) ? cfResponse.data.find((payment) => payment.payment_status === 'SUCCESS') : null;
     if (!successfulPayment) return res.status(409).json({ error: 'Payment has not been confirmed yet.', status: 'PENDING' });
 

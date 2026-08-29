@@ -1,55 +1,57 @@
-const { Cashfree: CashfreeSDK } = require('cashfree-pg');
+const axios = require('axios');
 require('dotenv').config();
 
-const appId = String(
-  process.env.CASHFREE_APP_ID || '',
-).trim();
-
-const secretKey = String(
-  process.env.CASHFREE_SECRET_KEY || '',
-).trim();
-
+const appId = String(process.env.CASHFREE_APP_ID || '').trim();
+const secretKey = String(process.env.CASHFREE_SECRET_KEY || '').trim();
 const apiVersion = String(
-  process.env.CASHFREE_API_VERSION || '2025-01-01',
+  process.env.CASHFREE_API_VERSION || '2025-01-01'
 ).trim();
 
 const isProduction =
-  String(process.env.CASHFREE_MODE || '')
-    .trim()
-    .toLowerCase() === 'production';
+  String(process.env.CASHFREE_MODE || '').trim().toLowerCase() === 'production';
 
-if (!appId || !secretKey) {
-  console.warn(
-    '[CASHFREE] Credentials are not configured at process startup.',
+const baseURL = isProduction
+  ? 'https://api.cashfree.com/pg'
+  : 'https://sandbox.cashfree.com/pg';
+
+const createOrder = async (request) => {
+  const response = await axios.post(
+    `${baseURL}/orders`,
+    request,
+    {
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'x-api-version': apiVersion,
+        'x-client-id': appId,
+        'x-client-secret': secretKey,
+      },
+      timeout: 15000,
+    }
   );
-}
 
-/*
- * cashfree-pg v6 uses an instance-based client.
- * The v5+ Node SDK documentation shows:
- *
- *   new Cashfree(Cashfree.SANDBOX, clientId, clientSecret)
- *
- * Do not use the pre-v5 static XClientId/XEnvironment API.
- */
-const environment = isProduction
-  ? CashfreeSDK.PRODUCTION
-  : CashfreeSDK.SANDBOX;
+  return response;
+};
 
-const Cashfree = new CashfreeSDK(
-  environment,
-  appId,
-  secretKey,
-);
-console.log('[CASHFREE CONFIG]', {
-  mode: isProduction ? 'production' : 'sandbox',
-  appIdPresent: Boolean(appId),
-  secretPresent: Boolean(secretKey),
-  appIdLength: appId.length,
-  secretLength: secretKey.length,
-  apiVersion,
-});
+const fetchPayments = async (orderId) => {
+  const response = await axios.get(
+    `${baseURL}/orders/${encodeURIComponent(orderId)}/payments`,
+    {
+      headers: {
+        accept: 'application/json',
+        'x-api-version': apiVersion,
+        'x-client-id': appId,
+        'x-client-secret': secretKey,
+      },
+      timeout: 15000,
+    }
+  );
+
+  return response;
+};
+
 module.exports = {
-  Cashfree,
+  createOrder,
+  fetchPayments,
   CASHFREE_API_VERSION: apiVersion,
 };

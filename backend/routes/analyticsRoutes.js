@@ -1,0 +1,2 @@
+const express=require('express');const rateLimit=require('express-rate-limit');const optionalAuth=require('../middleware/optionalAuth');const {track}=require('../controllers/analyticsController');const router=express.Router();
+router.post('/track',rateLimit({windowMs:60000,max:120,standardHeaders:true,legacyHeaders:false,message:{error:'Analytics rate limit reached.'}}),optionalAuth,track);module.exports=router;

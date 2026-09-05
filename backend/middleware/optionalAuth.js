@@ -1,0 +1,2 @@
+const jwt=require('jsonwebtoken');const prisma=require('../lib/prisma');
+module.exports=async function optionalAuth(req,_res,next){try{let token=null;const a=req.headers.authorization;if(a&&/^Bearer\s+/i.test(a))token=a.replace(/^Bearer\s+/i,'').trim();if(!token&&req.cookies?.token)token=req.cookies.token;if(token&&process.env.JWT_SECRET){const d=jwt.verify(token,process.env.JWT_SECRET);if(d?.id){const u=await prisma.user.findUnique({where:{id:d.id},select:{id:true,email:true,role:true,isPremium:true}});if(u)req.user=u;}}}catch(_e){}next();};

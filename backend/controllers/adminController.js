@@ -29,8 +29,8 @@ const money = (v) => Number(v || 0);
 const percent = (value, total) => total > 0 ? Number(((value / total) * 100).toFixed(2)) : 0;
 const delta = (current, previous) => previous > 0 ? Number((((current - previous) / previous) * 100).toFixed(1)) : (current > 0 ? 100 : 0);
 
-async function scalar(sql, ...params) {
-  const rows = await prisma.$queryRaw(sql(...params));
+async function scalar(queryFn, ...params) {
+  const rows = await queryFn(...params);
   return Number(rows?.[0]?.value || 0);
 }
 

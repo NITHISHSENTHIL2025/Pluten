@@ -28,6 +28,53 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum OfferType {
+  PERCENTAGE
+  FIXED
+}
+
+enum OfferApplyTo {
+  ALL
+  SELECTED
+}
+
+enum OfferStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  EXPIRED
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum AnalyticsEventType {
+  PAGE_VIEW
+  SESSION_HEARTBEAT
+  PRODUCT_VIEWED
+  PORTFOLIO_VIEWED
+  CHECKOUT_STARTED
+  PAYMENT_ATTEMPTED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  PRODUCT_DOWNLOADED
+  SIGNUP
+  LOGIN
+  PORTFOLIO_CREATED
+  PORTFOLIO_PUBLISHED
+}
+
+enum DeviceType {
+  MOBILE
+  DESKTOP
+  TABLET
+  UNKNOWN
+}
+
 // ======================================================
 // PORTFOLIO ENUMS
 // ======================================================
@@ -83,6 +130,9 @@ model User {
   orders       Order[]
   auditLogs    AuditLog[]
   downloadLogs DownloadLog[]
+  analyticsEvents AnalyticsEvent[]
+  sessions AnalyticsSession[]
+  refunds Refund[]
 
   // Portfolio ownership
   portfolios Portfolio[]
@@ -114,6 +164,7 @@ model Product {
   orders       Order[]
   offers       Offer[]
   downloadLogs DownloadLog[]
+  analyticsEvents AnalyticsEvent[]
 
   @@index([category])
   @@index([createdAt])
@@ -125,21 +176,40 @@ model Product {
 // ======================================================
 
 model Order {
-  id              String   @id @default(uuid())
-  userId          String
-  productId       String
-  totalAmount     Decimal  @default(0)
-  status          String   @default("PENDING")
-  transactionId   String?
-  createdAt       DateTime @default(now())
-  clientRequestId String?  @unique
+  id                 String      @id @default(uuid())
+  userId             String
+  productId          String
+  offerId            String?
+  totalAmount        Decimal     @default(0)
+  originalAmount     Decimal?
+  discountAmount     Decimal     @default(0)
+  couponCode         String?
+  currency           String      @default("INR")
+  status             OrderStatus @default(PENDING)
+  gateway            String      @default("CASHFREE")
+  transactionId      String?
+  gatewayOrderId     String?
+  gatewayPaymentId   String?
+  paymentMethod      String?
+  paymentFailureReason String?
+  customerSnapshot   Json?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  paidAt             DateTime?
+  clientRequestId    String?     @unique
 
   user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+  offer   Offer?  @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  refunds Refund[]
 
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([productId, status])
+  @@index([gatewayOrderId])
+  @@index([gatewayPaymentId])
+  @@index([paidAt])
 }
 
 // ======================================================
@@ -147,24 +217,116 @@ model Order {
 // ======================================================
 
 model Offer {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   name           String
-  type           String
+  type           OfferType
   value          Decimal
-  applyTo        String
+  applyTo        OfferApplyTo
   minOrderAmount Decimal?
-  couponCode     String?  @unique
-  autoApply      Boolean  @default(true)
-  status         String   @default("DRAFT")
+  couponCode     String?      @unique
+  autoApply      Boolean      @default(true)
+  status         OfferStatus  @default(DRAFT)
   startAt        DateTime
   endAt          DateTime
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   products Product[]
+  orders   Order[]
 
   @@index([status, autoApply])
   @@index([startAt, endAt])
+}
+
+
+// ======================================================
+// PAYMENTS / REFUNDS
+// ======================================================
+
+model Refund {
+  id             String       @id @default(uuid())
+  orderId         String
+  userId          String
+  refundId        String       @unique
+  gatewayRefundId String?
+  amount          Decimal
+  currency        String       @default("INR")
+  status          RefundStatus @default(PENDING)
+  note            String?
+  failureReason  String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  processedAt     DateTime?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ======================================================
+// ANALYTICS / LIVE TELEMETRY
+// ======================================================
+
+model AnalyticsSession {
+  id          String     @id @default(uuid())
+  sessionKey  String     @unique
+  visitorId   String
+  userId      String?
+  currentPath String?
+  deviceType  DeviceType @default(UNKNOWN)
+  browser     String?
+  os          String?
+  country     String?
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  firstSeen   DateTime   @default(now())
+  lastSeen    DateTime   @default(now())
+
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  events AnalyticsEvent[]
+
+  @@index([visitorId])
+  @@index([userId])
+  @@index([lastSeen])
+  @@index([deviceType])
+  @@index([utmSource])
+}
+
+model AnalyticsEvent {
+  id          String             @id @default(uuid())
+  type        AnalyticsEventType
+  visitorId   String
+  sessionId   String?
+  userId      String?
+  productId   String?
+  portfolioId String?
+  path        String?
+  deviceType  DeviceType         @default(UNKNOWN)
+  browser     String?
+  os          String?
+  country     String?
+  metadata    Json?
+  createdAt   DateTime           @default(now())
+
+  session   AnalyticsSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user      User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  product   Product?          @relation(fields: [productId], references: [id], onDelete: SetNull)
+  portfolio Portfolio?        @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+
+  @@index([type, createdAt])
+  @@index([visitorId, createdAt])
+  @@index([userId, createdAt])
+  @@index([productId, type, createdAt])
+  @@index([portfolioId, type, createdAt])
+  @@index([deviceType, createdAt])
+  @@index([country, createdAt])
+  @@index([createdAt])
 }
 
 // ======================================================
@@ -235,6 +397,7 @@ model Portfolio {
 
   seo      PortfolioSEO?
   settings PortfolioSettings?
+  analyticsEvents AnalyticsEvent[]
 
   @@index([userId])
   @@index([status])

@@ -26,7 +26,7 @@ function httpError(message, statusCode = 400) {
 
 async function assertOfferCapacity(tx, offer, userId) {
   if (!offer?.id) return;
-  await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`offer:${offer.id}`}))`;
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`offer:${offer.id}`}))`;
   const current = await tx.offer.findUnique({ where: { id: offer.id }, select: { maxRedemptions: true, perUserLimit: true, status: true, startAt: true, endAt: true } });
   const now = new Date();
   if (!current || current.status !== 'ACTIVE' || current.startAt > now || current.endAt < now) throw httpError('That offer is no longer available.', 409);
@@ -67,7 +67,7 @@ const createOrder = async (req, res) => {
     if (legacyOwnership) return res.status(200).json({ success: true, alreadyPurchased: true, order_id: legacyOwnership.sourceOrderId || null });
 
     const checkout = await prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`purchase:${req.user.id}:${productId}`}))`;
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`purchase:${req.user.id}:${productId}`}))`;
 
       const entitlement = await tx.entitlement.findUnique({ where: { userId_productId: { userId: req.user.id, productId } } });
       if (entitlement?.status === 'ACTIVE') return { type: 'OWNED', orderId: entitlement.sourceOrderId };
@@ -385,3 +385,4 @@ const reconcilePending = async (req, res) => {
 };
 
 module.exports = { quoteOrder, createOrder, verifyPayment, webhookHandler, createRefund, reconcilePending };
+

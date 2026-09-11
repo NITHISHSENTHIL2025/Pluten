@@ -1,4 +1,5 @@
 const portfolioService = require('../services/portfolioService');
+const { recordAnalyticsEvent } = require('../utils/analytics');
 
 function handleError(res, error, action) {
   console.error(`[PORTFOLIO] ${action} failed:`, error);
@@ -41,10 +42,10 @@ async function createPortfolio(req, res) {
         req.body,
       );
 
-    return res.status(201).json({
-      success: true,
-      ...result,
-    });
+    const sessionKey = String(req.headers['x-analytics-session'] || '').trim() || null;
+    const visitorId = String(req.headers['x-analytics-visitor'] || `user:${req.user.id}`).trim();
+    await recordAnalyticsEvent({type:'PORTFOLIO_CREATED',visitorId,sessionKey,userId:req.user.id,portfolioId:result?.portfolio?.id||result?.id||null}).catch(()=>null);
+    return res.status(201).json({ success:true, ...result });
   } catch (error) {
     return handleError(
       res,
@@ -84,10 +85,7 @@ async function updatePortfolio(req, res) {
         req.body,
       );
 
-    return res.status(200).json({
-      success: true,
-      ...result,
-    });
+    return res.status(200).json({ success:true, ...result });
   } catch (error) {
     return handleError(
       res,
@@ -126,6 +124,10 @@ async function publishPortfolio(req, res) {
         req.params.id,
       );
 
+    const sessionKey = String(req.headers['x-analytics-session'] || '').trim() || null;
+    const visitorId = String(req.headers['x-analytics-visitor'] || `user:${req.user.id}`).trim();
+    await recordAnalyticsEvent({type:'PORTFOLIO_PUBLISHED',visitorId,sessionKey,userId:req.user.id,portfolioId:result?.portfolio?.id||result?.id||req.params.id}).catch(()=>null);
+
     return res.status(200).json({
       success: true,
       ...result,
@@ -147,6 +149,10 @@ async function unpublishPortfolio(req, res) {
         req.params.id,
       );
 
+    const sessionKey = String(req.headers['x-analytics-session'] || '').trim() || null;
+    const visitorId = String(req.headers['x-analytics-visitor'] || `user:${req.user.id}`).trim();
+    await recordAnalyticsEvent({type:'PORTFOLIO_UNPUBLISHED',visitorId,sessionKey,userId:req.user.id,portfolioId:result?.portfolio?.id||result?.id||req.params.id}).catch(()=>null);
+
     return res.status(200).json({
       success: true,
       ...result,
@@ -162,21 +168,23 @@ async function unpublishPortfolio(req, res) {
 
 async function getPublicPortfolio(req, res) {
   try {
-    const portfolio =
-      await portfolioService.getPublicPortfolio(
-        req.params.username,
-      );
-
-    return res.status(200).json({
-      success: true,
-      portfolio,
-    });
+    const portfolio = await portfolioService.getPublicPortfolio(req.params.username);
+    return res.status(200).json({ success: true, portfolio });
   } catch (error) {
-    return handleError(
-      res,
-      error,
-      'get public portfolio',
-    );
+    if (error?.statusCode === 404) {
+      const redirectTo = await portfolioService.getRedirectForOldSlug(req.params.username).catch(() => null);
+      if (redirectTo) return res.status(200).json({ success: true, redirectTo });
+    }
+    return handleError(res, error, 'get public portfolio');
+  }
+}
+
+async function getPublicPortfolioIndex(req, res) {
+  try {
+    const portfolios = await portfolioService.listPublishedPortfolioIndex(req.query.limit || 500);
+    return res.status(200).json({ success: true, portfolios });
+  } catch (error) {
+    return handleError(res, error, 'get public portfolio index');
   }
 }
 
@@ -189,4 +197,5 @@ module.exports = {
   publishPortfolio,
   unpublishPortfolio,
   getPublicPortfolio,
+  getPublicPortfolioIndex,
 };

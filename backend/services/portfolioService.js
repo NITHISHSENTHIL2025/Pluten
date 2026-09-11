@@ -575,7 +575,7 @@ function normalizeAchievement(item, index) {
     description: normalizeText(item.description, 4000),
     organization: normalizeText(item.organization, 250),
     date: parseDate(item.date),
-    url: normalizeOptionalUrl(item.url),
+    url: normalizeOptionalUrl(item.url || item.credentialUrl),
     sortOrder: index,
   };
 }
@@ -768,7 +768,7 @@ function hasAchievementContent(item) {
     String(item.title || '').trim() ||
     String(item.description || '').trim() ||
     String(item.organization || '').trim() ||
-    String(item.url || '').trim() ||
+    String(item.url || item.credentialUrl || '').trim() ||
     item.date,
   );
 }
@@ -1524,9 +1524,26 @@ async function updatePortfolio(userId, portfolioId, body) {
       error.statusCode = 409;
       throw error;
     }
+
+    const historicOwner = await prisma.portfolioSlugHistory.findUnique({
+      where: { oldSlug: payload.username },
+      select: { portfolioId: true },
+    });
+    if (historicOwner && historicOwner.portfolioId !== portfolioId) {
+      const error = new Error('That username was previously used and is reserved for redirects.');
+      error.statusCode = 409;
+      throw error;
+    }
   }
 
   const updated = await prisma.$transaction(async (tx) => {
+    if (payload.username !== current.username) {
+      await tx.portfolioSlugHistory.upsert({
+        where: { oldSlug: current.username },
+        create: { portfolioId, oldSlug: current.username },
+        update: { portfolioId },
+      });
+    }
     const portfolio = await tx.portfolio.update({
       where: {
         id: portfolioId,
@@ -1789,6 +1806,28 @@ async function getPublicPortfolio(username) {
   return serializePublicPortfolio(portfolio);
 }
 
+
+async function getRedirectForOldSlug(username) {
+  const normalized = normalizeUsername(username);
+  if (!normalized) return null;
+  const history = await prisma.portfolioSlugHistory.findUnique({
+    where: { oldSlug: normalized },
+    include: { portfolio: { select: { username: true, status: true, visibility: true, deletedAt: true } } },
+  });
+  if (!history?.portfolio || history.portfolio.deletedAt || history.portfolio.status !== 'PUBLISHED' || history.portfolio.visibility !== 'PUBLIC') return null;
+  return history.portfolio.username;
+}
+
+async function listPublishedPortfolioIndex(limit = 500) {
+  const rows = await prisma.portfolio.findMany({
+    where: { status: 'PUBLISHED', visibility: 'PUBLIC', deletedAt: null, seo: { is: { noIndex: false } } },
+    orderBy: { updatedAt: 'desc' },
+    take: Math.min(Math.max(Number(limit) || 500, 1), 2000),
+    select: { username: true, updatedAt: true, publishedAt: true },
+  });
+  return rows;
+}
+
 module.exports = {
   normalizeUsername,
   validateUsername,
@@ -1800,4 +1839,6 @@ module.exports = {
   publishPortfolio,
   unpublishPortfolio,
   getPublicPortfolio,
+  getRedirectForOldSlug,
+  listPublishedPortfolioIndex,
 };

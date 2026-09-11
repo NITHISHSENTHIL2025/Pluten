@@ -110,6 +110,16 @@ const parseOfferInput = (
       body.autoApply
     ),
 
+    maxRedemptions:
+      body.maxRedemptions === undefined || body.maxRedemptions === null || body.maxRedemptions === ''
+        ? null
+        : Number.parseInt(body.maxRedemptions, 10),
+
+    perUserLimit:
+      body.perUserLimit === undefined || body.perUserLimit === null || body.perUserLimit === ''
+        ? null
+        : Number.parseInt(body.perUserLimit, 10),
+
     status:
       body.status || 'DRAFT',
 
@@ -219,6 +229,14 @@ const validateOfferInput = ({
       40
   ) {
     return 'Coupon code is too long.';
+  }
+
+  if (offerData.maxRedemptions !== null && (!Number.isInteger(offerData.maxRedemptions) || offerData.maxRedemptions < 1)) {
+    return 'Maximum redemptions must be at least 1 when set.';
+  }
+
+  if (offerData.perUserLimit !== null && (!Number.isInteger(offerData.perUserLimit) || offerData.perUserLimit < 1)) {
+    return 'Per-user redemption limit must be at least 1 when set.';
   }
 
   if (

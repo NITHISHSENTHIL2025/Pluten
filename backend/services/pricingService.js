@@ -7,7 +7,7 @@ const normalizeMoney = (value) => {
 
 const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
 
-const getActiveOffers = async (now = new Date()) => prisma.offer.findMany({
+const getActiveOffers = async (now = new Date(), client = prisma) => client.offer.findMany({
   where: {
     status: 'ACTIVE',
     startAt: { lte: now },
@@ -70,7 +70,7 @@ const calculateProductPricing = (product, offers, couponCode = '') => {
         : `₹${Number(offer.value).toLocaleString('en-IN')} OFF`
       : null,
     offer: offer
-      ? { id: offer.id, name: offer.name, type: offer.type, value: Number(offer.value), couponCode: offer.couponCode || null }
+      ? { id: offer.id, name: offer.name, type: offer.type, value: Number(offer.value), couponCode: offer.couponCode || null, maxRedemptions: offer.maxRedemptions ?? null, perUserLimit: offer.perUserLimit ?? null }
       : null,
   };
 };

@@ -40,24 +40,26 @@ function PaymentSuccessContent() {
     }, [orderId, router]);
 
     useEffect(() => {
-        let active = true;
-        const run = async () => {
+        let cancelled = false;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const delays = [0, 2000, 3000, 5000, 8000, 12000];
+        const run = async (index: number) => {
+            if (cancelled) return;
+            setAttempt(index + 1);
             const ok = await verify();
-            if (active && !ok) setAttempt((n) => n + 1);
+            if (cancelled || ok) return;
+            if (index + 1 < delays.length) {
+                timer = setTimeout(() => run(index + 1), delays[index + 1]);
+            }
         };
-        run();
-        return () => { active = false; };
+        run(0);
+        return () => { cancelled = true; if (timer) clearTimeout(timer); };
     }, [verify]);
 
-    useEffect(() => {
-        if (status !== 'PENDING' || attempt >= 5) return;
-        const timer = setTimeout(verify, 2500);
-        return () => clearTimeout(timer);
-    }, [attempt, status, verify]);
-
     const retry = async () => {
-        setRetrying(true); setAttempt(0); setStatus('VERIFYING');
-        await verify();
+        setRetrying(true); setStatus('VERIFYING');
+        const ok = await verify();
+        if (!ok) setStatus('PENDING');
         setRetrying(false);
     };
 
@@ -67,7 +69,7 @@ function PaymentSuccessContent() {
                 <div className="ps-kicker">PLUTEN / PAYMENT</div>
 
                 {status === 'VERIFYING' && <div className="ps-state"><Loader2 className="ps-icon ps-spin" size={46}/><h1>Securing your purchase</h1><p>Verifying the transaction with Cashfree before unlocking your library.</p></div>}
-                {status === 'PENDING' && <div className="ps-state"><div className="ps-round ps-amber"><ShieldCheck size={32}/></div><h1>Payment confirmation pending</h1><p>{message}</p>{attempt < 5 ? <span className="ps-note">Checking again automatically…</span> : <button className="ps-button ps-light" onClick={retry} disabled={retrying}>{retrying ? <Loader2 className="ps-spin" size={17}/> : <RefreshCw size={17}/>} Check again</button>}</div>}
+                {status === 'PENDING' && <div className="ps-state"><div className="ps-round ps-amber"><ShieldCheck size={32}/></div><h1>Payment confirmation pending</h1><p>{message}</p>{attempt < 6 ? <span className="ps-note">Checking again automatically…</span> : <button className="ps-button ps-light" onClick={retry} disabled={retrying}>{retrying ? <Loader2 className="ps-spin" size={17}/> : <RefreshCw size={17}/>} Check again</button>}</div>}
                 {status === 'ERROR' && <div className="ps-state"><div className="ps-round ps-red"><AlertCircle size={32}/></div><h1>Verification needs attention</h1><p>{message}</p><button className="ps-button ps-light" onClick={retry} disabled={retrying}>{retrying ? <Loader2 className="ps-spin" size={17}/> : <RefreshCw size={17}/>} Retry verification</button></div>}
                 {status === 'SUCCESS' && <div className="ps-success"><div className="ps-round ps-green"><CheckCircle size={38}/></div><h1>Payment successful</h1><p>Your purchase is verified and ready in your Pluten library.</p><div className="ps-reference"><span>Order reference</span><strong>{orderId}</strong></div><div className="ps-actions"><button className="ps-button ps-primary" onClick={() => router.push('/library')}><Package size={18}/> Access digital library</button><button className="ps-button ps-outline" onClick={() => router.push('/')}><ArrowRight size={17}/> Return to storefront</button></div></div>}
             </section>

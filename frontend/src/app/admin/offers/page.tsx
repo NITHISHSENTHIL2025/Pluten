@@ -55,6 +55,8 @@ type Offer = {
   value: number;
   applyTo: ApplyTo;
   minOrderAmount: number | null;
+  maxRedemptions?: number | null;
+  perUserLimit?: number | null;
   couponCode: string | null;
   autoApply: boolean;
   status: Status;
@@ -77,6 +79,8 @@ type FormState = {
   applyTo: ApplyTo;
   productIds: string[];
   minOrderAmount: string;
+  maxRedemptions: string;
+  perUserLimit: string;
   couponCode: string;
   autoApply: boolean;
   status: Status;
@@ -98,6 +102,8 @@ const blankForm = (): FormState => ({
   applyTo: "ALL",
   productIds: [],
   minOrderAmount: "",
+  maxRedemptions: "",
+  perUserLimit: "",
   couponCode: "",
   autoApply: true,
   status: "ACTIVE",
@@ -430,6 +436,8 @@ export default function OffersPage() {
           : String(
               offer.minOrderAmount
             ),
+      maxRedemptions: offer.maxRedemptions == null ? "" : String(offer.maxRedemptions),
+      perUserLimit: offer.perUserLimit == null ? "" : String(offer.perUserLimit),
       couponCode:
         offer.couponCode ||
         "",
@@ -570,6 +578,9 @@ export default function OffersPage() {
         )
       : undefined;
 
+    const maxRedemptions = form.maxRedemptions.trim() === "" ? undefined : Number.parseInt(form.maxRedemptions, 10);
+    const perUserLimit = form.perUserLimit.trim() === "" ? undefined : Number.parseInt(form.perUserLimit, 10);
+
     const normalizedCoupon =
       form.couponCode
         .trim()
@@ -615,6 +626,16 @@ export default function OffersPage() {
       setFormError(
         "Enter a valid minimum order amount."
       );
+      return;
+    }
+
+    if (maxRedemptions !== undefined && (!Number.isInteger(maxRedemptions) || maxRedemptions < 1)) {
+      setFormError("Maximum redemptions must be at least 1.");
+      return;
+    }
+
+    if (perUserLimit !== undefined && (!Number.isInteger(perUserLimit) || perUserLimit < 1)) {
+      setFormError("Per-user limit must be at least 1.");
       return;
     }
 
@@ -722,6 +743,8 @@ export default function OffersPage() {
         toIso(form.startAt),
       endAt:
         toIso(form.endAt),
+      ...(maxRedemptions !== undefined ? { maxRedemptions } : {}),
+      ...(perUserLimit !== undefined ? { perUserLimit } : {}),
     };
 
     /*
@@ -1910,6 +1933,17 @@ export default function OffersPage() {
                     maxLength={40}
                     disabled={saving}
                   />
+                </div>
+              </div>
+
+              <div className={styles.twoCol}>
+                <div className={styles.field}>
+                  <label>Maximum redemptions</label>
+                  <input inputMode="numeric" value={form.maxRedemptions} onChange={(event)=>setForm((current)=>({...current,maxRedemptions:event.target.value.replace(/\D/g,"").slice(0,9)}))} placeholder="Unlimited" disabled={saving}/>
+                </div>
+                <div className={styles.field}>
+                  <label>Per-user limit</label>
+                  <input inputMode="numeric" value={form.perUserLimit} onChange={(event)=>setForm((current)=>({...current,perUserLimit:event.target.value.replace(/\D/g,"").slice(0,4)}))} placeholder="Unlimited" disabled={saving}/>
                 </div>
               </div>
 

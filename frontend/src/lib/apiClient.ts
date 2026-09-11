@@ -30,7 +30,8 @@ apiClient.interceptors.response.use(
     const requestId =
       error?.response?.headers?.["x-request-id"];
 
-    if (error?.response?.status === 401 && typeof window !== "undefined") {
+    const silentAuth = Boolean((error?.config as any)?.skipSessionExpiry);
+    if (error?.response?.status === 401 && typeof window !== "undefined" && !silentAuth) {
       window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
     }
 

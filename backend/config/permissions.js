@@ -1,0 +1,50 @@
+const CAPABILITIES = Object.freeze({
+  OVERVIEW_VIEW: 'overview.view',
+  LIVE_VIEW: 'live.view',
+  ORDERS_VIEW: 'orders.view',
+  REFUNDS_CREATE: 'refunds.create',
+  CUSTOMERS_VIEW: 'customers.view',
+  PRODUCTS_MANAGE: 'products.manage',
+  OFFERS_MANAGE: 'offers.manage',
+  PRODUCT_ANALYTICS_VIEW: 'analytics.products.view',
+  PORTFOLIO_ANALYTICS_VIEW: 'analytics.portfolios.view',
+  AUDIT_VIEW: 'security.audit.view',
+  DOWNLOADS_VIEW: 'security.downloads.view',
+  SUPPORT_VIEW: 'support.view',
+  SUPPORT_MANAGE: 'support.manage',
+  HEALTH_VIEW: 'health.view',
+});
+
+const ROLE_CAPABILITIES = Object.freeze({
+  SUPER_ADMIN: Object.values(CAPABILITIES),
+  FINANCE_MANAGER: [
+    CAPABILITIES.OVERVIEW_VIEW,
+    CAPABILITIES.LIVE_VIEW,
+    CAPABILITIES.ORDERS_VIEW,
+    CAPABILITIES.REFUNDS_CREATE,
+    CAPABILITIES.PRODUCT_ANALYTICS_VIEW,
+    CAPABILITIES.PORTFOLIO_ANALYTICS_VIEW,
+  ],
+  PRODUCT_MANAGER: [
+    CAPABILITIES.LIVE_VIEW,
+    CAPABILITIES.PRODUCTS_MANAGE,
+    CAPABILITIES.OFFERS_MANAGE,
+    CAPABILITIES.PRODUCT_ANALYTICS_VIEW,
+    CAPABILITIES.PORTFOLIO_ANALYTICS_VIEW,
+  ],
+  CUSTOMER_SUPPORT: [
+    CAPABILITIES.LIVE_VIEW,
+    CAPABILITIES.CUSTOMERS_VIEW,
+    CAPABILITIES.PORTFOLIO_ANALYTICS_VIEW,
+    CAPABILITIES.DOWNLOADS_VIEW,
+    CAPABILITIES.SUPPORT_VIEW,
+    CAPABILITIES.SUPPORT_MANAGE,
+  ],
+  CUSTOMER: [],
+});
+
+function hasCapability(role, capability) {
+  return Boolean(ROLE_CAPABILITIES[role]?.includes(capability));
+}
+
+module.exports = { CAPABILITIES, ROLE_CAPABILITIES, hasCapability };

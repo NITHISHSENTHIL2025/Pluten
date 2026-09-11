@@ -178,7 +178,7 @@ async function getLive(req,res){
 
 async function getProductAnalytics(req,res){
   try{
-    const {start,end}=getWindow(req.query.range);
+    const { range, start, end } = getWindow(req.query.range);
     const [views,sales]=await Promise.all([
       prisma.$queryRaw`SELECT p.id,p.title,COUNT(e.id)::int AS views,COUNT(DISTINCT e."visitorId")::int AS unique_viewers FROM "Product" p LEFT JOIN "AnalyticsEvent" e ON e."productId"=p.id AND e.type='PRODUCT_VIEWED' AND e."createdAt">=${start} AND e."createdAt"<${end} WHERE p."isArchived"=false GROUP BY p.id,p.title ORDER BY views DESC LIMIT 50`,
       prisma.$queryRaw`SELECT p.id,p.title,COUNT(o.id)::int AS orders,COALESCE(SUM(o."totalAmount"),0)::numeric AS revenue FROM "Product" p LEFT JOIN "Order" o ON o."productId"=p.id AND o."status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') AND o."createdAt">=${start} AND o."createdAt"<${end} WHERE p."isArchived"=false GROUP BY p.id,p.title ORDER BY orders DESC,revenue DESC LIMIT 50`,
@@ -190,7 +190,7 @@ async function getProductAnalytics(req,res){
 
 async function getPortfolioAnalytics(req,res){
   try{
-    const {start,end}=getWindow(req.query.range);
+    const { range, start, end } = getWindow(req.query.range);
     const [total,published,drafts,created,publishedPeriod,usersWithPortfolio,views,templates]=await Promise.all([
       prisma.portfolio.count({where:{deletedAt:null}}),
       prisma.portfolio.count({where:{status:'PUBLISHED',deletedAt:null}}),
@@ -232,3 +232,4 @@ async function getHealth(req,res){
 }
 
 module.exports={getOverview,getLive,getProductAnalytics,getPortfolioAnalytics,getOrders,getCustomers,getCustomer,getAuditLogs,getDownloads,getHealth};
+

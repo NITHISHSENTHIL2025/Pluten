@@ -1,10 +1,6 @@
 const express = require('express');
-
-const {
-  verifyToken,
-  requireAdmin,
-} = require('../middleware/authMiddleware');
-
+const { verifyToken, requireCapability } = require('../middleware/authMiddleware');
+const { CAPABILITIES } = require('../config/permissions');
 const {
   getOverview,
   getLive,
@@ -19,153 +15,17 @@ const {
 } = require('../controllers/adminController');
 
 const router = express.Router();
+const gate = (capability) => [verifyToken, requireCapability(capability)];
 
-const ALL_ADMINS = [
-  'SUPER_ADMIN',
-  'FINANCE_MANAGER',
-  'PRODUCT_MANAGER',
-  'CUSTOMER_SUPPORT',
-];
-
-/*
-|--------------------------------------------------------------------------
-| OVERVIEW
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/overview',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'FINANCE_MANAGER',
-  ]),
-  getOverview,
-);
-
-/*
-|--------------------------------------------------------------------------
-| LIVE VISITORS
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/live',
-  verifyToken,
-  requireAdmin(ALL_ADMINS),
-  getLive,
-);
-
-/*
-|--------------------------------------------------------------------------
-| PRODUCT ANALYTICS
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/analytics/products',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'FINANCE_MANAGER',
-    'PRODUCT_MANAGER',
-  ]),
-  getProductAnalytics,
-);
-
-/*
-|--------------------------------------------------------------------------
-| PORTFOLIO ANALYTICS
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/analytics/portfolios',
-  verifyToken,
-  requireAdmin(ALL_ADMINS),
-  getPortfolioAnalytics,
-);
-
-/*
-|--------------------------------------------------------------------------
-| ORDERS
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/orders',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'FINANCE_MANAGER',
-  ]),
-  getOrders,
-);
-
-/*
-|--------------------------------------------------------------------------
-| CUSTOMERS
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/customers',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'CUSTOMER_SUPPORT',
-  ]),
-  getCustomers,
-);
-
-router.get(
-  '/customers/:id',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'CUSTOMER_SUPPORT',
-  ]),
-  getCustomer,
-);
-
-/*
-|--------------------------------------------------------------------------
-| SECURITY
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/security/audit',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-  ]),
-  getAuditLogs,
-);
-
-router.get(
-  '/security/downloads',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-    'CUSTOMER_SUPPORT',
-  ]),
-  getDownloads,
-);
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN HEALTH
-|--------------------------------------------------------------------------
-*/
-
-router.get(
-  '/health',
-  verifyToken,
-  requireAdmin([
-    'SUPER_ADMIN',
-  ]),
-  getHealth,
-);
+router.get('/overview', ...gate(CAPABILITIES.OVERVIEW_VIEW), getOverview);
+router.get('/live', ...gate(CAPABILITIES.LIVE_VIEW), getLive);
+router.get('/analytics/products', ...gate(CAPABILITIES.PRODUCT_ANALYTICS_VIEW), getProductAnalytics);
+router.get('/analytics/portfolios', ...gate(CAPABILITIES.PORTFOLIO_ANALYTICS_VIEW), getPortfolioAnalytics);
+router.get('/orders', ...gate(CAPABILITIES.ORDERS_VIEW), getOrders);
+router.get('/customers', ...gate(CAPABILITIES.CUSTOMERS_VIEW), getCustomers);
+router.get('/customers/:id', ...gate(CAPABILITIES.CUSTOMERS_VIEW), getCustomer);
+router.get('/security/audit', ...gate(CAPABILITIES.AUDIT_VIEW), getAuditLogs);
+router.get('/security/downloads', ...gate(CAPABILITIES.DOWNLOADS_VIEW), getDownloads);
+router.get('/health', ...gate(CAPABILITIES.HEALTH_VIEW), getHealth);
 
 module.exports = router;

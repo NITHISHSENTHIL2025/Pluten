@@ -50,8 +50,24 @@ const fetchPayments = async (orderId) => {
   return response;
 };
 
+const createRefund = async (orderId, request, idempotencyKey) => {
+  const response = await axios.post(
+    `${baseURL}/orders/${encodeURIComponent(orderId)}/refunds`,
+    request,
+    { headers: { accept: 'application/json', 'content-type': 'application/json', 'x-api-version': apiVersion, 'x-client-id': appId, 'x-client-secret': secretKey, ...(idempotencyKey ? { 'x-idempotency-key': idempotencyKey } : {}) }, timeout: 15000 }
+  );
+  return response;
+};
+
+const fetchRefund = async (orderId, refundId) => {
+  const response = await axios.get(`${baseURL}/orders/${encodeURIComponent(orderId)}/refunds/${encodeURIComponent(refundId)}`, { headers: { accept:'application/json', 'x-api-version':apiVersion, 'x-client-id':appId, 'x-client-secret':secretKey }, timeout:15000 });
+  return response;
+};
+
 module.exports = {
   createOrder,
   fetchPayments,
+  createRefund,
+  fetchRefund,
   CASHFREE_API_VERSION: apiVersion,
 };

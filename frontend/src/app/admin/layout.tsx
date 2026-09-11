@@ -1,350 +1,69 @@
-"use client";
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { Activity, BarChart3, Headphones, LayoutDashboard, Menu, Package, Settings, ShieldCheck, ShoppingCart, Tag, Users, X } from 'lucide-react';
+import apiClient from '@/lib/apiClient';
+import { CAPABILITIES, can, isAdminRole, type AdminRole } from '@/lib/adminPermissions';
+import styles from './admin.module.css';
 
-import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Users,
-  Package,
-  Settings,
-  ShieldCheck,
-  Tag,
-  Loader2,
-  Menu,
-  X,
-} from "lucide-react";
-import apiClient from "@/lib/apiClient";
-import styles from "./admin.module.css";
-
-type AdminRole =
-  | "SUPER_ADMIN"
-  | "FINANCE_MANAGER"
-  | "PRODUCT_MANAGER"
-  | "CUSTOMER_SUPPORT";
-
-interface MeResponse {
-  user: {
-    role: AdminRole;
-  };
-}
-
-interface NavItem {
-  href: string;
-  label: string;
-  icon: ReactNode;
-  roles: AdminRole[];
-}
-
-const NAV_ITEMS: NavItem[] = [
-  {
-    href: "/admin",
-    label: "Overview",
-    icon: <LayoutDashboard size={18} />,
-    roles: ["SUPER_ADMIN", "FINANCE_MANAGER"],
-  },
-  {
-    href: "/admin/orders",
-    label: "Orders",
-    icon: <ShoppingCart size={18} />,
-    roles: ["SUPER_ADMIN", "FINANCE_MANAGER"],
-  },
-  {
-    href: "/admin/customers",
-    label: "Customers",
-    icon: <Users size={18} />,
-    roles: ["SUPER_ADMIN", "CUSTOMER_SUPPORT"],
-  },
-  {
-    href: "/admin/products",
-    label: "Products",
-    icon: <Package size={18} />,
-    roles: ["SUPER_ADMIN", "PRODUCT_MANAGER"],
-  },
-  {
-    href: "/admin/offers",
-    label: "Offers",
-    icon: <Tag size={18} />,
-    roles: ["SUPER_ADMIN", "PRODUCT_MANAGER"],
-  },
-  {
-    href: "/admin/settings",
-    label: "Settings",
-    icon: <Settings size={18} />,
-    roles: ["SUPER_ADMIN"],
-  },
+type NavItem = { href: string; label: string; icon: ReactNode; capability: string };
+const NAV: NavItem[] = [
+  { href: '/admin', label: 'Overview', icon: <LayoutDashboard size={17}/>, capability: CAPABILITIES.overview },
+  { href: '/admin/orders', label: 'Orders', icon: <ShoppingCart size={17}/>, capability: CAPABILITIES.orders },
+  { href: '/admin/customers', label: 'Customers', icon: <Users size={17}/>, capability: CAPABILITIES.customers },
+  { href: '/admin/products', label: 'Products', icon: <Package size={17}/>, capability: CAPABILITIES.products },
+  { href: '/admin/offers', label: 'Offers', icon: <Tag size={17}/>, capability: CAPABILITIES.offers },
+  { href: '/admin/analytics', label: 'Analytics', icon: <BarChart3 size={17}/>, capability: CAPABILITIES.portfolioAnalytics },
+  { href: '/admin/support', label: 'Support', icon: <Headphones size={17}/>, capability: CAPABILITIES.support },
+  { href: '/admin/security', label: 'Security', icon: <ShieldCheck size={17}/>, capability: CAPABILITIES.downloads },
+  { href: '/admin/settings', label: 'Settings', icon: <Settings size={17}/>, capability: CAPABILITIES.settings },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  const [role, setRole] =
-    useState<AdminRole | null>(null);
-  const [checking, setChecking] =
-    useState(true);
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
+  const [role, setRole] = useState<AdminRole | null>(null);
+  const [checking, setChecking] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
-    const verify = async () => {
+    let active = true;
+    (async () => {
       try {
-        const response =
-          await apiClient.get<MeResponse>(
-            "/auth/me"
-          );
-
-        const nextRole =
-          response.data?.user?.role;
-
-        const allowed: AdminRole[] = [
-          "SUPER_ADMIN",
-          "FINANCE_MANAGER",
-          "PRODUCT_MANAGER",
-          "CUSTOMER_SUPPORT",
-        ];
-
-        if (
-          !nextRole ||
-          !allowed.includes(nextRole)
-        ) {
-          throw new Error(
-            "Insufficient clearance."
-          );
-        }
-
-        if (mounted) {
-          setRole(nextRole);
-        }
-      } catch (error) {
-        console.error(
-          "Admin authorization failed:",
-          error
-        );
-
-        if (mounted) {
-          router.replace(
-            `/login?redirect=${encodeURIComponent(
-              pathname || "/admin"
-            )}`
-          );
-        }
+        const response = await apiClient.get('/auth/me');
+        const next = response.data?.user?.role;
+        if (!isAdminRole(next)) throw new Error('No admin access');
+        if (active) setRole(next);
+      } catch {
+        if (active) router.replace(`/login?redirect=${encodeURIComponent(pathname || '/admin')}`);
       } finally {
-        if (mounted) {
-          setChecking(false);
-        }
+        if (active) setChecking(false);
       }
-    };
-
-    verify();
-
-    return () => {
-      mounted = false;
-    };
+    })();
+    return () => { active = false; };
   }, [pathname, router]);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  const visibleItems = useMemo(
-    () =>
-      role
-        ? NAV_ITEMS.filter((item) =>
-            item.roles.includes(role)
-          )
-        : [],
-    [role]
-  );
+  useEffect(() => setMobileOpen(false), [pathname]);
+  const visible = useMemo(() => NAV.filter((item) => can(role, item.capability)), [role]);
 
   useEffect(() => {
     if (!role) return;
-    const current = NAV_ITEMS.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`));
-    if (pathname.startsWith("/admin") && (!current || !current.roles.includes(role))) {
-      const firstAllowed = visibleItems[0]?.href || "/";
-      if (pathname !== firstAllowed) router.replace(firstAllowed);
-    }
-  }, [pathname, role, router, visibleItems]);
+    const current = NAV.find((item) => pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href}/`)));
+    if (pathname.startsWith('/admin') && current && !can(role, current.capability)) router.replace(visible[0]?.href || '/');
+  }, [pathname, role, router, visible]);
 
-  if (checking || !role) {
-    return (
-      <div className={styles.authLoading}>
-        <Loader2
-          className="animate-spin"
-          size={30}
-        />
-        <span>
-          Verifying secure access
-        </span>
-      </div>
-    );
-  }
+  if (checking || !role) return <div className={styles.authLoading}><Activity className={styles.spin} size={28}/><span>Verifying secure access</span></div>;
 
-  return (
-    <div className={styles.adminLayout}>
-      <button
-        type="button"
-        className={styles.mobileMenuButton}
-        onClick={() =>
-          setMobileOpen((open) => !open)
-        }
-        aria-label={
-          mobileOpen
-            ? "Close admin navigation"
-            : "Open admin navigation"
-        }
-        aria-expanded={mobileOpen}
-      >
-        {mobileOpen ? (
-          <X size={20} />
-        ) : (
-          <Menu size={20} />
-        )}
-      </button>
-
-      {mobileOpen && (
-        <button
-          type="button"
-          className={styles.sidebarBackdrop}
-          aria-label="Close admin navigation"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      <aside
-        className={`${styles.sidebar} ${
-          mobileOpen
-            ? styles.sidebarOpen
-            : ""
-        }`}
-      >
-        <div
-          className={styles.sidebarHeader}
-        >
-          <div
-            className={styles.adminBrandMark}
-            aria-hidden="true"
-          >
-            P
-          </div>
-          <div>
-            <span
-              className={styles.brandName}
-            >
-              PLUTEN
-            </span>
-            <span
-              className={styles.brandSub}
-            >
-              MISSION CONTROL
-            </span>
-          </div>
-          <span
-            className={styles.environmentBadge}
-          >
-            PROD
-          </span>
-        </div>
-
-        <nav
-          className={styles.navGroup}
-          aria-label="Admin navigation"
-        >
-          <span
-            className={styles.navLabel}
-          >
-            Workspace
-          </span>
-
-          {visibleItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${
-                pathname === item.href
-                  ? styles.navItemActive
-                  : ""
-              }`}
-              aria-current={
-                pathname === item.href
-                  ? "page"
-                  : undefined
-              }
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <div
-          className={styles.sidebarFooter}
-        >
-          <div
-            className={styles.roleBadge}
-          >
-            <ShieldCheck size={14} />
-            <span>
-              {role.replaceAll(
-                "_",
-                " "
-              )}
-            </span>
-          </div>
-          <Link
-            href="/"
-            className={
-              styles.backToStore
-            }
-          >
-            ← Back to Pluten
-          </Link>
-        </div>
-      </aside>
-
-      <main className={styles.mainContent}>
-        <header className={styles.topbar}>
-          <div>
-            <span
-              className={
-                styles.topbarEyebrow
-              }
-            >
-              Mission Control
-            </span>
-            <span
-              className={
-                styles.topbarSlash
-              }
-            >
-              / secure operations
-            </span>
-          </div>
-
-          <div
-            className={styles.topbarRole}
-          >
-            {role.replaceAll(
-              "_",
-              " "
-            )}
-          </div>
-        </header>
-
-        <div
-          className={styles.pageShell}
-        >
-          {children}
-        </div>
-      </main>
-    </div>
-  );
+  return <div className={styles.adminLayout}>
+    <button className={styles.mobileMenuButton} onClick={() => setMobileOpen((v) => !v)} aria-label="Toggle admin navigation">{mobileOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+    {mobileOpen && <button className={styles.sidebarBackdrop} onClick={() => setMobileOpen(false)} aria-label="Close navigation"/>}
+    <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
+      <div className={styles.sidebarHeader}><div className={styles.adminBrandMark}>P</div><div><span className={styles.brandName}>PLUTEN</span><span className={styles.brandSub}>FOUNDER CONTROL</span></div><span className={styles.environmentBadge}>V1</span></div>
+      <nav className={styles.navGroup}><span className={styles.navLabel}>Workspace</span>{visible.map((item) => <Link key={item.href} href={item.href} className={`${styles.navItem} ${(pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href}/`))) ? styles.navItemActive : ''}`}>{item.icon}<span>{item.label}</span></Link>)}</nav>
+      <div className={styles.sidebarFooter}><div className={styles.roleBadge}><ShieldCheck size={13}/>{role.replaceAll('_', ' ')}</div></div>
+    </aside>
+    {children}
+  </div>;
 }

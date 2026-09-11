@@ -29,20 +29,43 @@ const money = (v) => Number(v || 0);
 const percent = (value, total) => total > 0 ? Number(((value / total) * 100).toFixed(2)) : 0;
 const delta = (current, previous) => previous > 0 ? Number((((current - previous) / previous) * 100).toFixed(1)) : (current > 0 ? 100 : 0);
 
-async function scalar(queryFn, ...params) {
-  const rows = await queryFn(...params);
+async function scalar(query, ...params) {
+  const rows = await query(...params);
   return Number(rows?.[0]?.value || 0);
 }
 
 async function buildMetrics(start, end) {
   const previousDuration = end.getTime() - start.getTime();
   const previousStart = new Date(start.getTime() - previousDuration);
+  const todayStart = startOfIndiaDay(0);
+  const paid = ['SUCCESS', 'PARTIALLY_REFUNDED', 'REFUNDED'];
 
-  const todayStart=startOfIndiaDay(0); const [revenue, previousRevenue, orders, previousOrders, newCustomers, previousCustomers, productViews, uniqueVisitors, returningVisitors, liveVisitors, portfolioCreated, portfolioPublished, repeatCustomers, failedPayments, pendingOrders, totalUsers, premiumUsers, todayRevenue, todayOrders, todayProductViews, todayPortfolios] = await Promise.all([
-    scalar((s,e)=>prisma.$queryRaw`SELECT COALESCE(SUM("totalAmount"),0)::numeric AS value FROM "Order" WHERE "status"='SUCCESS' AND "createdAt">=${s} AND "createdAt"<${e}`, start, end),
-    scalar((s,e)=>prisma.$queryRaw`SELECT COALESCE(SUM("totalAmount"),0)::numeric AS value FROM "Order" WHERE "status"='SUCCESS' AND "createdAt">=${s} AND "createdAt"<${e}`, previousStart, start),
-    prisma.order.count({ where: { status: 'SUCCESS', createdAt: { gte: start, lt: end } } }),
-    prisma.order.count({ where: { status: 'SUCCESS', createdAt: { gte: previousStart, lt: start } } }),
+  const grossFor = (s, e) => scalar((a, b) => prisma.$queryRaw`
+    SELECT COALESCE(SUM("totalAmount"),0)::numeric AS value
+    FROM "Order"
+    WHERE "status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED')
+      AND "createdAt">=${a} AND "createdAt"<${b}
+  `, s, e);
+
+  const refundsFor = (s, e) => scalar((a, b) => prisma.$queryRaw`
+    SELECT COALESCE(SUM("amount"),0)::numeric AS value
+    FROM "Refund"
+    WHERE "status"='SUCCESS'
+      AND COALESCE("processedAt","updatedAt","createdAt")>=${a}
+      AND COALESCE("processedAt","updatedAt","createdAt")<${b}
+  `, s, e);
+
+  const [
+    grossRevenue, previousGrossRevenue, refundAmount, previousRefundAmount,
+    orders, previousOrders, newCustomers, previousCustomers,
+    productViews, uniqueVisitors, returningVisitors, liveVisitors,
+    portfolioCreated, portfolioPublished, repeatCustomers,
+    failedPayments, pendingOrders, totalUsers, premiumUsers,
+    todayGrossRevenue, todayRefundAmount, todayOrders, todayProductViews, todayPortfolios,
+  ] = await Promise.all([
+    grossFor(start, end), grossFor(previousStart, start), refundsFor(start, end), refundsFor(previousStart, start),
+    prisma.order.count({ where: { status: { in: paid }, createdAt: { gte: start, lt: end } } }),
+    prisma.order.count({ where: { status: { in: paid }, createdAt: { gte: previousStart, lt: start } } }),
     prisma.user.count({ where: { role: 'CUSTOMER', createdAt: { gte: start, lt: end } } }),
     prisma.user.count({ where: { role: 'CUSTOMER', createdAt: { gte: previousStart, lt: start } } }),
     prisma.analyticsEvent.count({ where: { type: 'PRODUCT_VIEWED', createdAt: { gte: start, lt: end } } }),
@@ -51,28 +74,54 @@ async function buildMetrics(start, end) {
     prisma.analyticsSession.count({ where: { lastSeen: { gte: new Date(Date.now() - 90000) } } }),
     prisma.portfolio.count({ where: { createdAt: { gte: start, lt: end } } }),
     prisma.portfolio.count({ where: { publishedAt: { gte: start, lt: end }, status: 'PUBLISHED' } }),
-    scalar((s,e)=>prisma.$queryRaw`SELECT COUNT(*)::int AS value FROM (SELECT "userId" FROM "Order" WHERE "status"='SUCCESS' GROUP BY "userId" HAVING COUNT(*)>1) x`, start, end),
+    scalar(()=>prisma.$queryRaw`SELECT COUNT(*)::int AS value FROM (SELECT "userId" FROM "Order" WHERE "status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') GROUP BY "userId" HAVING COUNT(*)>1) x`),
     prisma.order.count({ where: { status: 'FAILED', createdAt: { gte: start, lt: end } } }),
     prisma.order.count({ where: { status: 'PENDING' } }),
     prisma.user.count({ where: { role: 'CUSTOMER' } }),
     prisma.user.count({ where: { role: 'CUSTOMER', isPremium: true } }),
-    scalar((s,e)=>prisma.$queryRaw`SELECT COALESCE(SUM("totalAmount"),0)::numeric AS value FROM "Order" WHERE "status"='SUCCESS' AND "createdAt">=${s} AND "createdAt"<${e}`, todayStart, end),
-    prisma.order.count({ where:{status:'SUCCESS',createdAt:{gte:todayStart,lt:end}} }),
-    prisma.analyticsEvent.count({ where:{type:'PRODUCT_VIEWED',createdAt:{gte:todayStart,lt:end}} }),
-    prisma.portfolio.count({ where:{createdAt:{gte:todayStart,lt:end}} }),
+    grossFor(todayStart, end), refundsFor(todayStart, end),
+    prisma.order.count({ where: { status: { in: paid }, createdAt: { gte: todayStart, lt: end } } }),
+    prisma.analyticsEvent.count({ where: { type: 'PRODUCT_VIEWED', createdAt: { gte: todayStart, lt: end } } }),
+    prisma.portfolio.count({ where: { createdAt: { gte: todayStart, lt: end } } }),
   ]);
 
-  // repeatCustomers is lifetime, which is intentional: it measures relationship depth, not period sales.
+  const netRevenue = Math.max(0, money(grossRevenue) - money(refundAmount));
+  const previousNetRevenue = Math.max(0, money(previousGrossRevenue) - money(previousRefundAmount));
+  const todayNetRevenue = Math.max(0, money(todayGrossRevenue) - money(todayRefundAmount));
+
   return {
-    revenue: money(revenue), previousRevenue: money(previousRevenue), revenueDelta: delta(money(revenue), money(previousRevenue)),
-    orders, previousOrders, orderDelta: delta(orders, previousOrders),
-    newCustomers, previousCustomers, customerDelta: delta(newCustomers, previousCustomers),
-    productViews, uniqueVisitors, returningVisitors, returningRate: percent(returningVisitors, uniqueVisitors),
-    liveVisitors, portfolioCreated, portfolioPublished, repeatCustomers,
-    failedPayments, pendingOrders, totalUsers, premiumUsers,
-    averageOrderValue: orders ? Number((money(revenue) / orders).toFixed(2)) : 0,
+    revenue: netRevenue,
+    grossRevenue: money(grossRevenue),
+    refunds: money(refundAmount),
+    netRevenue,
+    previousRevenue: previousNetRevenue,
+    revenueDelta: delta(netRevenue, previousNetRevenue),
+    orders,
+    previousOrders,
+    orderDelta: delta(orders, previousOrders),
+    newCustomers,
+    previousCustomers,
+    customerDelta: delta(newCustomers, previousCustomers),
+    productViews,
+    uniqueVisitors,
+    returningVisitors,
+    returningRate: percent(returningVisitors, uniqueVisitors),
+    liveVisitors,
+    portfolioCreated,
+    portfolioPublished,
+    repeatCustomers,
+    failedPayments,
+    pendingOrders,
+    totalUsers,
+    premiumUsers,
+    averageOrderValue: orders ? Number((money(grossRevenue) / orders).toFixed(2)) : 0,
     viewToPurchase: percent(orders, productViews),
-    todayRevenue: money(todayRevenue), todayOrders, todayProductViews, todayPortfolios,
+    todayRevenue: todayNetRevenue,
+    todayGrossRevenue: money(todayGrossRevenue),
+    todayRefunds: money(todayRefundAmount),
+    todayOrders,
+    todayProductViews,
+    todayPortfolios,
   };
 }
 
@@ -81,15 +130,15 @@ async function getOverview(req, res) {
     const { range, start, end } = getWindow(req.query.range);
     const [metrics, revenueSeries, topProducts, devices, sources, countries, funnel, recentOrders, suspiciousDownloads, topConvertingProducts, missingDigitalAssets] = await Promise.all([
       buildMetrics(start, end),
-      prisma.$queryRaw`SELECT TO_CHAR((("createdAt" AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'),'YYYY-MM-DD') AS day, COALESCE(SUM("totalAmount"),0)::numeric AS revenue, COUNT(*)::int AS orders FROM "Order" WHERE "status"='SUCCESS' AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY 1 ORDER BY 1`,
-      prisma.$queryRaw`SELECT p.id,p.title,COUNT(o.id)::int AS orders,COALESCE(SUM(o."totalAmount"),0)::numeric AS revenue FROM "Product" p LEFT JOIN "Order" o ON o."productId"=p.id AND o."status"='SUCCESS' AND o."createdAt">=${start} AND o."createdAt"<${end} GROUP BY p.id,p.title ORDER BY orders DESC,revenue DESC LIMIT 10`,
+      prisma.$queryRaw`SELECT TO_CHAR((("createdAt" AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata'),'YYYY-MM-DD') AS day, COALESCE(SUM("totalAmount"),0)::numeric AS revenue, COUNT(*)::int AS orders FROM "Order" WHERE "status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY 1 ORDER BY 1`,
+      prisma.$queryRaw`SELECT p.id,p.title,COUNT(o.id)::int AS orders,COALESCE(SUM(o."totalAmount"),0)::numeric AS revenue FROM "Product" p LEFT JOIN "Order" o ON o."productId"=p.id AND o."status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') AND o."createdAt">=${start} AND o."createdAt"<${end} GROUP BY p.id,p.title ORDER BY orders DESC,revenue DESC LIMIT 10`,
       prisma.$queryRaw`SELECT "deviceType" AS device,COUNT(*)::int AS value FROM "AnalyticsEvent" WHERE type='PAGE_VIEW' AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY "deviceType" ORDER BY value DESC`,
       prisma.$queryRaw`SELECT COALESCE(NULLIF(s."utmSource",''),'Direct') AS source,COUNT(*)::int AS value FROM "AnalyticsSession" s WHERE s."firstSeen">=${start} AND s."firstSeen"<${end} GROUP BY 1 ORDER BY value DESC LIMIT 10`,
       prisma.$queryRaw`SELECT COALESCE(NULLIF("country",''),'Unknown') AS country,COUNT(DISTINCT "visitorId")::int AS value FROM "AnalyticsEvent" WHERE type='PAGE_VIEW' AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY 1 ORDER BY value DESC LIMIT 10`,
       prisma.$queryRaw`SELECT COUNT(DISTINCT "visitorId") FILTER (WHERE type='PAGE_VIEW')::int AS visitors, COUNT(DISTINCT "visitorId") FILTER (WHERE type='PRODUCT_VIEWED')::int AS product_viewers, COUNT(*) FILTER (WHERE type='CHECKOUT_STARTED')::int AS checkouts, COUNT(*) FILTER (WHERE type='PAYMENT_ATTEMPTED')::int AS payment_attempts, COUNT(*) FILTER (WHERE type='PAYMENT_SUCCESS')::int AS purchases FROM "AnalyticsEvent" WHERE "createdAt">=${start} AND "createdAt"<${end}`,
       prisma.order.findMany({ where: { createdAt: { gte: start, lt: end } }, orderBy: { createdAt: 'desc' }, take: 8, select: { id:true,totalAmount:true,status:true,createdAt:true,user:{select:{email:true,firstName:true,lastName:true}},product:{select:{title:true}} } }),
       prisma.$queryRaw`SELECT "userId","productId",COUNT(*)::int AS downloads FROM "DownloadLog" WHERE "createdAt">=${start} AND "createdAt"<${end} GROUP BY "userId","productId" HAVING COUNT(*)>=10 ORDER BY downloads DESC LIMIT 10`,
-      prisma.$queryRaw`SELECT p.id,p.title,COUNT(v.id)::int AS views,COALESCE(s.orders,0)::int AS orders,COALESCE(s.revenue,0)::numeric AS revenue,CASE WHEN COUNT(v.id)=0 THEN 0 ELSE ROUND((COALESCE(s.orders,0)::numeric/COUNT(v.id)::numeric)*100,2) END AS conversion FROM "Product" p LEFT JOIN "AnalyticsEvent" v ON v."productId"=p.id AND v.type='PRODUCT_VIEWED' AND v."createdAt">=${start} AND v."createdAt"<${end} LEFT JOIN (SELECT "productId",COUNT(*)::int AS orders,COALESCE(SUM("totalAmount"),0)::numeric AS revenue FROM "Order" WHERE "status"='SUCCESS' AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY "productId") s ON s."productId"=p.id WHERE p."isArchived"=false GROUP BY p.id,p.title,s.orders,s.revenue HAVING COUNT(v.id)>0 ORDER BY conversion DESC,views DESC LIMIT 10`,
+      prisma.$queryRaw`SELECT p.id,p.title,COUNT(v.id)::int AS views,COALESCE(s.orders,0)::int AS orders,COALESCE(s.revenue,0)::numeric AS revenue,CASE WHEN COUNT(v.id)=0 THEN 0 ELSE ROUND((COALESCE(s.orders,0)::numeric/COUNT(v.id)::numeric)*100,2) END AS conversion FROM "Product" p LEFT JOIN "AnalyticsEvent" v ON v."productId"=p.id AND v.type='PRODUCT_VIEWED' AND v."createdAt">=${start} AND v."createdAt"<${end} LEFT JOIN (SELECT "productId",COUNT(*)::int AS orders,COALESCE(SUM("totalAmount"),0)::numeric AS revenue FROM "Order" WHERE "status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') AND "createdAt">=${start} AND "createdAt"<${end} GROUP BY "productId") s ON s."productId"=p.id WHERE p."isArchived"=false GROUP BY p.id,p.title,s.orders,s.revenue HAVING COUNT(v.id)>0 ORDER BY conversion DESC,views DESC LIMIT 10`,
       prisma.product.findMany({where:{isArchived:false,isDigital:true,OR:[{assetUrl:null},{assetUrl:''}]},select:{id:true,title:true},take:25}),
     ]);
 
@@ -132,7 +181,7 @@ async function getProductAnalytics(req,res){
     const {start,end}=getWindow(req.query.range);
     const [views,sales]=await Promise.all([
       prisma.$queryRaw`SELECT p.id,p.title,COUNT(e.id)::int AS views,COUNT(DISTINCT e."visitorId")::int AS unique_viewers FROM "Product" p LEFT JOIN "AnalyticsEvent" e ON e."productId"=p.id AND e.type='PRODUCT_VIEWED' AND e."createdAt">=${start} AND e."createdAt"<${end} WHERE p."isArchived"=false GROUP BY p.id,p.title ORDER BY views DESC LIMIT 50`,
-      prisma.$queryRaw`SELECT p.id,p.title,COUNT(o.id)::int AS orders,COALESCE(SUM(o."totalAmount"),0)::numeric AS revenue FROM "Product" p LEFT JOIN "Order" o ON o."productId"=p.id AND o."status"='SUCCESS' AND o."createdAt">=${start} AND o."createdAt"<${end} WHERE p."isArchived"=false GROUP BY p.id,p.title ORDER BY orders DESC,revenue DESC LIMIT 50`,
+      prisma.$queryRaw`SELECT p.id,p.title,COUNT(o.id)::int AS orders,COALESCE(SUM(o."totalAmount"),0)::numeric AS revenue FROM "Product" p LEFT JOIN "Order" o ON o."productId"=p.id AND o."status" IN ('SUCCESS','PARTIALLY_REFUNDED','REFUNDED') AND o."createdAt">=${start} AND o."createdAt"<${end} WHERE p."isArchived"=false GROUP BY p.id,p.title ORDER BY orders DESC,revenue DESC LIMIT 50`,
     ]);
     const salesMap=new Map(sales.map(s=>[s.id,{orders:Number(s.orders),revenue:money(s.revenue)}]));
     return res.json({range,start,end,data:views.map(v=>{const s=salesMap.get(v.id)||{orders:0,revenue:0};return{id:v.id,title:v.title,views:Number(v.views),uniqueViewers:Number(v.unique_viewers),orders:s.orders,revenue:s.revenue,conversion:percent(s.orders,Number(v.views))};})});
@@ -158,15 +207,15 @@ async function getPortfolioAnalytics(req,res){
 }
 
 async function getOrders(req,res){
-  try{const {page,limit,skip}=parsePagination(req);const search=String(req.query.search||'').trim();const where=search?{OR:[{transactionId:{contains:search,mode:'insensitive'}},{id:{contains:search,mode:'insensitive'}},{gatewayOrderId:{contains:search,mode:'insensitive'}},{user:{email:{contains:search,mode:'insensitive'}}},{product:{title:{contains:search,mode:'insensitive'}}}]}:undefined;const [orders,total]=await Promise.all([prisma.order.findMany({where,skip,take:limit,orderBy:{createdAt:'desc'},include:{user:{select:{email:true,firstName:true,lastName:true}},product:{select:{title:true}}}}),prisma.order.count({where})]);return res.json({data:orders,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}});}catch(error){console.error('[ADMIN] Orders error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve order ledger.'});}
+  try{const {page,limit,skip}=parsePagination(req);const search=String(req.query.search||'').trim();const where=search?{OR:[{transactionId:{contains:search,mode:'insensitive'}},{id:{contains:search,mode:'insensitive'}},{gatewayOrderId:{contains:search,mode:'insensitive'}},{user:{email:{contains:search,mode:'insensitive'}}},{product:{title:{contains:search,mode:'insensitive'}}}]}:undefined;const [orders,total]=await Promise.all([prisma.order.findMany({where,skip,take:limit,orderBy:{createdAt:'desc'},include:{user:{select:{email:true,firstName:true,lastName:true}},product:{select:{title:true}},refunds:{select:{amount:true,status:true}}}}),prisma.order.count({where})]);return res.json({data:orders,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}});}catch(error){console.error('[ADMIN] Orders error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve order ledger.'});}
 }
 
 async function getCustomers(req,res){
-  try{const {page,limit,skip}=parsePagination(req);const search=String(req.query.search||'').trim();const where={role:'CUSTOMER',...(search?{OR:[{email:{contains:search,mode:'insensitive'}},{firstName:{contains:search,mode:'insensitive'}},{lastName:{contains:search,mode:'insensitive'}}]}:{})};const [customers,total]=await Promise.all([prisma.user.findMany({where,skip,take:limit,orderBy:{createdAt:'desc'},select:{id:true,email:true,firstName:true,lastName:true,isPremium:true,createdAt:true,_count:{select:{orders:{where:{status:'SUCCESS'}},portfolios:true}}}}),prisma.user.count({where})]);return res.json({data:customers,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}});}catch(error){console.error('[ADMIN] Customers error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve customer directory.'});}
+  try{const {page,limit,skip}=parsePagination(req);const search=String(req.query.search||'').trim();const where={role:'CUSTOMER',...(search?{OR:[{email:{contains:search,mode:'insensitive'}},{firstName:{contains:search,mode:'insensitive'}},{lastName:{contains:search,mode:'insensitive'}}]}:{})};const [customers,total]=await Promise.all([prisma.user.findMany({where,skip,take:limit,orderBy:{createdAt:'desc'},select:{id:true,email:true,firstName:true,lastName:true,isPremium:true,createdAt:true,_count:{select:{orders:{where:{status:{in:['SUCCESS','PARTIALLY_REFUNDED']}}},portfolios:true}}}}),prisma.user.count({where})]);return res.json({data:customers,pagination:{page,limit,total,totalPages:Math.max(1,Math.ceil(total/limit))}});}catch(error){console.error('[ADMIN] Customers error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve customer directory.'});}
 }
 
 async function getCustomer(req,res){
-  try{const customer=await prisma.user.findFirst({where:{id:req.params.id,role:'CUSTOMER'},select:{id:true,email:true,firstName:true,lastName:true,isPremium:true,createdAt:true,orders:{orderBy:{createdAt:'desc'},include:{product:{select:{title:true}}}},portfolios:{orderBy:{updatedAt:'desc'},select:{id:true,username:true,slug:true,status:true,template:true,createdAt:true,updatedAt:true}},downloadLogs:{orderBy:{createdAt:'desc'},take:50,include:{product:{select:{title:true}}}}}});if(!customer)return res.status(404).json({error:'Customer not found.'});const totalSpend=customer.orders.filter(o=>o.status==='SUCCESS').reduce((sum,o)=>sum+money(o.totalAmount),0);return res.json({...customer,totalSpend:Number(totalSpend.toFixed(2)),successfulOrders:customer.orders.filter(o=>o.status==='SUCCESS').length});}catch(error){console.error('[ADMIN] Customer detail error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve customer profile.'});}
+  try{const customer=await prisma.user.findFirst({where:{id:req.params.id,role:'CUSTOMER'},select:{id:true,email:true,firstName:true,lastName:true,isPremium:true,createdAt:true,orders:{orderBy:{createdAt:'desc'},include:{product:{select:{title:true}},refunds:{where:{status:'SUCCESS'},select:{amount:true,status:true}}}},portfolios:{orderBy:{updatedAt:'desc'},select:{id:true,username:true,slug:true,status:true,template:true,createdAt:true,updatedAt:true}},downloadLogs:{orderBy:{createdAt:'desc'},take:50,include:{product:{select:{title:true}}}}}});if(!customer)return res.status(404).json({error:'Customer not found.'});const totalSpend=customer.orders.filter(o=>['SUCCESS','PARTIALLY_REFUNDED','REFUNDED'].includes(o.status)).reduce((sum,o)=>sum+Math.max(0,money(o.totalAmount)-o.refunds.reduce((r,x)=>r+money(x.amount),0)),0);return res.json({...customer,totalSpend:Number(totalSpend.toFixed(2)),successfulOrders:customer.orders.filter(o=>['SUCCESS','PARTIALLY_REFUNDED'].includes(o.status)).length});}catch(error){console.error('[ADMIN] Customer detail error:',{requestId:req.requestId,message:error.message});return res.status(500).json({error:'Failed to retrieve customer profile.'});}
 }
 
 async function getAuditLogs(req,res){

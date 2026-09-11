@@ -1,10 +1,5 @@
 const prisma = require('../lib/prisma');
-
-const getClientIp = (req) => {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length) return forwarded.split(',')[0].trim();
-  return req.socket?.remoteAddress || 'unknown';
-};
+const getClientIp = require('./clientIp');
 
 const recordAudit = async ({ userId, action, entity, entityId, details, req }) => {
   try {
@@ -15,7 +10,7 @@ const recordAudit = async ({ userId, action, entity, entityId, details, req }) =
         entity,
         entityId,
         details: details ? JSON.stringify(details) : null,
-        ipAddress: getClientIp(req),
+        ipAddress: req ? getClientIp(req) : null,
       },
     });
   } catch (error) {

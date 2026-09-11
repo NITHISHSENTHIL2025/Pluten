@@ -7,37 +7,28 @@ import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://pluten.site'),
-  title: { default: 'Pluten — Beyond Ordinary', template: '%s | Pluten' },
-  description: 'Premium digital products built for people who refuse ordinary.',
-  keywords: ['Pluten', 'digital products', 'ebooks', 'courses', 'templates', 'software'],
+  title: { default: 'Pluten — Build Your Presence', template: '%s | Pluten' },
+  description: 'Useful digital products and a free portfolio maker for students, creators and builders.',
+  keywords: ['Pluten', 'portfolio maker', 'student portfolio', 'digital products', 'ebooks', 'templates'],
   authors: [{ name: 'Pluten', url: 'https://pluten.site' }],
   creator: 'Pluten',
   publisher: 'Pluten',
   robots: { index: true, follow: true },
   openGraph: {
-    title: 'Pluten — Beyond Ordinary',
-    description: 'Premium digital products built for people who refuse ordinary.',
+    title: 'Pluten — Build Your Presence',
+    description: 'Useful digital products and a free portfolio maker for students, creators and builders.',
     url: 'https://pluten.site',
     siteName: 'Pluten',
     locale: 'en_IN',
     type: 'website',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Pluten — Beyond Ordinary' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Pluten — Build Your Presence' }],
   },
-  twitter: { card: 'summary_large_image', title: 'Pluten — Beyond Ordinary', description: 'Premium digital products built for people who refuse ordinary.', images: ['/og.png'] },
+  twitter: { card: 'summary_large_image', title: 'Pluten — Build Your Presence', description: 'Useful digital products and a free portfolio maker for students, creators and builders.', images: ['/og.png'] },
   icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
 };
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', colorScheme: 'light' };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-  <html lang="en">
-    <body>
-      <AuthHeartbeat />
-      <SessionExpiryNotice />
-      <AnalyticsTracker />
-      {children}
-    </body>
-  </html>
-);
+  return <html lang="en"><body><AuthHeartbeat /><SessionExpiryNotice /><AnalyticsTracker />{children}</body></html>;
 }

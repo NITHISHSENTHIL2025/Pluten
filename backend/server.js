@@ -131,6 +131,8 @@ app.use(
       'Authorization',
       'Accept',
       'X-Request-Id',
+      'X-Analytics-Session',
+      'X-Analytics-Visitor',
     ],
   }),
 );
@@ -192,6 +194,8 @@ app.use(
   '/api/v1/auth',
   require('./routes/authRoutes'),
 );
+
+app.use('/api/v1/analytics', require('./routes/analyticsRoutes'));
 
 /*
 |--------------------------------------------------------------------------
@@ -286,6 +290,9 @@ app.use(
   '/api/v1/portfolio',
   require('./routes/portfolioRoutes'),
 );
+
+/* SUPPORT */
+app.use('/api/v1/support', require('./routes/supportRoutes'));
 
 /*
 |--------------------------------------------------------------------------

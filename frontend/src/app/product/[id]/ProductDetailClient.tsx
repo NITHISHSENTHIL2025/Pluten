@@ -114,12 +114,36 @@ export default function ProductDetailClient({
 
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [owned, setOwned] = useState(false);
+  const [ownershipChecked, setOwnershipChecked] = useState(false);
   const [keyboardInset, setKeyboardInset] = useState(0);
 
   const checkoutRequestIdRef = useRef<string | null>(null);
   const buyButtonRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const phoneInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    apiClient.get(`/user/ownership/${encodeURIComponent(id)}`, { skipSessionExpiry: true } as any)
+      .then((response) => { if (active) setOwned(Boolean(response.data?.owned)); })
+      .catch((error) => { if (error?.response?.status !== 401 && error?.response?.status !== 403) console.warn('[OWNERSHIP CHECK]', error?.message); })
+      .finally(() => { if (active) setOwnershipChecked(true); });
+    return () => { active = false; };
+  }, [id]);
+
+  useEffect(() => {
+    try {
+      const key = `pluten:checkout:${id}`;
+      const raw = window.sessionStorage.getItem(key);
+      if (!raw) return;
+      const intent = JSON.parse(raw);
+      window.sessionStorage.removeItem(key);
+      if (typeof intent?.phone === 'string') setPhoneNumber(intent.phone);
+      if (typeof intent?.coupon === 'string') setCouponCode(intent.coupon);
+      setShowPhonePrompt(true);
+    } catch { /* Ignore malformed local checkout intent. */ }
+  }, [id]);
 
   useEffect(() => {
     if (!showPhonePrompt) return;
@@ -262,6 +286,7 @@ export default function ProductDetailClient({
 
   const buy = () => {
     if (!product || isCheckingOut) return;
+    if (owned) { router.push('/library'); return; }
 
     setCheckoutError("");
     setPhoneError("");
@@ -333,7 +358,7 @@ export default function ProductDetailClient({
 
     const phone = phoneNumber.replace(/\D/g, "");
 
-    if (phone.length !== 10) {
+    if (Number(pricing.finalPrice ?? product.price) > 0 && phone.length !== 10) {
       setPhoneError(
         "Please enter a valid 10-digit phone number."
       );
@@ -379,23 +404,21 @@ export default function ProductDetailClient({
         "/payments/create",
         {
           productId: product.id,
-          customerPhone: phone,
+          customerPhone: phone || undefined,
           clientRequestId,
           couponCode:
             normalizedCoupon || undefined,
         }
       );
 
-      if (
-        response.data?.alreadyPurchased &&
-        response.data?.order_id
-      ) {
-        router.push(
-          `/payment-success?order_id=${encodeURIComponent(
-            response.data.order_id
-          )}`
-        );
+      if (response.data?.alreadyPurchased) {
+        setOwned(true);
+        router.push("/library");
+        return;
+      }
 
+      if (response.data?.freeOrder && response.data?.order_id) {
+        router.push(`/payment-success?order_id=${encodeURIComponent(response.data.order_id)}`);
         return;
       }
 
@@ -445,6 +468,7 @@ export default function ProductDetailClient({
         error?.response?.status === 401 ||
         error?.response?.status === 403
       ) {
+        try { window.sessionStorage.setItem(`pluten:checkout:${id}`, JSON.stringify({ phone: phoneNumber, coupon: couponCode })); } catch {}
         router.replace(
           `/login?redirect=${encodeURIComponent(
             `/product/${id}`
@@ -663,7 +687,7 @@ export default function ProductDetailClient({
                 Processing
               </>
             ) : (
-              "Buy this"
+              owned ? "Open in Library" : finalPrice <= 0 ? "Get free access" : `Get instant access — ₹${finalPrice.toLocaleString("en-IN")}`
             )}
           </button>
 
@@ -730,8 +754,7 @@ export default function ProductDetailClient({
               id="phone-description"
               className={styles.modalText}
             >
-              Use a valid 10-digit phone number
-              for secure Cashfree processing.
+              {finalPrice <= 0 ? "No payment details are required. Confirm below to add this product to your Library." : "Use a valid 10-digit phone number for secure Cashfree processing."}
             </p>
 
             {phoneError && (
@@ -763,6 +786,7 @@ export default function ProductDetailClient({
               )}
 
             <form onSubmit={checkout}>
+              {finalPrice > 0 && (
               <label
                 className={styles.formField}
               >
@@ -795,6 +819,8 @@ export default function ProductDetailClient({
                   />
                 </div>
               </label>
+
+              )}
 
               <label
                 className={styles.formField}
@@ -876,7 +902,7 @@ export default function ProductDetailClient({
                 type="submit"
                 disabled={
                   isCheckingOut ||
-                  phoneNumber.length !== 10
+                  (finalPrice > 0 && phoneNumber.length !== 10)
                 }
               >
                 {isCheckingOut ? (
@@ -888,7 +914,7 @@ export default function ProductDetailClient({
                     Processing
                   </>
                 ) : (
-                  "Proceed to payment"
+                  finalPrice <= 0 ? "Add to Library" : "Proceed to secure payment"
                 )}
               </button>
             </form>

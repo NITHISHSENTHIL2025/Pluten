@@ -24,6 +24,7 @@ enum Role {
 enum OrderStatus {
   PENDING
   SUCCESS
+  PARTIALLY_REFUNDED
   FAILED
   REFUNDED
 }
@@ -52,6 +53,24 @@ enum RefundStatus {
   CANCELLED
 }
 
+enum EntitlementStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum SupportTicketPriority {
+  NORMAL
+  HIGH
+  URGENT
+}
+
 enum AnalyticsEventType {
   PAGE_VIEW
   SESSION_HEARTBEAT
@@ -66,6 +85,8 @@ enum AnalyticsEventType {
   LOGIN
   PORTFOLIO_CREATED
   PORTFOLIO_PUBLISHED
+  PORTFOLIO_UNPUBLISHED
+  SUPPORT_TICKET_CREATED
 }
 
 enum DeviceType {
@@ -133,6 +154,8 @@ model User {
   analyticsEvents AnalyticsEvent[]
   sessions AnalyticsSession[]
   refunds Refund[]
+  entitlements Entitlement[]
+  supportTickets SupportTicket[]
 
   // Portfolio ownership
   portfolios Portfolio[]
@@ -165,6 +188,7 @@ model Product {
   offers       Offer[]
   downloadLogs DownloadLog[]
   analyticsEvents AnalyticsEvent[]
+  entitlements Entitlement[]
 
   @@index([category])
   @@index([createdAt])
@@ -197,6 +221,7 @@ model Order {
   updatedAt          DateTime    @updatedAt
   paidAt             DateTime?
   clientRequestId    String?     @unique
+  paymentSessionId   String?
 
   user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
@@ -228,6 +253,8 @@ model Offer {
   status         OfferStatus  @default(DRAFT)
   startAt        DateTime
   endAt          DateTime
+  maxRedemptions Int?
+  perUserLimit   Int?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -398,6 +425,7 @@ model Portfolio {
   seo      PortfolioSEO?
   settings PortfolioSettings?
   analyticsEvents AnalyticsEvent[]
+  slugHistory PortfolioSlugHistory[]
 
   @@index([userId])
   @@index([status])
@@ -681,6 +709,73 @@ model PortfolioSettings {
   updatedAt DateTime @updatedAt
 
   portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+}
+
+
+// ======================================================
+// PURCHASE ENTITLEMENTS
+// ======================================================
+
+model Entitlement {
+  id            String            @id @default(uuid())
+  userId        String
+  productId     String
+  sourceOrderId String?
+  status        EntitlementStatus @default(ACTIVE)
+  grantedAt     DateTime          @default(now())
+  revokedAt     DateTime?
+  revokeReason  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([status])
+  @@index([sourceOrderId])
+}
+
+// ======================================================
+// PORTFOLIO SLUG HISTORY
+// ======================================================
+
+model PortfolioSlugHistory {
+  id          String    @id @default(uuid())
+  portfolioId String
+  oldSlug     String    @unique
+  createdAt   DateTime  @default(now())
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+}
+
+// ======================================================
+// SUPPORT
+// ======================================================
+
+model SupportTicket {
+  id             String                @id @default(uuid())
+  ticketNumber   String                @unique
+  userId         String?
+  name           String
+  email          String
+  category       String
+  subject        String
+  message        String
+  orderReference String?
+  status         SupportTicketStatus   @default(OPEN)
+  priority       SupportTicketPriority @default(NORMAL)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  resolvedAt     DateTime?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status, createdAt])
+  @@index([email])
 }
 
 // ======================================================

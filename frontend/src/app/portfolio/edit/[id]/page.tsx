@@ -743,8 +743,8 @@ export default function PortfolioEditorPage() {
               (item as any).date,
             ),
             credentialUrl:
-              (item as any)
-                .credentialUrl || "",
+              (item as any).url ||
+              (item as any).credentialUrl || "",
           }),
         ),
       );
@@ -1141,7 +1141,7 @@ projectUrl:
               null,
             date:
               item.date || null,
-            credentialUrl:
+            url:
   item.credentialUrl.trim()
     ? normalizeUrl(
         item.credentialUrl,
@@ -1346,7 +1346,7 @@ projectUrl:
     ],
   );
 
-  const validateAll = useCallback(() => {
+  const validateDraft = useCallback(() => {
     if (name.trim().length < 2) {
       return "Please enter your full name.";
     }
@@ -1356,10 +1356,6 @@ projectUrl:
 
     if (cleanUsername.length < 3) {
       return "Your public username must contain at least 3 characters.";
-    }
-
-    if (!title.trim()) {
-      return "Please enter your professional title.";
     }
 
     if (
@@ -1414,12 +1410,20 @@ projectUrl:
     socialLinks,
   ]);
 
+  const validatePublish = useCallback(() => {
+    const draftError = validateDraft();
+    if (draftError) return draftError;
+    if (!title.trim()) return "Please enter your professional title before publishing.";
+    return "";
+  }, [validateDraft, title]);
+
   const save = useCallback(
     async (
       shouldPublish = false,
     ) => {
-      const validation =
-        validateAll();
+      const validation = shouldPublish
+        ? validatePublish()
+        : validateDraft();
 
       if (validation) {
         setError(validation);
@@ -1533,7 +1537,8 @@ projectUrl:
       }
     },
     [
-      validateAll,
+      validateDraft,
+      validatePublish,
       portfolioId,
       payload,
       username,
@@ -2252,7 +2257,7 @@ projectUrl:
                 publishing
               }
               ready={
-                validateAll() === ""
+                validatePublish() === ""
               }
             />
           )}

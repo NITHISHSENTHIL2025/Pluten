@@ -13,6 +13,7 @@ const {
   publishPortfolio,
   unpublishPortfolio,
   getPublicPortfolio,
+  getPublicPortfolioIndex,
 } = require('../controllers/portfolioController');
 
 const router = express.Router();
@@ -25,6 +26,8 @@ const router = express.Router();
 | Must stay above /:id so "public" is not treated as a portfolio ID.
 |
 */
+router.get('/public-index', getPublicPortfolioIndex);
+
 router.get(
   '/public/:username',
   getPublicPortfolio,

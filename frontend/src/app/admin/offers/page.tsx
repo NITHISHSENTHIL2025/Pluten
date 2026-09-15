@@ -1357,7 +1357,7 @@ export default function OffersPage() {
                   "space-between",
                 marginTop: 16,
                 gap: 12,
-                color: "#777",
+                color: "var(--pluten-text-secondary)",
                 fontSize: 11,
               }}
             >

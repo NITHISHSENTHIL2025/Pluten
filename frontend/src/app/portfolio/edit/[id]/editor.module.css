@@ -1,22 +1,22 @@
 .page {
   min-height: 100vh;
-  color: #111;
-  background: #f3f3ef;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
 }
 
 .loadingScreen {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: #f3f3ef;
-  color: #111;
+  background: var(--pluten-surface-high);
+  color: var(--pluten-black);
 }
 
 .loadingBox {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #77776f;
+  color: var(--pluten-text-secondary);
   font-size: 14px;
 }
 
@@ -25,12 +25,12 @@
   padding: 44px;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 28px;
-  background: #fafaf7;
+  background: var(--pluten-surface-high);
   box-shadow: 0 30px 90px rgba(17, 17, 17, 0.08);
 }
 
 .errorScreen > span {
-  color: #92928a;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   font-weight: 650;
   letter-spacing: 0.22em;
@@ -45,7 +45,7 @@
 
 .errorScreen p {
   margin: 18px 0 0;
-  color: #71716a;
+  color: var(--pluten-text-secondary);
   line-height: 1.7;
 }
 
@@ -57,8 +57,8 @@
   padding: 0 18px;
   min-height: 48px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 13px;
   font-weight: 600;
 }
@@ -74,7 +74,7 @@
   padding: 0 20px;
   border-bottom: 1px solid rgba(17, 17, 17, 0.1);
   background: rgba(248, 248, 244, 0.92);
-  backdrop-filter: blur(22px);
+  backdrop-filter: none;
 }
 
 .headerLeft {
@@ -96,7 +96,7 @@
 }
 
 .brandLabel {
-  color: #9a9a92;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -106,7 +106,7 @@
   max-width: 280px;
   margin-top: 4px;
   overflow: hidden;
-  color: #161616;
+  color: var(--pluten-black);
   font-size: 13px;
   font-weight: 650;
   text-overflow: ellipsis;
@@ -124,11 +124,11 @@
 }
 
 .saveState {
-  color: #86867e;
+  color: var(--pluten-text-secondary);
 }
 
 .saveStateDirty {
-  color: #a06a00;
+  color: var(--pluten-text-secondary);
 }
 
 .headerActions {
@@ -168,12 +168,12 @@
 .outlineButton {
   border: 1px solid rgba(17, 17, 17, 0.12);
   color: #222;
-  background: #fff;
+  background: var(--pluten-surface-high);
 }
 
 .publishButton {
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
 }
 
 .outlineButton:hover,
@@ -206,7 +206,7 @@
   overflow-y: auto;
   padding: 30px 16px;
   border-right: 1px solid rgba(17, 17, 17, 0.09);
-  background: #ededE8;
+  background: var(--pluten-surface-high);
 }
 
 .sidebarIntro {
@@ -214,7 +214,7 @@
 }
 
 .sidebarIntro span {
-  color: #92928a;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.22em;
@@ -222,7 +222,7 @@
 
 .sidebarIntro p {
   margin: 9px 0 0;
-  color: #77776f;
+  color: var(--pluten-text-secondary);
   font-size: 12px;
   line-height: 1.65;
 }
@@ -252,14 +252,14 @@
 }
 
 .sectionButton {
-  color: #66665f;
+  color: var(--pluten-text-secondary);
   background: transparent;
 }
 
 .sectionButtonActive {
-  color: #111;
+  color: var(--pluten-black);
   border-color: rgba(17, 17, 17, 0.08);
-  background: #fff;
+  background: var(--pluten-surface-high);
   box-shadow: 0 10px 30px rgba(17, 17, 17, 0.05);
 }
 
@@ -268,7 +268,7 @@
 }
 
 .sectionNumber {
-  color: #aaa9a0;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -291,7 +291,7 @@
 .sectionButtonText small {
   margin-top: 3px;
   overflow: hidden;
-  color: #96968e;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -299,13 +299,13 @@
 }
 
 .sectionButtonActive > svg:last-child {
-  color: #77776f;
+  color: var(--pluten-text-secondary);
 }
 
 .formArea {
   min-width: 0;
   padding: 48px 42px 100px;
-  background: #f5f5f1;
+  background: var(--pluten-surface-high);
 }
 
 .errorBanner {
@@ -327,12 +327,12 @@
 }
 
 .errorBanner strong {
-  color: #6c3510;
+  color: var(--pluten-black);
   font-size: 12px;
 }
 
 .errorBanner span {
-  color: #815a35;
+  color: var(--pluten-text-secondary);
   font-size: 11px;
   line-height: 1.5;
 }
@@ -344,7 +344,7 @@
   height: 30px;
   border: 0;
   border-radius: 10px;
-  color: #6c3510;
+  color: var(--pluten-black);
   background: rgba(255, 255, 255, 0.55);
   cursor: pointer;
 }
@@ -363,7 +363,7 @@
 }
 
 .sectionHeading > div > span {
-  color: #999990;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.22em;
@@ -380,7 +380,7 @@
 .sectionHeading p {
   max-width: 650px;
   margin: 15px 0 0;
-  color: #77776f;
+  color: var(--pluten-text-secondary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -395,8 +395,8 @@
   padding: 0 14px;
   border: 1px solid rgba(17, 17, 17, 0.12);
   border-radius: 999px;
-  color: #1e1e1e;
-  background: #fff;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
   font-size: 11px;
   font-weight: 650;
   transition:
@@ -426,20 +426,20 @@
 .fieldLabel > span {
   display: block;
   margin-bottom: 8px;
-  color: #55554e;
+  color: var(--pluten-text-secondary);
   font-size: 10px;
   font-weight: 650;
   letter-spacing: 0.02em;
 }
 
 .fieldLabel > span b {
-  color: #9f3434;
+  color: var(--pluten-text-secondary);
 }
 
 .fieldLabel > small {
   display: block;
   margin-top: 7px;
-  color: #999990;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   line-height: 1.45;
 }
@@ -452,8 +452,8 @@
   width: 100%;
   border: 1px solid rgba(17, 17, 17, 0.11);
   border-radius: 15px;
-  color: #191919;
-  background: #fff;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
   outline: 0;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.7) inset;
@@ -484,14 +484,12 @@
 .usernameField:focus-within,
 .tagField:focus-within {
   border-color: rgba(17, 17, 17, 0.3);
-  box-shadow:
-    0 0 0 3px
-      rgba(17, 17, 17, 0.04);
+  box-shadow: var(--pluten-shadow-pressed);
 }
 
 .fieldLabel input::placeholder,
 .fieldLabel textarea::placeholder {
-  color: #b1b1aa;
+  color: var(--pluten-text-secondary);
 }
 
 .usernameField {
@@ -504,7 +502,7 @@
 .usernameField > span {
   margin: 0;
   padding-left: 14px;
-  color: #a2a29a;
+  color: var(--pluten-text-secondary);
   font-size: 12px;
 }
 
@@ -533,7 +531,7 @@
   appearance: none;
   border: 0;
   outline: 0;
-  color: #191919;
+  color: var(--pluten-black);
   background: transparent;
   cursor: pointer;
   font-size: 13px;
@@ -543,7 +541,7 @@
   position: absolute;
   right: 13px;
   pointer-events: none;
-  color: #85857d;
+  color: var(--pluten-text-secondary);
 }
 
 .repeatableList {
@@ -555,7 +553,7 @@
   padding: 23px;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 20px;
-  background: #fafaf7;
+  background: var(--pluten-surface-high);
   box-shadow:
     0 10px 30px rgba(17, 17, 17, 0.025);
 }
@@ -570,7 +568,7 @@
 
 .repeatableHeader div span {
   display: block;
-  color: #a0a098;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -592,8 +590,8 @@
   height: 36px;
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 11px;
-  color: #77776f;
-  background: #fff;
+  color: var(--pluten-text-secondary);
+  background: var(--pluten-surface-high);
   cursor: pointer;
   transition:
     color 180ms ease,
@@ -602,9 +600,9 @@
 }
 
 .iconDanger:hover {
-  color: #aa2929;
+  color: var(--pluten-text-secondary);
   border-color: rgba(170, 41, 41, 0.18);
-  background: #fff4f4;
+  background: var(--pluten-surface-high);
 }
 
 .toggleRow {
@@ -618,7 +616,7 @@
   border: 1px solid rgba(17, 17, 17, 0.07);
   border-radius: 15px;
   color: #222;
-  background: #f4f4ef;
+  background: var(--pluten-surface-high);
   text-align: left;
   cursor: pointer;
 }
@@ -635,7 +633,7 @@
 
 .toggleRow > div span {
   margin-top: 4px;
-  color: #8b8b83;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   line-height: 1.45;
 }
@@ -653,11 +651,11 @@
 }
 
 .toggleOn {
-  background: #111;
+  background: var(--pluten-black);
 }
 
 .toggleOff {
-  background: #d7d7d0;
+  background: var(--pluten-surface-low);
 }
 
 .toggleOn > span,
@@ -683,13 +681,13 @@
   padding: 18px;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 17px;
-  background: #fafaf7;
+  background: var(--pluten-surface-high);
 }
 
 .skillIndex {
   align-self: start;
   padding-top: 13px;
-  color: #9f9f97;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -714,7 +712,7 @@
   align-items: center;
   gap: 5px;
   margin-top: 7px;
-  color: #55554e;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   font-weight: 650;
 }
@@ -741,8 +739,8 @@
   min-height: 27px;
   padding: 0 9px;
   border-radius: 999px;
-  color: #31312c;
-  background: #efefe9;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
   font-size: 10px;
   font-weight: 600;
 }
@@ -755,7 +753,7 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  color: #76766f;
+  color: var(--pluten-text-secondary);
   background: transparent;
   cursor: pointer;
 }
@@ -780,7 +778,7 @@
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 999px;
   color: #222;
-  background: #fff;
+  background: var(--pluten-surface-high);
   cursor: pointer;
   font-size: 9px;
   font-weight: 650;
@@ -803,8 +801,8 @@
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
 }
 
 .emptySection h3 {
@@ -817,7 +815,7 @@
 .emptySection p {
   max-width: 470px;
   margin: 9px 0 0;
-  color: #888880;
+  color: var(--pluten-text-secondary);
   font-size: 12px;
   line-height: 1.65;
 }
@@ -830,8 +828,8 @@
   min-height: 40px;
   padding: 0 14px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 10px;
   font-weight: 650;
   transition: transform 180ms ease;
@@ -845,8 +843,8 @@
   padding: 28px;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 20px;
-  background: #111;
-  color: #fff;
+  background: var(--pluten-black);
+  color: var(--pluten-surface-high);
 }
 
 .reviewHero span {
@@ -883,12 +881,12 @@
 }
 
 .readyIndicator {
-  color: #9ce5bf;
+  color: var(--pluten-surface-low);
   background: rgba(81, 192, 135, 0.1);
 }
 
 .incompleteIndicator {
-  color: #d9c38f;
+  color: var(--pluten-text-secondary);
   background: rgba(217, 195, 143, 0.09);
 }
 
@@ -907,7 +905,7 @@
 }
 
 .reviewItem svg {
-  color: #18704b;
+  color: var(--pluten-success);
 }
 
 .emptyCheck {
@@ -923,7 +921,7 @@
 }
 
 .reviewItem small {
-  color: #96968e;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
 }
 
@@ -936,12 +934,12 @@
   padding: 21px;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 19px;
-  background: #fff;
+  background: var(--pluten-surface-high);
 }
 
 .publishBox span {
   display: block;
-  color: #999991;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -962,8 +960,8 @@
   min-height: 46px;
   padding: 0 17px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 11px;
   font-weight: 650;
   transition: transform 180ms ease;
@@ -977,7 +975,7 @@
   padding: 20px;
   overflow: hidden;
   border-left: 1px solid rgba(17, 17, 17, 0.09);
-  background: #e8e8e3;
+  background: var(--pluten-surface-low);
 }
 
 .previewHeader {
@@ -994,7 +992,7 @@
 }
 
 .previewHeader > div > span {
-  color: #8f8f87;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -1002,7 +1000,7 @@
 
 .previewHeader > div > strong {
   margin-top: 4px;
-  color: #66665f;
+  color: var(--pluten-text-secondary);
   font-size: 10px;
   font-weight: 500;
 }
@@ -1015,7 +1013,7 @@
   padding: 0 9px;
   border: 1px solid rgba(16, 114, 72, 0.18);
   border-radius: 999px;
-  color: #147247;
+  color: var(--pluten-success);
   background: rgba(22, 144, 91, 0.06);
   font-size: 8px;
   font-weight: 700;
@@ -1027,7 +1025,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #1d9c66;
+  background: var(--pluten-success);
 }
 
 .previewBrowser {
@@ -1035,7 +1033,7 @@
   overflow: hidden;
   border: 1px solid rgba(17, 17, 17, 0.14);
   border-radius: 24px;
-  background: #111;
+  background: var(--pluten-black);
   box-shadow: 0 25px 70px rgba(17, 17, 17, 0.14);
 }
 
@@ -1046,7 +1044,7 @@
   min-height: 45px;
   padding: 0 13px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #171717;
+  background: var(--pluten-black);
 }
 
 .previewDots {
@@ -1075,8 +1073,8 @@
 .previewPage {
   height: calc(100% - 45px);
   overflow-y: auto;
-  color: #111;
-  background: #f7f7f3;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
 }
 
 .previewNav {
@@ -1095,8 +1093,8 @@
   width: 29px;
   height: 29px;
   border-radius: 50%;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 8px;
   font-weight: 700;
 }
@@ -1117,7 +1115,7 @@
 
 .previewNav span {
   margin-top: 4px;
-  color: #97978f;
+  color: var(--pluten-text-secondary);
   font-size: 6px;
   letter-spacing: 0.18em;
 }
@@ -1127,7 +1125,7 @@
 }
 
 .previewHero > span {
-  color: #9a9a92;
+  color: var(--pluten-text-secondary);
   font-size: 7px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -1142,7 +1140,7 @@
 }
 
 .previewHero h2 i {
-  color: #b0b0a7;
+  color: var(--pluten-text-secondary);
   font-style: normal;
 }
 
@@ -1155,7 +1153,7 @@
 .previewHero p {
   max-width: 340px;
   margin: 12px 0 0;
-  color: #73736c;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   line-height: 1.65;
 }
@@ -1172,8 +1170,8 @@
   min-height: 30px;
   padding: 0 10px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 7px;
   font-weight: 650;
   letter-spacing: 0.06em;
@@ -1182,7 +1180,7 @@
 .previewActions span + span {
   color: #222;
   border: 1px solid rgba(17, 17, 17, 0.12);
-  background: #fff;
+  background: var(--pluten-surface-high);
 }
 
 .previewMeta {
@@ -1213,7 +1211,7 @@
 
 .previewMeta span {
   margin-top: 5px;
-  color: #999991;
+  color: var(--pluten-text-secondary);
   font-size: 6px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -1228,7 +1226,7 @@
 .previewAbout > span,
 .previewSkills > span,
 .previewSectionHeading > span {
-  color: #999991;
+  color: var(--pluten-text-secondary);
   font-size: 7px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -1245,7 +1243,7 @@
 
 .previewAbout > p {
   margin: 15px 0 0;
-  color: #77776f;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   line-height: 1.7;
 }
@@ -1261,8 +1259,8 @@
   padding: 6px 8px;
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 999px;
-  color: #6f6f68;
-  background: #fff;
+  color: var(--pluten-text-secondary);
+  background: var(--pluten-surface-high);
   font-size: 6px;
 }
 
@@ -1284,7 +1282,7 @@
 }
 
 .previewProject > span {
-  color: #a4a49c;
+  color: var(--pluten-text-secondary);
   font-size: 6px;
   font-weight: 700;
 }
@@ -1303,7 +1301,7 @@
   max-width: 270px;
   margin-top: 4px;
   overflow: hidden;
-  color: #85857d;
+  color: var(--pluten-text-secondary);
   font-size: 7px;
   line-height: 1.45;
   text-overflow: ellipsis;
@@ -1311,7 +1309,7 @@
 }
 
 .previewProject > svg {
-  color: #8e8e86;
+  color: var(--pluten-text-secondary);
 }
 
 .previewSkills > div {
@@ -1325,8 +1323,8 @@
   padding: 7px 8px;
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 999px;
-  color: #5d5d56;
-  background: #fff;
+  color: var(--pluten-text-secondary);
+  background: var(--pluten-surface-high);
   font-size: 7px;
 }
 
@@ -1340,8 +1338,8 @@
 .previewSocial span {
   padding: 7px 9px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 7px;
   font-weight: 650;
 }
@@ -1354,7 +1352,7 @@
   margin: 40px 26px 0;
   padding: 18px 0 24px;
   border-top: 1px solid rgba(17, 17, 17, 0.1);
-  color: #9a9a91;
+  color: var(--pluten-text-secondary);
   font-size: 6px;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -1546,7 +1544,7 @@
   padding: 18px;
   overflow: hidden;
   border-left: 1px solid rgba(17, 17, 17, 0.09);
-  background: #e8e8e3;
+  background: var(--pluten-surface-low);
 }
 
 .previewHeader {
@@ -1564,7 +1562,7 @@
 }
 
 .previewHeader > div > span {
-  color: #8f8f87;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -1572,7 +1570,7 @@
 
 .previewHeader > div > strong {
   margin-top: 4px;
-  color: #55554e;
+  color: var(--pluten-text-secondary);
   font-size: 11px;
   font-weight: 700;
 }
@@ -1585,7 +1583,7 @@
   padding: 0 9px;
   border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 999px;
-  color: #55554e;
+  color: var(--pluten-text-secondary);
   background: rgba(255, 255, 255, 0.55);
   font-size: 7px;
   font-weight: 800;
@@ -1597,8 +1595,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #31a46d;
-  box-shadow: 0 0 0 4px rgba(49, 164, 109, 0.08);
+  background: var(--pluten-success);
+  box-shadow: none;
 }
 
 .orbitPreviewStage {
@@ -1633,3 +1631,52 @@
     max-width: none;
   }
 }
+
+/* =========================================================
+   PLUTEN V1 FROST EDITOR OVERRIDES
+   Logic untouched — visual system only.
+   ========================================================= */
+.page{background:var(--pluten-bg)!important;color:var(--pluten-text)!important}
+.loadingScreen,.errorScreen{background:var(--pluten-bg)!important;color:var(--pluten-text)!important}
+.loadingBox{border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-xl)!important;background:var(--pluten-surface)!important;box-shadow:var(--pluten-shadow-raised)!important}
+.darkButton,.publishButton,.publishButtonLarge,.primarySmall{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important;border-color:var(--pluten-black)!important;box-shadow:var(--pluten-shadow-raised-soft)!important;font-weight:700!important}
+.outlineButton,.addButton,.backButton{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-surface)!important;color:var(--pluten-black)!important;border:1px solid var(--pluten-border)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}
+.editorHeader{background:var(--pluten-bg)!important;border-bottom:1px solid var(--pluten-border)!important;box-shadow:none!important}
+.brandLabel,.saveState,.sectionNumber,.fieldLabel,.previewHeader,.previewSectionHeading{color:var(--pluten-text-secondary)!important;font-size:9px!important;font-weight:700!important;letter-spacing:.11em!important;text-transform:uppercase!important}
+.headerName,.sectionHeading h1,.sectionHeading h2,.reviewHero h2,.publishBox h3{font-family:var(--font-space-grotesk),sans-serif!important;letter-spacing:-.04em!important;font-weight:700!important}
+.headerName{font-size:15px!important}.sectionHeading h1,.sectionHeading h2{font-size:clamp(28px,3vw,38px)!important;line-height:1.03!important}.sectionHeading p,.sidebarIntro p,.repeatableCard p,.publishBox p{color:var(--pluten-text-secondary)!important}
+.editorLayout{background:var(--pluten-bg)!important}
+.sidebar{background:var(--pluten-surface)!important;border-right:1px solid var(--pluten-border)!important}
+.sidebarIntro{border-bottom:1px solid var(--pluten-border)!important}
+.sectionNav{gap:7px!important}
+.sectionButton{border:0!important;border-radius:var(--pluten-radius-sm)!important;background:transparent!important;color:var(--pluten-text-secondary)!important}
+.sectionButton:hover{background:var(--pluten-surface-low)!important;color:var(--pluten-black)!important}
+.sectionButtonActive{background:var(--pluten-surface-low)!important;color:var(--pluten-black)!important;box-shadow:var(--pluten-shadow-recessed)!important}
+.sectionButtonText strong{font-family:var(--font-space-grotesk),sans-serif!important;font-weight:650!important}.sectionButtonText span{color:var(--pluten-text-secondary)!important}
+.formArea{background:var(--pluten-bg)!important}
+.sectionContent{max-width:860px!important}
+.errorBanner{border:1px solid rgba(159,63,67,.16)!important;border-radius:var(--pluten-radius-sm)!important;background:rgba(159,63,67,.06)!important;color:var(--pluten-danger)!important}
+.formGrid,.formStack{gap:16px!important}
+.fieldLabel{margin-bottom:7px!important}
+.formArea input,.formArea textarea,.formArea select,.usernameField,.tagField,.socialUrlField{border:0!important;border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-surface-low)!important;color:var(--pluten-text)!important;box-shadow:var(--pluten-shadow-recessed)!important}
+.formArea input:focus,.formArea textarea:focus,.formArea select:focus{outline:none!important;box-shadow:var(--pluten-shadow-pressed)!important}
+.selectWrap svg{color:var(--pluten-text-secondary)!important}
+.repeatableList{gap:14px!important}
+.repeatableCard,.skillCard{border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-lg)!important;background:var(--pluten-surface)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}
+.repeatableHeader{border-bottom:1px solid var(--pluten-border)!important}.repeatableHeader h3{font-family:var(--font-space-grotesk),sans-serif!important;font-size:18px!important;letter-spacing:-.03em!important}
+.iconDanger{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-surface)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}
+.toggleRow{border-radius:var(--pluten-radius-md)!important;background:var(--pluten-surface-low)!important;box-shadow:var(--pluten-shadow-recessed)!important}
+.toggleOn,.toggleOff{border-radius:var(--pluten-radius-pill)!important}.toggleOn{background:var(--pluten-black)!important}.toggleOff{background:var(--pluten-surface)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}
+.skillIndex{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important}.skillForm{gap:12px!important}
+.urlPreview{color:var(--pluten-text-secondary)!important;background:var(--pluten-surface-low)!important;border-radius:var(--pluten-radius-xs)!important}
+.tagList{gap:8px!important}.tag{border-radius:var(--pluten-radius-xs)!important;background:var(--pluten-surface-low)!important;color:var(--pluten-black)!important;box-shadow:var(--pluten-shadow-recessed)!important}.tagAddButton{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-surface)!important;color:var(--pluten-black)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}
+.emptySection{border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-lg)!important;background:var(--pluten-surface-low)!important;box-shadow:var(--pluten-shadow-recessed)!important}.emptyIcon{border-radius:var(--pluten-radius-md)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important}
+.reviewHero,.publishBox,.previewPanel,.orbitPreviewPanel{border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-xl)!important;background:var(--pluten-surface)!important;box-shadow:var(--pluten-shadow-raised)!important}
+.readyIndicator{color:var(--pluten-success)!important}.incompleteIndicator{color:var(--pluten-warning)!important}
+.reviewList{gap:10px!important}.reviewItem{border-radius:var(--pluten-radius-md)!important;background:var(--pluten-surface-low)!important;box-shadow:var(--pluten-shadow-recessed)!important;border:0!important}.emptyCheck{background:var(--pluten-surface)!important;color:var(--pluten-text-secondary)!important}
+.previewBrowser{border-radius:var(--pluten-radius-lg)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important;box-shadow:none!important}.previewBrowserTop{border-color:rgba(255,255,255,.08)!important}.previewUrl{color:rgba(252,253,252,.58)!important}.previewPage{background:var(--pluten-black)!important}.previewHero strong{font-family:var(--font-space-grotesk),sans-serif!important;font-size:clamp(28px,3vw,40px)!important;letter-spacing:-.045em!important}.previewHero p,.previewMeta,.previewAbout p,.previewProject p,.previewSkills,.previewSocial{color:rgba(252,253,252,.65)!important}.previewActions a{border-radius:var(--pluten-radius-sm)!important}.previewProject{border-radius:var(--pluten-radius-sm)!important;background:rgba(255,255,255,.055)!important}.previewFooter{border-color:rgba(255,255,255,.08)!important}
+.templateSelection{margin-top:8px!important}.orbitPreviewStage{border-radius:var(--pluten-radius-lg)!important;overflow:hidden!important}
+@media(max-width:980px){.editorLayout{grid-template-columns:1fr!important}.sidebar{position:relative!important;top:auto!important;border-right:0!important;border-bottom:1px solid var(--pluten-border)!important}.sectionNav{display:flex!important;overflow-x:auto!important;padding-bottom:6px!important}.sectionButton{min-width:190px!important}.formArea{padding-left:20px!important;padding-right:20px!important}}
+@media(max-width:640px){.editorHeader{padding-left:10px!important;padding-right:10px!important}.headerCenter{display:none!important}.headerActions{gap:7px!important}.outlineButton{display:none!important}.formArea{padding:28px 10px 60px!important}.repeatableCard,.skillCard{border-radius:var(--pluten-radius-md)!important}.reviewHero,.publishBox,.previewPanel,.orbitPreviewPanel{border-radius:var(--pluten-radius-lg)!important}}
+.editorHeader{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.liveDot::before{background:var(--pluten-black)!important;box-shadow:none!important}

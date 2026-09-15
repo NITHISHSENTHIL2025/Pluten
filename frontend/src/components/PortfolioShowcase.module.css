@@ -36,9 +36,9 @@
 .stage{
   position:relative;
   width:100%;
-  aspect-ratio:16/8.6;
-  max-height:620px;
-  min-height:360px;
+  aspect-ratio:16/9;
+  max-height:none;
+  min-height:0;
   overflow:hidden;
   border-radius:var(--pluten-radius-lg);
   background:var(--pluten-black);
@@ -106,14 +106,17 @@
 
 @media(max-width:850px){
   .intro,.details{grid-template-columns:1fr;gap:14px}
-  .stage{aspect-ratio:16/10;min-height:320px}
+  .stage{aspect-ratio:16/9;min-height:0;max-height:none}
   .detailDescription{max-width:620px}
 }
 @media(max-width:620px){
-  .section{width:calc(100% - 24px);padding:68px 0 74px}
-  .introTitle{font-size:36px}
-  .stage{min-height:300px;border-radius:var(--pluten-radius-md)}
-  .stageTop{padding:16px}.stageMeta{display:none}
-  .stageCta{left:16px;bottom:16px}.stageControls{right:16px;bottom:16px}.progress{display:none}
-  .details{padding-top:24px}.detailTitle{font-size:32px}
+  .section{width:calc(100% - 24px);padding:54px 0 62px}
+  .intro{margin-bottom:20px}.introTitle{font-size:31px}.introDescription{font-size:13px;line-height:1.58}
+  .stage{aspect-ratio:16/9;min-height:0;max-height:none;border-radius:var(--pluten-radius-md)}
+  .stageTop{padding:11px 12px;font-size:7px}.stageMeta{display:none}
+  .playButton{width:38px;height:38px}
+  .stageCta{left:10px;bottom:10px}.cta{min-height:38px;padding:0 11px;font-size:9.5px}
+  .stageControls{right:10px;bottom:10px;gap:5px}.arrowButton{width:30px;height:30px}.progress{display:none}
+  .details{padding-top:20px;gap:10px}.detailTitle{font-size:27px}.detailDescription{font-size:13px;line-height:1.58}
+  .microCopy{margin-top:22px;padding-top:14px;font-size:7px}
 }

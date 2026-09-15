@@ -45,3 +45,17 @@
 - Decorative glow scan: 0 active CSS blur/text-glow/exterior-white-shadow matches in the refined source
 
 A full dependency-aware `next build` should still be run on the target machine after copying the files. The prior version of this same codebase successfully passed `npm ci`, `typecheck`, `lint` (warnings only), and `next build` on the user's machine before this styling-only refinement pass.
+
+## Responsive storefront + auth polish pass
+- Product navigation now uses a dedicated `ProductsJumpLink` that reliably scrolls to `#products` even when the hash is already present.
+- Mobile homepage removes the capability rail and principles strip so products begin directly after the compact hero.
+- Mobile hero typography and spacing reduced for cleaner scanability.
+- Store product media is now a strict 1:1 ratio on every viewport.
+- Mobile product catalog becomes one horizontal scroll row with snap behavior and a subtle visible scrollbar.
+- Discount/offer label moved out of the product image and into its own aligned row above the image.
+- Portfolio showcase stage is now a strict 16:9 ratio on desktop, tablet and mobile.
+- Mobile portfolio controls and type sizes reduced to fit the 16:9 frame cleanly.
+- Login page rebuilt as a compact responsive account-access screen; the Google button is sized to fit narrow devices without horizontal clipping.
+- Session-expiry notice redesigned as a clean compact toast/bottom sheet and is never shown on the login route.
+- Expected unauthenticated library/profile/portfolio probes no longer emit global session-expiry UI or noisy console API errors.
+- Product-detail "Back to products" now returns directly to the storefront product section.

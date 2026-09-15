@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Download, Library, Loader2, ShieldCheck, UserRound, AlertCircle, RefreshCw } from "lucide-react";
 import apiClient from "@/lib/apiClient";
+import ProductsJumpLink from "@/components/ProductsJumpLink";
 import styles from "./library.module.css";
 
 interface PurchasedAsset { id:string; title:string; thumbnail:string|null; category?:string; }
@@ -19,7 +20,7 @@ export default function MyLibraryPage(){
 
   const loadLibrary=async()=>{
     setLoading(true); setError(null);
-    try{const response=await apiClient.get<PurchasedAsset[]>("/user/library");setAssets(Array.isArray(response.data)?response.data:[]);}
+    try{const response=await apiClient.get<PurchasedAsset[]>("/user/library", { skipSessionExpiry: true, skipApiErrorLog: true });setAssets(Array.isArray(response.data)?response.data:[]);}
     catch(err:any){
       if(err?.response?.status===401||err?.response?.status===403){router.replace(`/login?redirect=${encodeURIComponent("/library")}`);return;}
       setError(err?.response?.data?.error||"We couldn't load your library right now.");
@@ -32,7 +33,7 @@ export default function MyLibraryPage(){
     if(downloadingId)return;
     setDownloadError(null);setDownloadingId(productId);
     try{
-      const response=await apiClient.get(`/user/download/${productId}`);
+      const response=await apiClient.get(`/user/download/${productId}`, { skipSessionExpiry: true, skipApiErrorLog: true });
       const url=response?.data?.downloadUrl;
       if(typeof url!=="string"||!url)throw new Error("No secure download URL returned.");
       window.location.assign(url);
@@ -55,7 +56,7 @@ export default function MyLibraryPage(){
       {error?<section className={styles.errorPanel}><AlertCircle size={22}/><h2 className={styles.errorTitle}>Library unavailable.</h2><p className={styles.errorText}>{error}</p><button className={styles.retryBtn} onClick={loadLibrary}><RefreshCw size={15}/> Try again</button></section>:<>
         <div className={styles.libraryMeta}><span className={styles.assetCount}><strong>{assets.length}</strong> {assets.length===1?'DIGITAL ASSET':'DIGITAL ASSETS'}</span></div>
         {downloadError&&<div className={styles.downloadError}><AlertCircle size={14}/>{downloadError}</div>}
-        {assets.length===0?<section className={styles.empty}><div className={styles.emptyInner}><div className={styles.emptyIcon}><Library size={24}/></div><h2 className={styles.emptyTitle}>Your library is empty.</h2><p className={styles.emptyText}>Products you purchase from Pluten will appear here automatically.</p><Link className={styles.emptyAction} href="/#products">Explore products</Link></div></section>:<section className={styles.assetGrid}>{assets.map(asset=><article key={asset.id} className={styles.assetCard}><div className={styles.cardImageWrap}>{asset.thumbnail?<img src={asset.thumbnail} alt="" className={styles.cardImage}/>:<div className={styles.noImage}>NO PREVIEW</div>}<div className={styles.cardImageShade}/></div><div className={styles.cardContent}><span className={styles.cardEyebrow}>{asset.category||'DIGITAL PRODUCT'}</span><h2 className={styles.cardTitle}>{asset.title}</h2><div className={styles.cardFooter}><span className={styles.cardStatus}><span className={styles.cardStatusDot}/>Purchased</span><button className={styles.downloadBtn} disabled={downloadingId===asset.id} onClick={()=>handleDownload(asset.id)}>{downloadingId===asset.id?<Loader2 size={14} className="pluten-login-spinner"/>:<Download size={14}/>} {downloadingId===asset.id?'Preparing':'Download'}</button></div></div></article>)}</section>}
+        {assets.length===0?<section className={styles.empty}><div className={styles.emptyInner}><div className={styles.emptyIcon}><Library size={24}/></div><h2 className={styles.emptyTitle}>Your library is empty.</h2><p className={styles.emptyText}>Products you purchase from Pluten will appear here automatically.</p><ProductsJumpLink className={styles.emptyAction}>Explore products</ProductsJumpLink></div></section>:<section className={styles.assetGrid}>{assets.map(asset=><article key={asset.id} className={styles.assetCard}><div className={styles.cardImageWrap}>{asset.thumbnail?<img src={asset.thumbnail} alt="" className={styles.cardImage}/>:<div className={styles.noImage}>NO PREVIEW</div>}<div className={styles.cardImageShade}/></div><div className={styles.cardContent}><span className={styles.cardEyebrow}>{asset.category||'DIGITAL PRODUCT'}</span><h2 className={styles.cardTitle}>{asset.title}</h2><div className={styles.cardFooter}><span className={styles.cardStatus}><span className={styles.cardStatusDot}/>Purchased</span><button className={styles.downloadBtn} disabled={downloadingId===asset.id} onClick={()=>handleDownload(asset.id)}>{downloadingId===asset.id?<Loader2 size={14} className="pluten-login-spinner"/>:<Download size={14}/>} {downloadingId===asset.id?'Preparing':'Download'}</button></div></div></article>)}</section>}
       </>}
     </div>
     <footer className={styles.footer}><div className={styles.footerInner}><Link href="/" className={styles.footerBrand}><img src="/favicon.ico" alt=""/>PLUTEN</Link><span className={styles.footerCopyright}>© 2026 PLUTEN</span></div></footer>

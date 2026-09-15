@@ -513,7 +513,7 @@ export default function ProductDetailClient({
         <main className={styles.unavailable}>
           <button
             className={styles.backButton}
-            onClick={() => router.push("/")}
+            onClick={() => window.location.assign("/#products")}
           >
             <ArrowLeft size={16} />
             Back to marketplace
@@ -544,7 +544,7 @@ export default function ProductDetailClient({
 
       <main className={styles.pageContainer}>
         <div className={styles.breadcrumbBar}>
-          <button className={styles.backButton} onClick={() => router.push("/")}>
+          <button className={styles.backButton} onClick={() => window.location.assign("/#products")}>
             <ArrowLeft size={15} />
             Back to products
           </button>

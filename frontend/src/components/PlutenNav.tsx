@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { InstagramIcon } from "@/components/InstagramIcon";
+import ProductsJumpLink from "@/components/ProductsJumpLink";
 import { LibraryBig, Menu, UserRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ export default function PlutenNav() {
         </Link>
 
         <nav className="pluten-nav-links" aria-label="Main navigation">
-          <Link href="/#products" className="pluten-nav-link">Products</Link>
+          <ProductsJumpLink className="pluten-nav-link">Products</ProductsJumpLink>
           <Link href="/portfolio" className="pluten-nav-link pluten-nav-portfolio">Portfolio Maker <span className="pluten-nav-new">FREE</span></Link>
           <Link href="/support" className="pluten-nav-link">Support</Link>
           <a href={instagram} target="_blank" rel="noreferrer" className="pluten-nav-link"><InstagramIcon size={14}/> Instagram</a>
@@ -46,7 +47,7 @@ export default function PlutenNav() {
       <div className="pluten-mobile-panel">
         <div className="pluten-mobile-header"><span className="pluten-brand-name">PLUTEN</span><button className="pluten-mobile-close" onClick={() => setOpen(false)} aria-label="Close menu"><X size={20}/></button></div>
         <nav className="pluten-mobile-links">
-          <Link href="/#products" onClick={() => setOpen(false)} className="pluten-mobile-link">Products</Link>
+          <ProductsJumpLink onClick={() => setOpen(false)} className="pluten-mobile-link">Products</ProductsJumpLink>
           <Link href="/portfolio" onClick={() => setOpen(false)} className="pluten-mobile-link">Portfolio Maker <span className="pluten-nav-new">FREE</span></Link>
           <Link href="/library" onClick={() => setOpen(false)} className="pluten-mobile-link">Library</Link>
           <Link href="/support" onClick={() => setOpen(false)} className="pluten-mobile-link">Support</Link>

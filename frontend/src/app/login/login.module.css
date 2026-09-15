@@ -1,21 +1,62 @@
-.page{min-height:100dvh;background:var(--pluten-bg);color:var(--pluten-text)}
-.premiumContainer{min-height:100dvh;display:grid;place-items:center;padding:32px 16px;position:relative;overflow:hidden}
-.backgroundGrid{position:absolute;inset:0;pointer-events:none;opacity:.34;background-image:linear-gradient(rgba(16,19,19,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(16,19,19,.016) 1px,transparent 1px);background-size:56px 56px}
-.backgroundGlow{display:none}
-.skeuomorphicCard{position:relative;z-index:2;width:min(460px,100%);padding:36px 34px 32px;background:var(--pluten-surface);border:1px solid var(--pluten-border);border-radius:var(--pluten-radius-xl);box-shadow:var(--pluten-shadow-raised)}
-.brand{display:flex;flex-direction:column;align-items:center;margin-bottom:26px}
-.brandLogo{width:54px;height:54px;object-fit:cover;border-radius:var(--pluten-radius-md);margin-bottom:12px;box-shadow:none}
-.brandName{font-family:var(--font-space-grotesk),sans-serif;font-size:15px;font-weight:700;letter-spacing:-.025em}
-.securityIcon{width:46px;height:46px;display:grid;place-items:center;border-radius:var(--pluten-radius-sm);background:var(--pluten-surface-low);box-shadow:none;margin:0 auto 18px}
-.title{margin:0;text-align:center;font-family:var(--font-space-grotesk),sans-serif;font-size:32px;font-weight:700;letter-spacing:-.045em;line-height:1.05}
-.description{max-width:340px;margin:14px auto 0;text-align:center;color:var(--pluten-text-secondary);font-size:14px;line-height:1.62}
-.statusMessage{margin-top:18px;border-radius:var(--pluten-radius-sm);padding:12px 14px;background:rgba(159,63,67,.07);border:1px solid rgba(159,63,67,.18);color:var(--pluten-danger);font-size:12px;line-height:1.5;text-align:center}
-.googleWrap{display:grid;justify-content:center;margin-top:26px}
-.footerNote{margin-top:24px;text-align:center;color:var(--pluten-text-secondary);font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase}
-.embeddedNotice{margin-top:18px;padding:14px;border:1px solid var(--pluten-border);border-radius:var(--pluten-radius-md);background:var(--pluten-surface-low);box-shadow:none;color:var(--pluten-text-secondary);font-size:12px;line-height:1.55;text-align:center}
-.browserButton,.browserSecondary{width:100%;min-height:46px;margin-top:12px;border:0;border-radius:var(--pluten-radius-sm);font-weight:700;font-size:12px;transition:transform .2s var(--pluten-ease)}
-.browserButton{background:var(--pluten-black);color:var(--pluten-surface-high)}
-.browserSecondary{background:var(--pluten-surface);color:var(--pluten-black);box-shadow:none;border:1px solid var(--pluten-border)}
-.browserButton:hover,.browserSecondary:hover{transform:translateY(-2px)}
-.browserInstructions{margin-top:12px;color:var(--pluten-text-secondary);font-size:11px;line-height:1.55}
-@media(max-width:520px){.skeuomorphicCard{padding:30px 20px 26px;border-radius:var(--pluten-radius-lg)}.title{font-size:29px}}
+.premiumContainer{
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:48px 20px;
+  background:var(--pluten-bg);
+  color:var(--pluten-text);
+}
+.authShell{
+  width:min(440px,100%);
+  overflow:hidden;
+  border:1px solid var(--pluten-border);
+  border-radius:var(--pluten-radius-lg);
+  background:var(--pluten-surface-high);
+  box-shadow:0 18px 44px rgba(16,19,19,.085),0 2px 7px rgba(16,19,19,.035),inset 0 1px 0 rgba(255,255,255,.65);
+}
+.authHeader{
+  min-height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 24px;
+  border-bottom:1px solid var(--pluten-border);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;color:var(--pluten-black);text-decoration:none}
+.brandLogo{width:32px;height:32px;display:block;object-fit:cover;border-radius:50%}
+.brandName{font-family:var(--font-space-grotesk),sans-serif;font-size:14px;font-weight:700;letter-spacing:-.03em}
+.secureBadge{display:inline-flex;align-items:center;gap:6px;color:var(--pluten-text-secondary);font-size:9px;font-weight:650;white-space:nowrap}
+.authBody{padding:30px 28px 26px}
+.eyebrow{margin:0 0 10px;color:var(--pluten-text-secondary);font-size:8px;font-weight:700;letter-spacing:.13em}
+.title{margin:0;font-family:var(--font-space-grotesk),sans-serif;font-size:30px;line-height:1.04;letter-spacing:-.045em;font-weight:700}
+.description{max-width:350px;margin:12px 0 0;color:var(--pluten-text-secondary);font-size:13px;line-height:1.62}
+.statusMessage{margin-top:18px;padding:11px 12px;border:1px solid rgba(159,63,67,.16);border-radius:var(--pluten-radius-sm);background:rgba(159,63,67,.055);color:var(--pluten-danger);font-size:11px;line-height:1.48}
+.googleArea{margin-top:26px;padding-top:22px;border-top:1px solid var(--pluten-border)}
+.googleLabel{display:block;margin-bottom:12px;color:var(--pluten-text-secondary);font-size:8px;font-weight:700;letter-spacing:.12em}
+.googleWrap{width:100%;min-height:44px;display:flex;align-items:center;justify-content:flex-start;overflow:hidden}
+.googleWrap>div{max-width:100%}
+.loadingState{min-height:44px;display:inline-flex;align-items:center;gap:9px;color:var(--pluten-text-secondary);font-size:11px;font-weight:600}
+.footerNote{margin:22px 0 0;color:var(--pluten-text-secondary);font-size:8px;font-weight:650;letter-spacing:.08em;text-transform:uppercase}
+.embeddedNotice{margin-top:24px;padding-top:20px;border-top:1px solid var(--pluten-border)}
+.embeddedNotice>strong{display:block;font-family:var(--font-space-grotesk),sans-serif;font-size:16px;letter-spacing:-.025em}
+.embeddedNotice>span{display:block;margin-top:6px;color:var(--pluten-text-secondary);font-size:12px;line-height:1.5}
+.embeddedActions{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:16px}
+.browserButton,.browserSecondary{min-height:44px;border-radius:var(--pluten-radius-sm);font-size:11px;font-weight:700;cursor:pointer}
+.browserButton{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 14px;border:0;background:var(--pluten-black);color:var(--pluten-surface-high)}
+.browserSecondary{padding:0 13px;border:1px solid var(--pluten-border-strong);background:transparent;color:var(--pluten-black)}
+.browserInstructions{margin-top:16px;color:var(--pluten-text-secondary);font-size:11px;line-height:1.55}
+.browserInstructions p{margin:0}.browserInstructions ol{margin:12px 0 0;padding-left:20px}.browserInstructions li+li{margin-top:5px}.browserInstructions .browserButton{width:100%;margin-top:16px}
+
+@media(max-width:520px){
+  .premiumContainer{align-items:flex-start;padding:24px 16px 32px}
+  .authShell{border:0;border-radius:0;background:transparent;box-shadow:none}
+  .authHeader{min-height:58px;padding:0;border-bottom:1px solid var(--pluten-border)}
+  .secureBadge{font-size:8px}.brandLogo{width:30px;height:30px}.brandName{font-size:13px}
+  .authBody{padding:32px 0 0}
+  .title{font-size:28px}.description{font-size:12.5px;line-height:1.58}
+  .googleArea{margin-top:22px;padding-top:20px}.googleWrap{overflow:visible}
+  .footerNote{margin-top:18px;font-size:7.5px}
+  .embeddedActions{grid-template-columns:1fr}
+}

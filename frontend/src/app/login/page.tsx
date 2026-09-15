@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
-import { Check, Copy, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
+import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import PlutenMotion from "@/components/system/PlutenMotion";
 import styles from "./login.module.css";
 
 const ADMIN_ROLES = new Set([
@@ -196,8 +197,8 @@ function LoginEngine() {
                 <span className={styles.googleLabel}>CONTINUE WITH GOOGLE</span>
                 <div className={styles.googleWrap} aria-busy={loading}>
                   {loading ? (
-                    <div className={styles.loadingState}>
-                      <Loader2 className="pluten-login-spinner" size={22} />
+                    <div className={styles.loadingState} role="status" aria-live="polite">
+                      <PlutenMotion state="processing" size={34} className={styles.inlineMotion} label="Signing in" />
                       <span>Signing you in…</span>
                     </div>
                   ) : (
@@ -224,8 +225,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="pluten-auth-fallback">
-          <Loader2 className="pluten-login-spinner" size={28} />
+        <main className="pluten-auth-fallback" role="status" aria-live="polite">
+          <PlutenMotion state="loading" size={82} label="Loading sign in" priority="high" />
         </main>
       }
     >

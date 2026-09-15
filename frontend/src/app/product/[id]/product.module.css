@@ -832,3 +832,7 @@
     scroll-margin-bottom: 140px;
   }
 }
+
+/* V1 system-state finishing */
+.unavailableIcon{width:72px;height:72px;margin-bottom:18px;border:0;border-radius:0;background:transparent;color:inherit}
+.unavailableIcon img{width:72px;height:72px;display:block}

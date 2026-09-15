@@ -4,7 +4,7 @@ export function proxy(request: NextRequest) {
     const response = NextResponse.next();
     const pathname = request.nextUrl.pathname;
 
-    const isProtectedPage = pathname === '/library' || pathname === '/profile' || pathname.startsWith('/admin');
+    const isProtectedPage = pathname === '/library' || pathname === '/profile' || pathname === '/payment-success' || pathname.startsWith('/admin');
 
     if (isProtectedPage) {
         response.headers.set('Cache-Control', 'private, no-store, max-age=0');
@@ -18,5 +18,6 @@ export const config = {
         '/library/:path*',
         '/profile/:path*',
         '/admin/:path*',
+        '/payment-success',
     ],
 };

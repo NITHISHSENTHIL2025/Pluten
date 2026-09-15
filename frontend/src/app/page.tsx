@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight, BadgeCheck, Download, LockKeyhole, RefreshCw } from 'lucide-react';
+import { ArrowRight, BadgeCheck, Download, LockKeyhole } from 'lucide-react';
 import { InstagramIcon } from '@/components/InstagramIcon';
 import PlutenNav from '@/components/PlutenNav';
 import ProductCard from '@/components/ProductCard';
 import ProductsJumpLink from '@/components/ProductsJumpLink';
 import PortfolioShowcase from '@/components/PortfolioShowcase';
 import MotionReveal from '@/components/MotionReveal';
+import PlutenMotion from '@/components/system/PlutenMotion';
 import styles from './page.module.css';
 
 interface Product {
@@ -150,7 +151,7 @@ export default async function StorefrontPage() {
 
           {products.length === 0 ? (
             <div className={styles.state}>
-              <RefreshCw size={20} />
+              <PlutenMotion state="error" size={64} label="Catalog unavailable" />
               <h3>Catalog temporarily unavailable.</h3>
               <p>The storefront could not load products right now. Your account and library are unaffected.</p>
               <Link href="/" className={styles.stateAction}>Refresh</Link>

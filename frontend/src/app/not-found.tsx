@@ -1,16 +1,23 @@
-import Link from 'next/link';
+import Link from "next/link";
+import SystemStateShell from "@/components/system/SystemStateShell";
+import styles from "@/components/system/SystemStateShell.module.css";
 
 export default function NotFound() {
   return (
-    <main className="pluten-error-page">
-      <section className="pluten-error-card">
-        <div className="pluten-error-kicker">PLUTEN / 404</div>
-        <h1>Page not found.</h1>
-        <p>The page you requested does not exist or is no longer available.</p>
-        <div className="pluten-error-actions">
-          <Link href="/" className="pluten-error-primary">Return home</Link>
-        </div>
-      </section>
-    </main>
+    <SystemStateShell
+      kicker="PLUTEN / 404"
+      statusCode="404"
+      title="This page isn't here."
+      description="The link may have changed, expired, or never existed. Your Pluten account and purchases are unaffected."
+      actions={
+        <>
+          <Link className={styles.primary} href="/">Go to Pluten home</Link>
+          <Link className={styles.secondary} href="/#products">Explore products</Link>
+        </>
+      }
+      headerMeta="Page not found"
+      footerLeft="Pluten · 404"
+      footerRight="Useful things, kept simple."
+    />
   );
 }

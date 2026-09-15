@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 1000"
+     width="256"
+     height="256"
+     role="img"
+     aria-labelledby="title desc">
+  <title id="title">Pluten loading animation</title>
+  <desc id="desc">The Pluten logo builds from left to right in a subtle repeating loading animation.</desc>
+
+  <defs>
+    <clipPath id="logoCircle">
+      <circle cx="498.5" cy="494.5" r="341.5"/>
+    </clipPath>
+  </defs>
+
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    .piece {
+      fill: #101313;
+      clip-path: url(#logoCircle);
+      transform-box: fill-box;
+      transform-origin: center;
+      opacity: .16;
+      animation: pluten-build 1.65s cubic-bezier(.16,1,.3,1) infinite;
+    }
+
+    .p1 { animation-delay: 0s; }
+    .p2 { animation-delay: .09s; }
+    .p3 { animation-delay: .18s; }
+    .p4 { animation-delay: .27s; }
+    .p5 { animation-delay: .36s; }
+    .p6 { animation-delay: .45s; }
+
+    @keyframes pluten-build {
+      0% {
+        opacity: .12;
+        transform: translateY(7px) scaleY(.92);
+      }
+      18% {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+      }
+      52% {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+      }
+      76% {
+        opacity: .22;
+        transform: translateY(-3px) scaleY(.97);
+      }
+      100% {
+        opacity: .12;
+        transform: translateY(7px) scaleY(.92);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .piece {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+
+  <g clip-path="url(#logoCircle)">
+    <rect class="piece p1" x="157" y="153.0" width="351.5" height="683.0" rx="0"/>
+    <rect class="piece p2" x="536.5" y="153.0" width="55.0" height="683.0" rx="0"/>
+    <rect class="piece p3" x="619.5" y="153.0" width="52.0" height="683.0" rx="0"/>
+    <rect class="piece p4" x="698.5" y="153.0" width="45.0" height="683.0" rx="0"/>
+    <rect class="piece p5" x="771.5" y="153.0" width="34.0" height="683.0" rx="0"/>
+    <rect class="piece p6" x="828.5" y="153.0" width="11.5" height="683.0" rx="0"/>
+  </g>
+</svg>

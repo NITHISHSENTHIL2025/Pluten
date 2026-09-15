@@ -1,0 +1,28 @@
+PLUTEN V1 SYSTEM STATE INTEGRATION — VALIDATION REPORT
+
+SOURCE BASIS
+- Frontend analyzed from the uploaded pluten-frontend-analysis(1).zip.
+- Motion assets copied byte-for-byte from the uploaded pluten-motion-V1-FINAL-REFINED(1).zip.
+
+VALIDATION COMPLETED IN THIS WORKSPACE
+- 75 non-declaration TypeScript/TSX source files parsed/transpiled with TypeScript 5.8.3: 0 syntax failures.
+- All new/modified local @/ and relative imports resolved to real files: 0 missing imports.
+- All 28 frontend CSS files checked for balanced braces: PASS.
+- System-state CSS module references checked for missing classes: PASS for all new system components/payment/login/library/profile/admin components. Existing product module nested selector classes were confirmed manually.
+- All 6 locked motion SVGs parsed as valid XML: PASS.
+- All 6 public motion SVG files are byte-identical to the corresponding files from the uploaded locked motion pack: PASS.
+- public/sw.js parsed by Node: PASS.
+- Modified backend/controllers/paymentController.js parsed by Node --check: PASS.
+- Replacement ZIP and complete frontend ZIP tested with ZIP CRC integrity: PASS.
+
+FULL NPM VALIDATION
+A complete npm ci could not finish inside this sandbox because package downloads stalled, so npm run typecheck / npm run lint / npm run build could not be rerun here after the integration. The uploaded frontend baseline already contains the normal scripts for those checks.
+
+RUN THESE LOCALLY BEFORE MERGE
+cd X:\projects\xuiness\isevens-ecosystem\frontend
+npm ci
+npm run typecheck
+npm run lint
+npm run build
+
+Then run the manual state-flow checks listed in PLUTEN_V1_SYSTEM_STATES.md.

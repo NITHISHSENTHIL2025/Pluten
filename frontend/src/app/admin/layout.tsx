@@ -3,9 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Activity, BarChart3, Headphones, LayoutDashboard, Menu, Package, Settings, ShieldCheck, ShoppingCart, Tag, Users, X } from 'lucide-react';
+import { BarChart3, Headphones, LayoutDashboard, Menu, Package, Settings, ShieldCheck, ShoppingCart, Tag, Users, X } from 'lucide-react';
 import apiClient from '@/lib/apiClient';
 import { CAPABILITIES, can, isAdminRole, type AdminRole } from '@/lib/adminPermissions';
+import PlutenMotion from '@/components/system/PlutenMotion';
 import styles from './admin.module.css';
 
 type NavItem = { href: string; label: string; icon: ReactNode; capability: string };
@@ -37,7 +38,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         if (!isAdminRole(next)) throw new Error('No admin access');
         if (active) setRole(next);
       } catch {
-        if (active) router.replace(`/login?redirect=${encodeURIComponent(pathname || '/admin')}`);
+        if (active) router.replace(`/login?expired=1&redirect=${encodeURIComponent(pathname || '/admin')}`);
       } finally {
         if (active) setChecking(false);
       }
@@ -54,13 +55,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     if (pathname.startsWith('/admin') && current && !can(role, current.capability)) router.replace(visible[0]?.href || '/');
   }, [pathname, role, router, visible]);
 
-  if (checking || !role) return <div className={styles.authLoading}><Activity className={styles.spin} size={28}/><span>Verifying secure access</span></div>;
+  if (checking || !role) return <div className={styles.authLoading}><PlutenMotion state="processing" size={72} label="Verifying secure access"/><span>Verifying secure access</span></div>;
 
   return <div className={styles.adminLayout}>
     <button className={styles.mobileMenuButton} onClick={() => setMobileOpen((v) => !v)} aria-label="Toggle admin navigation">{mobileOpen ? <X size={19}/> : <Menu size={19}/>}</button>
     {mobileOpen && <button className={styles.sidebarBackdrop} onClick={() => setMobileOpen(false)} aria-label="Close navigation"/>}
     <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
-      <div className={styles.sidebarHeader}><div className={styles.adminBrandMark}>P</div><div><span className={styles.brandName}>PLUTEN</span><span className={styles.brandSub}>FOUNDER CONTROL</span></div><span className={styles.environmentBadge}>V1</span></div>
+      <div className={styles.sidebarHeader}><div className={styles.adminBrandMark}><img src="/favicon.ico" alt="" /></div><div><span className={styles.brandName}>PLUTEN</span><span className={styles.brandSub}>FOUNDER CONTROL</span></div><span className={styles.environmentBadge}>V1</span></div>
       <nav className={styles.navGroup}><span className={styles.navLabel}>Workspace</span>{visible.map((item) => <Link key={item.href} href={item.href} className={`${styles.navItem} ${(pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href}/`))) ? styles.navItemActive : ''}`}>{item.icon}<span>{item.label}</span></Link>)}</nav>
       <div className={styles.sidebarFooter}><div className={styles.roleBadge}><ShieldCheck size={13}/>{role.replaceAll('_', ' ')}</div></div>
     </aside>

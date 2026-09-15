@@ -216,7 +216,16 @@ const verifyPayment = async (req, res) => {
 
     const cfResponse = await cashfreeFetchPayments(orderId);
     const successfulPayment = Array.isArray(cfResponse?.data) ? cfResponse.data.find((payment) => payment.payment_status === 'SUCCESS') : null;
-    if (!successfulPayment) return res.status(409).json({ error: 'Payment has not been confirmed yet.', status: 'PENDING' });
+    if (!successfulPayment) {
+      if (order.status === 'FAILED') {
+        return res.status(409).json({
+          error: order.paymentFailureReason || 'The payment was not completed. No product access was granted.',
+          status: 'FAILED',
+          productId: order.productId,
+        });
+      }
+      return res.status(409).json({ error: 'Payment has not been confirmed yet.', status: 'PENDING' });
+    }
 
     const result = await fulfillPaidOrder(orderId, {
       amount: successfulPayment.payment_amount,

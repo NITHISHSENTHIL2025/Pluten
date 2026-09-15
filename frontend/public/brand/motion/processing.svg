@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="256" height="256" role="img" aria-labelledby="title desc">
+<title id="title">Pluten Processing</title>
+<desc id="desc">The exact Pluten mark contracts into a black seed which expands and opens into a proper circular loading ring, rotates smoothly, then reforms into Pluten.</desc>
+<defs><clipPath id="logoCircle"><circle cx="498.5" cy="494.5" r="341.5"/></clipPath></defs>
+<style>
+.logoPiece{fill:#101313}
+.logoGroup{transform-box:view-box;transform-origin:500px 500px;animation:processLogo 3.55s cubic-bezier(.16,1,.3,1) infinite}
+.ringOuter{transform-box:view-box;transform-origin:500px 500px;animation:ringGrow 3.55s cubic-bezier(.16,1,.3,1) infinite}
+.ringSpin{transform-box:view-box;transform-origin:500px 500px;animation:ringSpin 3.55s cubic-bezier(.45,.05,.55,.95) infinite}
+.loaderRing{fill:none;stroke:#101313;stroke-width:68;stroke-linecap:round;animation:ringDash 3.55s cubic-bezier(.16,1,.3,1) infinite}
+@keyframes processLogo{
+0%,18%{transform:scale(1)}
+34%,80%{transform:scale(.03)}
+95%,100%{transform:scale(1)}
+}
+@keyframes ringGrow{
+0%,29%{transform:scale(.03)}
+45%{transform:scale(1.045)}
+52%,72%{transform:scale(1)}
+84%,100%{transform:scale(.03)}
+}
+@keyframes ringSpin{
+0%,42%{transform:rotate(-85deg)}
+72%{transform:rotate(635deg)}
+100%{transform:rotate(635deg)}
+}
+@keyframes ringDash{
+0%,30%{stroke-dasharray:0 1290}
+46%,74%{stroke-dasharray:1030 260}
+86%,100%{stroke-dasharray:0 1290}
+}
+@media(prefers-reduced-motion:reduce){.logoGroup{animation:none}.ringOuter{display:none}}
+</style>
+
+<g class="logoGroup"><rect class="logoPiece" x="157.0" y="153" width="351.5" height="683" clip-path="url(#logoCircle)"/>
+<rect class="logoPiece" x="536.5" y="153" width="55.0" height="683" clip-path="url(#logoCircle)"/>
+<rect class="logoPiece" x="619.5" y="153" width="52.0" height="683" clip-path="url(#logoCircle)"/>
+<rect class="logoPiece" x="698.5" y="153" width="45.0" height="683" clip-path="url(#logoCircle)"/>
+<rect class="logoPiece" x="771.5" y="153" width="34.0" height="683" clip-path="url(#logoCircle)"/>
+<rect class="logoPiece" x="828.5" y="153" width="11.5" height="683" clip-path="url(#logoCircle)"/></g>
+
+<g class="ringOuter">
+  <g class="ringSpin">
+    <circle class="loaderRing" cx="500" cy="500" r="205"/>
+  </g>
+</g>
+</svg>

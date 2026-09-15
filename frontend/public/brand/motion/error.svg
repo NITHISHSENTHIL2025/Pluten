@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 1000"
+     width="256" height="256"
+     role="img" aria-labelledby="title desc"
+     shape-rendering="geometricPrecision">
+<title id="title">Pluten Error — Final V1</title>
+<desc id="desc">The exact Pluten mark closes into a solid black circle. A clean rounded white error cross draws in the center, holds briefly, then reverses back into Pluten.</desc>
+
+<defs>
+  <clipPath id="markCircle"><circle cx="498.5" cy="494.5" r="341.5"/></clipPath>
+</defs>
+
+<style>
+.core{
+  fill:#101313;
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:corePulse 3.65s cubic-bezier(.16,1,.3,1) infinite;
+}
+.gap{fill:#FCFDFC;transform-box:fill-box;transform-origin:center}
+.xline{
+  fill:none;
+  stroke:#FCFDFC;
+  stroke-width:48;
+  stroke-linecap:round;
+  stroke-dasharray:330;
+  stroke-dashoffset:330;
+}
+.x1{animation:x1 3.65s cubic-bezier(.16,1,.3,1) infinite}
+.x2{animation:x2 3.65s cubic-bezier(.16,1,.3,1) infinite}
+
+@keyframes corePulse{
+  0%,18%,88%,100%{transform:scale(1)}
+  40%{transform:scale(.985)}
+  56%,72%{transform:scale(1.022)}
+  80%{transform:scale(.997)}
+}
+@keyframes x1{
+  0%,47%{stroke-dashoffset:330}
+  59%,72%{stroke-dashoffset:0}
+  84%,100%{stroke-dashoffset:-330}
+}
+@keyframes x2{
+  0%,52%{stroke-dashoffset:330}
+  64%,72%{stroke-dashoffset:0}
+  81%,100%{stroke-dashoffset:-330}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .xline{stroke-dashoffset:330}
+}
+</style>
+
+<g clip-path="url(#markCircle)">
+  <circle class="core" cx="498.5" cy="494.5" r="341.5"/>
+  
+  <rect class="gap g1" x="508.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.65s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.180;0.390;0.796;0.932;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g2" x="591.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.65s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.205;0.408;0.782;0.924;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g3" x="671.5" y="130" width="27" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.65s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.230;0.426;0.768;0.916;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g4" x="743.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.65s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.255;0.444;0.754;0.908;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g5" x="805.5" y="130" width="23" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.65s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.280;0.462;0.740;0.900;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+</g>
+
+<path class="xline x1" d="M405 405 L592 592"/>
+<path class="xline x2" d="M592 405 L405 592"/>
+</svg>

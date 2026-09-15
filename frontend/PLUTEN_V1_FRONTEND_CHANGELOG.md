@@ -59,3 +59,16 @@ A full dependency-aware `next build` should still be run on the target machine a
 - Session-expiry notice redesigned as a clean compact toast/bottom sheet and is never shown on the login route.
 - Expected unauthenticated library/profile/portfolio probes no longer emit global session-expiry UI or noisy console API errors.
 - Product-detail "Back to products" now returns directly to the storefront product section.
+
+## 2026-09-15 — V1 system-state integration
+
+- Integrated the locked six-state Pluten SVG motion pack under `public/brand/motion/`.
+- Replaced the route-loading `P` placeholder with the real locked loading motion.
+- Added a reusable branded system-state shell and error/retry boundary.
+- Added live offline handling plus a minimal service-worker navigation fallback.
+- Added dedicated offline, maintenance and service-unavailable experiences.
+- Rebuilt payment verification around Processing / Pending / Retry / Error / Success states with order details and no green success UI.
+- Added terminal failed-payment handling when paired with the included backend verification patch.
+- Replaced the old floating session warning with a responsive security dialog/bottom sheet and exact return-path preservation.
+- Improved login, library, profile, product-unavailable and admin-auth loading/error state consistency.
+- Preserved the existing Frost palette, Space Grotesk + Inter typography, restrained depth, no glow and no violet constraints.

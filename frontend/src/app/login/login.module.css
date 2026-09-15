@@ -60,3 +60,16 @@
   .footerNote{margin-top:18px;font-size:7.5px}
   .embeddedActions{grid-template-columns:1fr}
 }
+
+/* V1 system-state finishing */
+.inlineMotion{width:34px;height:34px;display:block;flex:0 0 34px}
+@media(max-width:520px){
+  .premiumContainer{min-height:100dvh;padding:18px 14px max(28px,env(safe-area-inset-bottom))}
+  .authHeader{min-height:60px}
+  .authBody{padding-top:28px}
+  .title{font-size:27px}
+  .description{max-width:320px}
+  .googleArea{margin-top:21px}
+  .googleWrap{min-height:48px}
+  .loadingState{min-height:48px}
+}

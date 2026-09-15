@@ -50,7 +50,9 @@ apiClient.interceptors.response.use(
       error.requestId = requestId;
     }
 
-    if (!axios.isCancel(error) && !silentLog) console.error("[API ERROR]", {
+    const browserOffline = typeof navigator !== "undefined" && !navigator.onLine;
+
+    if (!axios.isCancel(error) && !silentLog && !browserOffline) console.error("[API ERROR]", {
       status: error?.response?.status,
       method: error?.config?.method,
       url: error?.config?.url,

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F4F6F5">
+<title>You're offline | Pluten</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#F4F6F5;color:#101313;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}.head,.foot,.main{width:min(1080px,calc(100% - 28px));margin-inline:auto}.head{min-height:64px;display:flex;align-items:center;border-bottom:1px solid rgba(16,19,19,.06);font-weight:750;font-size:13px}.main{flex:1;display:grid;place-items:center;padding:40px 0}.box{width:min(490px,100%);text-align:center}.motion{width:100px;height:100px;display:block;margin:0 auto 20px}.k{margin:0 0 10px;color:#5B6060;font-size:8px;font-weight:750;letter-spacing:.14em}.box h1{margin:0;font-size:clamp(34px,10vw,46px);line-height:1;letter-spacing:-.05em}.box p{max-width:430px;margin:14px auto 0;color:#5B6060;font-size:13px;line-height:1.65}.actions{display:flex;justify-content:center;gap:9px;margin-top:22px}.btn{min-height:44px;padding:0 15px;border-radius:14px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}.primary{border:1px solid #101313;background:#101313;color:#FCFDFC}.secondary{border:1px solid rgba(16,19,19,.12);background:transparent;color:#101313;text-decoration:none;display:inline-flex;align-items:center}.foot{min-height:58px;display:flex;align-items:center;border-top:1px solid rgba(16,19,19,.06);color:#5B6060;font-size:8px;letter-spacing:.08em}@media(max-width:520px){.actions{display:grid}.btn{width:100%}.motion{width:88px;height:88px}}
+</style>
+</head>
+<body>
+<header class="head">PLUTEN</header>
+<main class="main"><section class="box">
+<img class="motion" src="/brand/motion/offline.svg" alt="Offline">
+<p class="k">PLUTEN / CONNECTION</p>
+<h1>You're offline.</h1>
+<p>Reconnect to Wi-Fi or mobile data, then try again. Your Pluten account and purchases are unaffected.</p>
+<div class="actions"><button class="btn primary" onclick="location.reload()">Try again</button><a class="btn secondary" href="/">Pluten home</a></div>
+</section></main>
+<footer class="foot">PLUTEN · OFFLINE FALLBACK</footer>
+<script>window.addEventListener('online',function(){setTimeout(function(){location.reload()},350)})</script>
+</body>
+</html>

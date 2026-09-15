@@ -27,3 +27,10 @@
 @media(max-width:1080px){.assetGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:800px){.header{align-items:flex-start;flex-direction:column}.assetGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.footerInner{align-items:flex-start;flex-direction:column;padding:24px 0}.footerLinks{flex-wrap:wrap}}
 @media(max-width:560px){.topNavInner,.contentWrapper,.footerInner{width:calc(100% - 20px)}.contentWrapper{padding-top:42px}.assetGrid{grid-template-columns:1fr}.pageTitle{font-size:40px}.vaultBadge{align-self:flex-start}}
+
+/* V1 system-state integration */
+.loadingLogo{width:78px;height:78px;border-radius:0;object-fit:contain;animation:none}
+.errorPanel{display:grid;justify-items:start;gap:10px;border-color:var(--pluten-border-strong);background:transparent}
+.errorPanel>img{margin-bottom:2px}
+.downloadBtn img{width:18px;height:18px;flex:0 0 18px}
+@media(max-width:560px){.loadingLogo{width:72px;height:72px}.errorPanel{padding:22px}}

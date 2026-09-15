@@ -6,6 +6,8 @@ import "./pluten-frost-system.css";
 import AuthHeartbeat from "@/components/AuthHeartbeat";
 import SessionExpiryNotice from "@/components/SessionExpiryNotice";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import NetworkStatusGate from "@/components/system/NetworkStatusGate";
+import ServiceWorkerRegistration from "@/components/system/ServiceWorkerRegistration";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -61,6 +63,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthHeartbeat />
         <SessionExpiryNotice />
         <AnalyticsTracker />
+        <ServiceWorkerRegistration />
+        <NetworkStatusGate />
         {children}
       </body>
     </html>

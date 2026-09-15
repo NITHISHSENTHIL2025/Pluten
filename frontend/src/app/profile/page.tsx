@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Library, Crown, Loader2, LogOut, Mail, ShieldCheck, User, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowLeft, Library, Crown, LogOut, Mail, ShieldCheck, User, RefreshCw } from "lucide-react";
 import apiClient from "@/lib/apiClient";
+import PlutenMotion from "@/components/system/PlutenMotion";
 import styles from "./profile.module.css";
 
 interface UserProfile { firstName:string|null; lastName:string|null; email:string; role:string; isPremium:boolean; createdAt:string; }
@@ -22,7 +23,7 @@ export default function ProfilePage(){
       setProfile(response.data);
     }catch(err:any){
       if(err?.response?.status===401||err?.response?.status===403){
-        router.replace(`/login?redirect=${encodeURIComponent("/profile")}`);
+        router.replace(`/login?expired=1&redirect=${encodeURIComponent("/profile")}`);
         return;
       }
       setError(err?.response?.data?.error||"We couldn't load your profile right now.");
@@ -37,9 +38,9 @@ export default function ProfilePage(){
     try{await apiClient.post("/auth/logout");}catch(error){console.error("Logout failed",error);}finally{window.location.replace("/");}
   };
 
-  if(loading)return <main className={styles.page}><div className={styles.loading}><Loader2 size={30} className="pluten-login-spinner"/><span>Loading your account</span></div></main>;
+  if(loading)return <main className={styles.page}><div className={styles.loading}><PlutenMotion state="loading" size={78} label="Loading your account"/><span>Loading your account</span></div></main>;
 
-  if(error||!profile)return <main className={styles.page}><div className={styles.content}><button className={styles.back} onClick={()=>router.push("/")}><ArrowLeft size={16}/> Back to store</button><div className={styles.error}><AlertCircle size={22}/><h1 className={styles.errorTitle}>Account unavailable</h1><p className={styles.errorText}>{error||"Your secure session could not be loaded."}</p><button className={styles.retry} onClick={loadProfile}><RefreshCw size={15}/> Try again</button></div></div></main>;
+  if(error||!profile)return <main className={styles.page}><div className={styles.content}><button className={styles.back} onClick={()=>router.push("/")}><ArrowLeft size={16}/> Back to store</button><div className={styles.error}><PlutenMotion state="error" size={72} label="Account unavailable"/><h1 className={styles.errorTitle}>Account unavailable</h1><p className={styles.errorText}>{error||"Your secure session could not be loaded."}</p><button className={styles.retry} onClick={loadProfile}><RefreshCw size={15}/> Try again</button></div></div></main>;
 
   const name=[profile.firstName,profile.lastName].filter(Boolean).join(" ").trim()||"Pluten member";
   const initials=name.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase();
@@ -69,7 +70,7 @@ export default function ProfilePage(){
         </div>
         <div className={styles.logout}>
           <p className={styles.logoutText}>Your purchases remain available after you sign out.</p>
-          <button className={styles.logoutBtn} onClick={logout} disabled={loggingOut}>{loggingOut?<><Loader2 size={16} className="pluten-login-spinner"/> Signing out</>:<><LogOut size={16}/> Sign out</>}</button>
+          <button className={styles.logoutBtn} onClick={logout} disabled={loggingOut}>{loggingOut?<><PlutenMotion state="processing" size={18} label="Signing out"/> Signing out</>:<><LogOut size={16}/> Sign out</>}</button>
         </div>
       </section>
     </div>

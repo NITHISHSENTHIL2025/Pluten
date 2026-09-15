@@ -3,6 +3,7 @@
 import apiClient from "@/lib/apiClient";
 import PlutenNav from "@/components/PlutenNav";
 import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
+import PlutenMotion from "@/components/system/PlutenMotion";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -472,7 +473,7 @@ export default function ProductDetailClient({
       ) {
         try { window.sessionStorage.setItem(`pluten:checkout:${id}`, JSON.stringify({ phone: phoneNumber, coupon: couponCode })); } catch {}
         router.replace(
-          `/login?redirect=${encodeURIComponent(
+          `/login?expired=1&redirect=${encodeURIComponent(
             `/product/${id}`
           )}`
         );
@@ -521,7 +522,7 @@ export default function ProductDetailClient({
 
           <div className={styles.unavailableInner}>
             <div className={styles.unavailableIcon}>
-              <AlertCircle size={24} />
+              <PlutenMotion state="error" size={64} label="Product unavailable" />
             </div>
 
             <p className={styles.eyebrow}>PLUTEN / PRODUCT</p>

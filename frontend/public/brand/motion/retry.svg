@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 1000"
+     width="256" height="256"
+     role="img" aria-labelledby="title desc"
+     shape-rendering="geometricPrecision">
+<title id="title">Pluten Retry — Final V1</title>
+<desc id="desc">The exact Pluten mark closes into a solid black circle. A refined white retry arrow draws inside the circle, makes one smooth controlled return sweep, then reverses back into Pluten.</desc>
+
+<defs>
+  <clipPath id="markCircle"><circle cx="498.5" cy="494.5" r="341.5"/></clipPath>
+</defs>
+
+<style>
+.core{
+  fill:#101313;
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:corePulse 3.85s cubic-bezier(.16,1,.3,1) infinite;
+}
+.gap{fill:#FCFDFC;transform-box:fill-box;transform-origin:center}
+.retryGroup{
+  transform-box:view-box;
+  transform-origin:498.5px 494.5px;
+  animation:retryTurn 3.85s cubic-bezier(.16,1,.3,1) infinite;
+}
+.retryArc{
+  fill:none;
+  stroke:#FCFDFC;
+  stroke-width:44;
+  stroke-linecap:round;
+  stroke-dasharray:990;
+  stroke-dashoffset:990;
+  animation:arcDraw 3.85s cubic-bezier(.16,1,.3,1) infinite;
+}
+.retryHead{
+  fill:#FCFDFC;
+  transform-box:fill-box;
+  transform-origin:620px 358px;
+  animation:headGrow 3.85s cubic-bezier(.16,1,.3,1) infinite;
+}
+
+@keyframes corePulse{
+  0%,18%,88%,100%{transform:scale(1)}
+  40%{transform:scale(.985)}
+  55%,74%{transform:scale(1.018)}
+  81%{transform:scale(.998)}
+}
+@keyframes arcDraw{
+  0%,45%{stroke-dashoffset:990}
+  59%,75%{stroke-dashoffset:180}
+  86%,100%{stroke-dashoffset:-990}
+}
+@keyframes headGrow{
+  0%,52%{transform:scale(.001) rotate(-8deg)}
+  63%,75%{transform:scale(1) rotate(0deg)}
+  85%,100%{transform:scale(.001) rotate(8deg)}
+}
+@keyframes retryTurn{
+  0%,53%{transform:rotate(-12deg)}
+  59%{transform:rotate(0deg)}
+  73%{transform:rotate(300deg)}
+  77%{transform:rotate(306deg)}
+  81%{transform:rotate(299deg)}
+  85%,100%{transform:rotate(300deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .retryGroup{display:none}
+}
+</style>
+
+<g clip-path="url(#markCircle)">
+  <circle class="core" cx="498.5" cy="494.5" r="341.5"/>
+  
+  <rect class="gap g1" x="508.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.85s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.180;0.390;0.816;0.932;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g2" x="591.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.85s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.205;0.408;0.802;0.924;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g3" x="671.5" y="130" width="27" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.85s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.230;0.426;0.788;0.916;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g4" x="743.5" y="130" width="28" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.85s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.255;0.444;0.774;0.908;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+  <rect class="gap g5" x="805.5" y="130" width="23" height="740">
+    <animateTransform attributeName="transform"
+      type="scale"
+      additive="sum"
+      dur="3.85s"
+      repeatCount="indefinite"
+      calcMode="spline"
+      keyTimes="0;0.280;0.462;0.760;0.900;1"
+      keySplines=".16 1 .3 1;.16 1 .3 1;.22 .61 .36 1;.16 1 .3 1;.16 1 .3 1"
+      values="1 1;1 1;.001 1;.001 1;1 1;1 1"/>
+  </rect>
+</g>
+
+<g class="retryGroup">
+  <path class="retryArc" d="M628 358 A165 165 0 1 0 648 603"/>
+  <path class="retryHead" d="M605 292 L699 358 L590 394 Z"/>
+</g>
+</svg>

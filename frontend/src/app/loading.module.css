@@ -1,0 +1,12 @@
+.page{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:var(--pluten-bg,#F4F6F5);
+  color:var(--pluten-text,#101313);
+}
+.inner{display:grid;place-items:center;gap:15px;text-align:center}
+.motion{width:90px;height:90px;display:block}
+.label{color:var(--pluten-text-secondary,#5B6060);font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+@media(max-width:520px){.motion{width:78px;height:78px}.label{font-size:7.5px}}

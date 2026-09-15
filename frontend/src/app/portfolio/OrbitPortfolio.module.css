@@ -116,7 +116,7 @@
 }
 .ringOuter { width: clamp(600px, 57vw, 850px); height: clamp(600px, 57vw, 850px); border: 1px solid rgba(255,255,255,.07); }
 .ringInner { width: clamp(390px, 36vw, 560px); height: clamp(390px, 36vw, 560px); border: 1px solid rgba(255,255,255,.045); }
-.centerPoint { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%,-50%); border-radius: 50%; background: #f5f2ea; box-shadow: 0 0 0 8px rgba(255,255,255,.015),0 0 35px rgba(255,255,255,.13); pointer-events:none; }
+.centerPoint { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%,-50%); border-radius: 50%; background: #f5f2ea; box-shadow: none; pointer-events:none; }
 
 .card {
   position: absolute;
@@ -595,3 +595,6 @@
     height: 34px;
   }
 }
+
+/* Pluten V1 quality rule: no luminous edge / halo effects. */
+.centerPoint{box-shadow:none!important}

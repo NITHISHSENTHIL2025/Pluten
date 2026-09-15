@@ -9,17 +9,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        obsidian: "#0a0a0a",
-        premiumRed: "#8b0000",
-        crimson: "#b90e0a",
-        steel: "#2d2d2d",
-        softWhite: "#f5f5f5",
+        frost: {
+          DEFAULT: "#F4F6F5",
+          high: "#FCFDFC",
+          low: "#E8EBE9",
+          ink: "#101313",
+          muted: "#5B6060",
+          shadow: "#C9CECB",
+        },
       },
-      backgroundImage: {
-        'premium-gradient': 'linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%)',
-      }
+      borderRadius: {
+        "pluten-xs": "10px",
+        "pluten-sm": "14px",
+        "pluten-md": "18px",
+        "pluten-lg": "24px",
+        "pluten-xl": "30px",
+      },
+      fontFamily: {
+        display: ["var(--font-space-grotesk)", "Space Grotesk", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+      },
     },
   },
   plugins: [],
 };
+
 export default config;

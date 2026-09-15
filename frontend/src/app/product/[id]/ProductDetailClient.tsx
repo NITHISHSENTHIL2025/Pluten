@@ -1,6 +1,7 @@
 "use client";
 
 import apiClient from "@/lib/apiClient";
+import PlutenNav from "@/components/PlutenNav";
 import PlutenSkeleton from "@/components/skeleton/PlutenSkeleton";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,9 +11,10 @@ import {
   Check,
   Loader2,
   ShieldCheck,
-  User,
   X,
   Tag,
+  Download,
+  LibraryBig,
 } from "lucide-react";
 // @ts-ignore
 import { load } from "@cashfreepayments/cashfree-js";
@@ -492,435 +494,381 @@ export default function ProductDetailClient({
 
   if (loading) {
     return (
-      <main className={styles.pageContainer}>
-        <div className={styles.loading}>
-          <PlutenSkeleton variant="product" />
-          <PlutenSkeleton variant="text" />
-        </div>
-      </main>
+      <>
+        <PlutenNav />
+        <main className={styles.pageContainer}>
+          <div className={styles.loading}>
+            <PlutenSkeleton variant="product" />
+            <PlutenSkeleton variant="text" />
+          </div>
+        </main>
+      </>
     );
   }
 
   if (!product) {
     return (
-      <main className={styles.unavailable}>
-        <button
-          className={styles.backButton}
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft size={16} />
-          Back to marketplace
-        </button>
+      <>
+        <PlutenNav />
+        <main className={styles.unavailable}>
+          <button
+            className={styles.backButton}
+            onClick={() => router.push("/")}
+          >
+            <ArrowLeft size={16} />
+            Back to marketplace
+          </button>
 
-        <div className={styles.unavailableInner}>
-          <div className={styles.unavailableIcon}>
-            <AlertCircle size={24} />
+          <div className={styles.unavailableInner}>
+            <div className={styles.unavailableIcon}>
+              <AlertCircle size={24} />
+            </div>
+
+            <p className={styles.eyebrow}>PLUTEN / PRODUCT</p>
+            <h1>Product unavailable.</h1>
+            <p>{loadError || "This product is no longer available."}</p>
           </div>
-
-          <p className={styles.eyebrow}>
-            PLUTEN / PRODUCT
-          </p>
-
-          <h1>Product unavailable.</h1>
-
-          <p>
-            {loadError ||
-              "This asset is no longer available."}
-          </p>
-        </div>
-      </main>
+        </main>
+      </>
     );
   }
 
-  const originalPrice = Number(
-    pricing.originalPrice ?? product.price
-  );
-
-  const finalPrice = Number(
-    pricing.finalPrice ?? originalPrice
-  );
-
-  const discountAmount = Number(
-    pricing.discountAmount ?? 0
-  );
-
+  const originalPrice = Number(pricing.originalPrice ?? product.price);
+  const finalPrice = Number(pricing.finalPrice ?? originalPrice);
+  const discountAmount = Number(pricing.discountAmount ?? 0);
   const hasDiscount = discountAmount > 0;
 
   return (
-    <main className={styles.pageContainer}>
-      <nav className={styles.topNav}>
-        <button
-          className={styles.brand}
-          onClick={() => router.push("/")}
-          aria-label="Pluten home"
-        >
-          PLUTEN
-        </button>
+    <>
+      <PlutenNav />
 
-        <button
-          className={styles.backButton}
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft size={16} />
-          Back to market
-        </button>
-      </nav>
-
-      <section className={styles.productLayout}>
-        <div>
-          <div className={styles.imageContainer}>
-            {product.thumbnail ? (
-              <img
-                src={product.thumbnail}
-                alt={product.title}
-                className={styles.productImage}
-                loading="eager"
-              />
-            ) : (
-              <div className={styles.noImage}>
-                NO PREVIEW
-              </div>
-            )}
-          </div>
-
-          <div className={styles.productInfo}>
-            <h1 className={styles.title}>
-              {product.title}
-            </h1>
-
-            <div className={styles.vendorInfo}>
-              <span className={styles.vendorIcon}>
-                <User size={15} />
-              </span>
-
-              <span>Pluten Network</span>
-
-              <Check
-                size={14}
-                className={styles.verified}
-              />
-
-              <span className={styles.dot}>
-                ·
-              </span>
-
-              <span>{product.category}</span>
-            </div>
-
-            <p className={styles.description}>
-              {product.description}
-            </p>
-          </div>
-        </div>
-
-        <aside className={styles.checkoutCard}>
-          <div className={styles.priceTop}>
-            <span className={styles.priceLabel}>
-              Today
-            </span>
-
-            {hasDiscount ? (
-              <>
-                <div className={styles.priceRow}>
-                  <strong>
-                    ₹
-                    {finalPrice.toLocaleString(
-                      "en-IN"
-                    )}
-                  </strong>
-
-                  {pricing.discountLabel && (
-                    <span
-                      className={
-                        styles.discountPill
-                      }
-                    >
-                      {pricing.discountLabel}
-                    </span>
-                  )}
-                </div>
-
-                <span
-                  className={
-                    styles.originalPrice
-                  }
-                >
-                  ₹
-                  {originalPrice.toLocaleString(
-                    "en-IN"
-                  )}
-                </span>
-              </>
-            ) : (
-              <strong
-                className={styles.priceOnly}
-              >
-                ₹
-                {originalPrice.toLocaleString(
-                  "en-IN"
-                )}
-              </strong>
-            )}
-          </div>
-
-          {checkoutError && (
-            <div
-              className={styles.checkoutError}
-            >
-              <AlertCircle size={15} />
-              {checkoutError}
-            </div>
-          )}
-
-          <button
-            ref={buyButtonRef}
-            className={styles.buyBtn}
-            onClick={buy}
-            disabled={isCheckingOut}
-          >
-            {isCheckingOut ? (
-              <>
-                <Loader2
-                  size={17}
-                  className="pluten-login-spinner"
-                />
-                Processing
-              </>
-            ) : (
-              owned ? "Open in Library" : finalPrice <= 0 ? "Get free access" : `Get instant access — ₹${finalPrice.toLocaleString("en-IN")}`
-            )}
+      <main className={styles.pageContainer}>
+        <div className={styles.breadcrumbBar}>
+          <button className={styles.backButton} onClick={() => router.push("/")}>
+            <ArrowLeft size={15} />
+            Back to products
           </button>
 
-          <div className={styles.guarantee}>
-            <ShieldCheck size={15} />
-            Secure transaction via Cashfree
-          </div>
-        </aside>
-      </section>
-
-      {showPhonePrompt && (
-        <div
-          className={styles.modalOverlay}
-          style={{
-            paddingBottom: `max(10px, ${keyboardInset}px)`,
-          }}
-          onMouseDown={(event) => {
-            if (
-              event.target ===
-                event.currentTarget &&
-              !isCheckingOut
-            ) {
-              setShowPhonePrompt(false);
-            }
-          }}
-        >
-          <div
-            ref={modalRef}
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="phone-title"
-            aria-describedby="phone-description"
-          >
-            <div className={styles.modalHeader}>
-              <div>
-                <p
-                  className={
-                    styles.modalEyebrow
-                  }
-                >
-                  PLUTEN / CHECKOUT
-                </p>
-
-                <h2 id="phone-title">
-                  Billing details
-                </h2>
-              </div>
-
-              <button
-                className={styles.modalClose}
-                onClick={() =>
-                  !isCheckingOut &&
-                  setShowPhonePrompt(false)
-                }
-                aria-label="Close checkout"
-                disabled={isCheckingOut}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <p
-              id="phone-description"
-              className={styles.modalText}
-            >
-              {finalPrice <= 0 ? "No payment details are required. Confirm below to add this product to your Library." : "Use a valid 10-digit phone number for secure Cashfree processing."}
-            </p>
-
-            {phoneError && (
-              <div className={styles.phoneError}>
-                {phoneError}
-              </div>
-            )}
-
-            {couponError && (
-              <div className={styles.phoneError}>
-                {couponError}
-              </div>
-            )}
-
-            {couponApplied &&
-              pricing.offer && (
-                <div
-                  className={
-                    styles.couponSuccess
-                  }
-                >
-                  <Tag size={14} />
-                  {pricing.offer.name} applied —
-                  you save ₹
-                  {pricing.discountAmount.toLocaleString(
-                    "en-IN"
-                  )}
-                </div>
-              )}
-
-            <form onSubmit={checkout}>
-              {finalPrice > 0 && (
-              <label
-                className={styles.formField}
-              >
-                <span>Phone number</span>
-
-                <div
-                  className={styles.phoneWrap}
-                >
-                  <span>+91</span>
-
-                  <input
-                    ref={phoneInputRef}
-                    type="tel"
-                    inputMode="numeric"
-                    autoComplete="tel"
-                    enterKeyHint="next"
-                    maxLength={10}
-                    value={phoneNumber}
-                    onChange={(event) => {
-                      setPhoneNumber(
-                        event.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 10)
-                      );
-
-                      setPhoneError("");
-                    }}
-                    placeholder="00000 00000"
-                    disabled={isCheckingOut}
-                  />
-                </div>
-              </label>
-
-              )}
-
-              <label
-                className={styles.formField}
-              >
-                <span>
-                  Coupon code{" "}
-                  <em>optional</em>
-                </span>
-
-                <div
-                  className={
-                    styles.couponRow
-                  }
-                >
-                  <input
-                    className={
-                      styles.couponInput
-                    }
-                    value={couponCode}
-                    onChange={(event) => {
-                      setCouponCode(
-                        event.target.value
-                          .toUpperCase()
-                          .replace(/\s/g, "")
-                          .slice(0, 40)
-                      );
-
-                      setCouponError("");
-                      setCouponApplied(false);
-                    }}
-                    placeholder="SAVE20"
-                    disabled={
-                      isCheckingOut ||
-                      isApplyingCoupon
-                    }
-                    maxLength={40}
-                  />
-
-                  <button
-                    type="button"
-                    className={
-                      styles.applyCouponButton
-                    }
-                    onClick={applyCoupon}
-                    disabled={
-                      isApplyingCoupon ||
-                      !couponCode.trim()
-                    }
-                  >
-                    {isApplyingCoupon ? (
-                      <Loader2
-                        size={15}
-                        className="pluten-login-spinner"
-                      />
-                    ) : (
-                      "Apply"
-                    )}
-                  </button>
-                </div>
-              </label>
-
-              <div
-                className={
-                  styles.modalTotal
-                }
-              >
-                <span>Total</span>
-
-                <strong>
-                  ₹
-                  {finalPrice.toLocaleString(
-                    "en-IN"
-                  )}
-                </strong>
-              </div>
-
-              <button
-                className={styles.payButton}
-                type="submit"
-                disabled={
-                  isCheckingOut ||
-                  (finalPrice > 0 && phoneNumber.length !== 10)
-                }
-              >
-                {isCheckingOut ? (
-                  <>
-                    <Loader2
-                      size={17}
-                      className="pluten-login-spinner"
-                    />
-                    Processing
-                  </>
-                ) : (
-                  finalPrice <= 0 ? "Add to Library" : "Proceed to secure payment"
-                )}
-              </button>
-            </form>
+          <div className={styles.breadcrumbTrail} aria-label="Product category">
+            <span>Pluten</span>
+            <span aria-hidden="true">/</span>
+            <span>{product.category || "Digital product"}</span>
           </div>
         </div>
-      )}
-    </main>
+
+        <section className={styles.productLayout}>
+          <div className={styles.galleryColumn}>
+            <div className={styles.imageContainer}>
+              {product.thumbnail ? (
+                <img
+                  src={product.thumbnail}
+                  alt={product.title}
+                  className={styles.productImage}
+                  loading="eager"
+                />
+              ) : (
+                <div className={styles.noImage}>
+                  <span>PLUTEN</span>
+                  <strong>Preview unavailable</strong>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.imageCaption}>
+              <span>Digital product</span>
+              <span aria-hidden="true">•</span>
+              <span>Instant library delivery</span>
+            </div>
+          </div>
+
+          <article className={styles.productInfo}>
+            <p className={styles.productEyebrow}>
+              {product.category || "PLUTEN DIGITAL PRODUCT"}
+            </p>
+
+            <h1 className={styles.title}>{product.title}</h1>
+
+            <div className={styles.vendorInfo}>
+              <span className={styles.verifiedMark}>
+                <Check size={13} />
+              </span>
+              <span>Published by Pluten</span>
+              <span className={styles.metaSeparator} aria-hidden="true">•</span>
+              <span>Digital access</span>
+            </div>
+
+            <div className={styles.infoDivider} />
+
+            <section className={styles.descriptionSection}>
+              <h2>About this product</h2>
+              <p className={styles.description}>{product.description}</p>
+            </section>
+
+            <section className={styles.benefits} aria-label="Product benefits">
+              <div className={styles.benefitRow}>
+                <span className={styles.benefitIcon}><Download size={17} /></span>
+                <div>
+                  <strong>Instant access</strong>
+                  <p>Access your product immediately after a successful purchase.</p>
+                </div>
+              </div>
+
+              <div className={styles.benefitRow}>
+                <span className={styles.benefitIcon}><LibraryBig size={17} /></span>
+                <div>
+                  <strong>Saved in your Library</strong>
+                  <p>Your purchase stays connected to your Pluten account.</p>
+                </div>
+              </div>
+
+              <div className={styles.benefitRow}>
+                <span className={styles.benefitIcon}><ShieldCheck size={17} /></span>
+                <div>
+                  <strong>Secure checkout</strong>
+                  <p>Payments are processed securely through Cashfree.</p>
+                </div>
+              </div>
+            </section>
+          </article>
+
+          <aside className={styles.checkoutCard}>
+            <div className={styles.checkoutHeading}>
+              <span className={styles.priceLabel}>Price</span>
+              {ownershipChecked && owned && (
+                <span className={styles.ownedBadge}>Owned</span>
+              )}
+            </div>
+
+            {hasDiscount ? (
+              <div className={styles.priceBlock}>
+                <div className={styles.priceRow}>
+                  <strong>₹{finalPrice.toLocaleString("en-IN")}</strong>
+                  {pricing.discountLabel && (
+                    <span className={styles.discountPill}>{pricing.discountLabel}</span>
+                  )}
+                </div>
+                <div className={styles.savingsRow}>
+                  <span className={styles.originalPrice}>
+                    ₹{originalPrice.toLocaleString("en-IN")}
+                  </span>
+                  <span>
+                    Save ₹{discountAmount.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <strong className={styles.priceOnly}>
+                {finalPrice <= 0 ? "Free" : `₹${originalPrice.toLocaleString("en-IN")}`}
+              </strong>
+            )}
+
+            <div className={styles.checkoutDivider} />
+
+            <div className={styles.purchaseFacts}>
+              <div>
+                <span>Delivery</span>
+                <strong>Instant digital access</strong>
+              </div>
+              <div>
+                <span>Access</span>
+                <strong>Pluten Library</strong>
+              </div>
+              <div>
+                <span>Support</span>
+                <strong>Included</strong>
+              </div>
+            </div>
+
+            {checkoutError && (
+              <div className={styles.checkoutError}>
+                <AlertCircle size={15} />
+                {checkoutError}
+              </div>
+            )}
+
+            <button
+              ref={buyButtonRef}
+              className={styles.buyBtn}
+              onClick={buy}
+              disabled={isCheckingOut}
+            >
+              {isCheckingOut ? (
+                <>
+                  <Loader2 size={17} className="pluten-login-spinner" />
+                  Processing
+                </>
+              ) : owned ? (
+                "Open in Library"
+              ) : finalPrice <= 0 ? (
+                "Get free access"
+              ) : (
+                `Get instant access — ₹${finalPrice.toLocaleString("en-IN")}`
+              )}
+            </button>
+
+            <div className={styles.guarantee}>
+              <ShieldCheck size={15} />
+              <span>Secure transaction via Cashfree</span>
+            </div>
+          </aside>
+        </section>
+
+        <section className={styles.lowerInfo}>
+          <div className={styles.lowerInfoLabel}>PLUTEN / PURCHASE EXPERIENCE</div>
+          <div className={styles.lowerInfoContent}>
+            <h2>Buy once. Keep it in your account.</h2>
+            <p>
+              After checkout, eligible products appear in your Pluten Library so you can
+              return to them from the same account without searching through old payment links.
+            </p>
+          </div>
+        </section>
+
+        {showPhonePrompt && (
+          <div
+            className={styles.modalOverlay}
+            style={{ paddingBottom: `max(10px, ${keyboardInset}px)` }}
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget && !isCheckingOut) {
+                setShowPhonePrompt(false);
+              }
+            }}
+          >
+            <div
+              ref={modalRef}
+              className={styles.modal}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="phone-title"
+              aria-describedby="phone-description"
+            >
+              <div className={styles.modalHeader}>
+                <div>
+                  <p className={styles.modalEyebrow}>PLUTEN / CHECKOUT</p>
+                  <h2 id="phone-title">Billing details</h2>
+                </div>
+
+                <button
+                  className={styles.modalClose}
+                  onClick={() => !isCheckingOut && setShowPhonePrompt(false)}
+                  aria-label="Close checkout"
+                  disabled={isCheckingOut}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p id="phone-description" className={styles.modalText}>
+                {finalPrice <= 0
+                  ? "No payment details are required. Confirm below to add this product to your Library."
+                  : "Use a valid 10-digit phone number for secure Cashfree processing."}
+              </p>
+
+              {phoneError && <div className={styles.phoneError}>{phoneError}</div>}
+              {couponError && <div className={styles.phoneError}>{couponError}</div>}
+
+              {couponApplied && pricing.offer && (
+                <div className={styles.couponSuccess}>
+                  <Tag size={14} />
+                  {pricing.offer.name} applied — you save ₹
+                  {pricing.discountAmount.toLocaleString("en-IN")}
+                </div>
+              )}
+
+              <form onSubmit={checkout}>
+                {finalPrice > 0 && (
+                  <label className={styles.formField}>
+                    <span>Phone number</span>
+                    <div className={styles.phoneWrap}>
+                      <span>+91</span>
+                      <input
+                        ref={phoneInputRef}
+                        type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        enterKeyHint="next"
+                        maxLength={10}
+                        value={phoneNumber}
+                        onChange={(event) => {
+                          setPhoneNumber(
+                            event.target.value.replace(/\D/g, "").slice(0, 10)
+                          );
+                          setPhoneError("");
+                        }}
+                        placeholder="00000 00000"
+                        disabled={isCheckingOut}
+                      />
+                    </div>
+                  </label>
+                )}
+
+                <label className={styles.formField}>
+                  <span>
+                    Coupon code <em>optional</em>
+                  </span>
+
+                  <div className={styles.couponRow}>
+                    <input
+                      className={styles.couponInput}
+                      value={couponCode}
+                      onChange={(event) => {
+                        setCouponCode(
+                          event.target.value
+                            .toUpperCase()
+                            .replace(/\s/g, "")
+                            .slice(0, 40)
+                        );
+                        setCouponError("");
+                        setCouponApplied(false);
+                      }}
+                      placeholder="SAVE20"
+                      disabled={isCheckingOut || isApplyingCoupon}
+                      maxLength={40}
+                    />
+
+                    <button
+                      type="button"
+                      className={styles.applyCouponButton}
+                      onClick={applyCoupon}
+                      disabled={isApplyingCoupon || !couponCode.trim()}
+                    >
+                      {isApplyingCoupon ? (
+                        <Loader2 size={15} className="pluten-login-spinner" />
+                      ) : (
+                        "Apply"
+                      )}
+                    </button>
+                  </div>
+                </label>
+
+                <div className={styles.modalTotal}>
+                  <span>Total</span>
+                  <strong>₹{finalPrice.toLocaleString("en-IN")}</strong>
+                </div>
+
+                <button
+                  className={styles.payButton}
+                  type="submit"
+                  disabled={
+                    isCheckingOut || (finalPrice > 0 && phoneNumber.length !== 10)
+                  }
+                >
+                  {isCheckingOut ? (
+                    <>
+                      <Loader2 size={17} className="pluten-login-spinner" />
+                      Processing
+                    </>
+                  ) : finalPrice <= 0 ? (
+                    "Add to Library"
+                  ) : (
+                    "Proceed to secure payment"
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </main>
+    </>
   );
 }

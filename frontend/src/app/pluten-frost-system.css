@@ -1,0 +1,301 @@
+/* ============================================================
+   PLUTEN V1 — FROST DESIGN SYSTEM
+   Refined depth system: no outer white glow, no luminous edges.
+   ============================================================ */
+:root {
+  --pluten-bg: #F4F6F5;
+  --pluten-surface: #F4F6F5;
+  --pluten-surface-high: #FCFDFC;
+  --pluten-surface-low: #E8EBE9;
+  --pluten-black: #101313;
+  --pluten-text: #101313;
+  --pluten-text-secondary: #5B6060;
+  --pluten-shadow-dark: #C9CECB;
+  --pluten-shadow-light: #FFFFFF;
+  --pluten-border: rgba(16, 19, 19, 0.045);
+  --pluten-border-strong: rgba(16, 19, 19, 0.09);
+  --pluten-danger: #9F3F43;
+  --pluten-success: #3F6F5A;
+  --pluten-warning: #7A6645;
+
+  --pluten-radius-xs: 10px;
+  --pluten-radius-sm: 14px;
+  --pluten-radius-md: 18px;
+  --pluten-radius-lg: 24px;
+  --pluten-radius-xl: 30px;
+  --pluten-radius-pill: 999px;
+
+  --pluten-space-1: 8px;
+  --pluten-space-2: 12px;
+  --pluten-space-3: 16px;
+  --pluten-space-4: 24px;
+  --pluten-space-5: 32px;
+  --pluten-space-6: 48px;
+  --pluten-space-7: 72px;
+  --pluten-content: 1240px;
+
+  /* Directional depth only. No bright exterior highlight shadow. */
+  --pluten-shadow-raised:
+    0 20px 48px rgba(16, 19, 19, 0.11),
+    0 3px 10px rgba(16, 19, 19, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  --pluten-shadow-raised-soft:
+    0 10px 26px rgba(16, 19, 19, 0.075),
+    0 2px 6px rgba(16, 19, 19, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  --pluten-shadow-recessed:
+    inset 0 2px 6px rgba(16, 19, 19, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.60);
+  --pluten-shadow-pressed:
+    inset 0 3px 8px rgba(16, 19, 19, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48);
+
+  --pluten-ease: cubic-bezier(.16, 1, .3, 1);
+
+  --pluten-paper: var(--pluten-bg);
+  --pluten-white: var(--pluten-surface-high);
+  --pluten-ink: var(--pluten-text);
+  --pluten-muted: var(--pluten-text-secondary);
+  --pluten-line: var(--pluten-border);
+  --pluten-red: var(--pluten-danger);
+  --pluten-red-dark: #7E3034;
+  --pluten-green: var(--pluten-success);
+}
+
+html {
+  min-width: 320px;
+  background: var(--pluten-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--pluten-bg);
+  color: var(--pluten-text);
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6,
+.pluten-brand-name {
+  font-family: var(--font-space-grotesk), "Space Grotesk", var(--font-inter), sans-serif;
+}
+
+button, input, textarea, select { font-family: inherit; }
+::selection { background: var(--pluten-black); color: var(--pluten-surface-high); }
+:focus-visible { outline: 2px solid var(--pluten-black) !important; outline-offset: 3px; }
+
+/* Explicitly disable decorative glow layers. */
+[class*="Glow"], [class*="glow"], [class*="Halo"], [class*="halo"] {
+  background-image: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* ============================================================
+   FULL-WIDTH PUBLIC NAVIGATION
+   Integrated with the page, never a floating capsule.
+   ============================================================ */
+.pluten-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--pluten-border) !important;
+  border-radius: 0 !important;
+  background: rgba(244, 246, 245, 0.97) !important;
+  box-shadow: 0 8px 28px rgba(16, 19, 19, 0.045) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.pluten-nav-inner {
+  width: min(var(--pluten-content), calc(100% - 40px)) !important;
+  min-height: 72px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  gap: 28px !important;
+}
+
+.pluten-brand { gap: 10px !important; color: var(--pluten-black) !important; }
+.pluten-brand-mark {
+  width: 34px !important;
+  height: 34px !important;
+  border: 0 !important;
+  border-radius: var(--pluten-radius-xs) !important;
+  background: var(--pluten-black) !important;
+  box-shadow: none !important;
+}
+.pluten-brand-logo { width: 22px !important; height: 22px !important; border-radius: 50%; }
+.pluten-brand-name {
+  color: var(--pluten-black) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.pluten-nav-links { gap: 2px !important; }
+.pluten-nav-link {
+  min-height: 40px !important;
+  padding: 0 11px !important;
+  border: 0 !important;
+  border-radius: var(--pluten-radius-xs) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--pluten-text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  transition: color .18s var(--pluten-ease), background .18s var(--pluten-ease) !important;
+}
+.pluten-nav-link:hover {
+  color: var(--pluten-black) !important;
+  background: var(--pluten-surface-low) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.pluten-nav-portfolio { border: 0 !important; background: transparent !important; }
+.pluten-nav-new {
+  height: 17px !important;
+  padding: 0 6px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: var(--pluten-black) !important;
+  color: var(--pluten-surface-high) !important;
+  box-shadow: none !important;
+}
+
+.pluten-nav-actions { gap: 4px !important; }
+.pluten-nav-icon,
+.pluten-nav-login,
+.pluten-mobile-toggle {
+  min-height: 40px !important;
+  border: 0 !important;
+  border-radius: var(--pluten-radius-xs) !important;
+  background: transparent !important;
+  color: var(--pluten-black) !important;
+  box-shadow: none !important;
+}
+.pluten-nav-icon { width: 40px !important; height: 40px !important; }
+.pluten-nav-icon:hover,
+.pluten-mobile-toggle:hover { background: var(--pluten-surface-low) !important; transform: none !important; }
+.pluten-nav-login { background: var(--pluten-black) !important; color: var(--pluten-surface-high) !important; padding: 0 14px !important; }
+
+.pluten-mobile-overlay { background: rgba(16, 19, 19, 0.30) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.pluten-mobile-panel {
+  background: var(--pluten-surface-high) !important;
+  border: 0 !important;
+  border-left: 1px solid var(--pluten-border) !important;
+  box-shadow: -18px 0 48px rgba(16, 19, 19, 0.13) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.pluten-mobile-close { border-radius: var(--pluten-radius-xs) !important; box-shadow: none !important; }
+.pluten-mobile-link { border-radius: 0 !important; }
+
+/* Global interaction motion: physical and restrained. */
+a, button { transition-timing-function: var(--pluten-ease); }
+
+@media (max-width: 760px) {
+  .pluten-nav { top: 0 !important; }
+  .pluten-nav-inner { width: calc(100% - 24px) !important; min-height: 64px !important; }
+  .pluten-brand-mark { width: 32px !important; height: 32px !important; }
+  .pluten-brand-name { font-size: 15px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Shared account/payment states */
+.pluten-auth-fallback,
+.ps-page {
+  min-height: 100dvh !important;
+  background: var(--pluten-bg) !important;
+  color: var(--pluten-text) !important;
+}
+.ps-card {
+  border: 1px solid var(--pluten-border) !important;
+  border-radius: var(--pluten-radius-xl) !important;
+  background: var(--pluten-surface) !important;
+  box-shadow: var(--pluten-shadow-raised) !important;
+}
+.ps-kicker,.ps-note,.ps-reference {
+  color: var(--pluten-text-secondary) !important;
+}
+.ps-state,.ps-success {
+  border-radius: var(--pluten-radius-md) !important;
+  background: var(--pluten-surface-low) !important;
+  box-shadow: var(--pluten-shadow-recessed) !important;
+}
+.ps-icon {
+  border-radius: var(--pluten-radius-md) !important;
+  background: var(--pluten-black) !important;
+  color: var(--pluten-surface-high) !important;
+  box-shadow: none !important;
+}
+.ps-round {
+  border-radius: var(--pluten-radius-sm) !important;
+}
+
+/* Error and loading states */
+.pluten-error-card {
+  border: 1px solid var(--pluten-border) !important;
+  border-radius: var(--pluten-radius-xl) !important;
+  background: var(--pluten-surface) !important;
+  box-shadow: var(--pluten-shadow-raised) !important;
+}
+.pluten-error-icon {
+  border-radius: var(--pluten-radius-md) !important;
+}
+.pluten-error-primary,
+.pluten-error-secondary,
+.ps-button {
+  border-radius: var(--pluten-radius-sm) !important;
+}
+.pluten-route-loading { color: var(--pluten-text-secondary) !important; }
+.pluten-route-loading-mark {
+  border-radius: var(--pluten-radius-sm) !important;
+  box-shadow: var(--pluten-shadow-raised-soft) !important;
+}
+
+/* ============================================================
+   PLUTEN BRAND MARK — ACTUAL LOGO, NO LETTER PLACEHOLDER
+   ============================================================ */
+.pluten-brand-mark {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pluten-brand-logo {
+  width: 36px !important;
+  height: 36px !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+@media (max-width: 760px) {
+  .pluten-brand-mark,
+  .pluten-brand-logo {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}

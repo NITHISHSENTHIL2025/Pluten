@@ -13,7 +13,7 @@
 .eyebrow {
   display: block;
   margin-bottom: 11px;
-  color: #999990;
+  color: var(--pluten-text-secondary);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.2em;
@@ -22,11 +22,8 @@
 
 .title {
   margin: 0;
-  color: #111;
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  color: var(--pluten-black);
+  font-family:var(--font-space-grotesk),"Space Grotesk",sans-serif;
   font-size:
     clamp(42px, 4.5vw, 64px);
   font-weight: 700;
@@ -37,7 +34,7 @@
 .description {
   max-width: 550px;
   margin: 15px 0 0;
-  color: #77776f;
+  color: var(--pluten-text-secondary);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -45,7 +42,7 @@
 .count {
   flex: 0 0 auto;
   padding-bottom: 5px;
-  color: #999990;
+  color: var(--pluten-text-secondary);
   font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -70,8 +67,8 @@
     1px solid
     rgba(17, 17, 17, 0.1);
   border-radius: 22px;
-  background: #fafaf7;
-  color: #111;
+  background: var(--pluten-surface-high);
+  color: var(--pluten-black);
   text-align: left;
   cursor: pointer;
   box-shadow:
@@ -96,7 +93,7 @@
 .option:focus-visible {
   outline:
     2px solid
-    #111;
+    var(--pluten-black);
   outline-offset: 3px;
 }
 
@@ -122,7 +119,7 @@
 }
 
 .optionMeta {
-  color: #8c8c84;
+  color: var(--pluten-text-secondary);
   font-size: 7px;
   font-weight: 800;
   letter-spacing: 0.17em;
@@ -136,8 +133,8 @@
   padding:
     0 8px;
   border-radius: 999px;
-  color: #fff;
-  background: #111;
+  color: var(--pluten-surface-high);
+  background: var(--pluten-black);
   font-size: 7px;
   font-weight: 800;
   letter-spacing: 0.03em;
@@ -153,7 +150,7 @@
       rgba(255, 255, 255, 0.85),
       transparent 48%
     ),
-    #efefeb;
+    var(--pluten-surface-high);
 }
 
 .editorialVisual {
@@ -163,8 +160,8 @@
   background:
     linear-gradient(
       135deg,
-      #f7f6f1,
-      #e9e8e2
+      var(--pluten-surface-high),
+      var(--pluten-surface-low)
     );
 }
 
@@ -178,7 +175,7 @@
   display: block;
   height: 2px;
   border-radius: 999px;
-  background: #111;
+  background: var(--pluten-black);
 }
 
 .editorialLines span:nth-child(1) {
@@ -252,7 +249,7 @@
       rgba(255, 255, 255, 0.09),
       transparent 36%
     ),
-    #080808;
+    var(--pluten-black);
 }
 
 .orbitRing,
@@ -289,8 +286,8 @@
   transform:
     translate(-50%, -50%);
   border-radius: 18px;
-  color: #111;
-  background: #f5f2e9;
+  color: var(--pluten-black);
+  background: var(--pluten-surface-high);
   box-shadow:
     0 20px 40px
     rgba(0, 0, 0, 0.28);
@@ -346,7 +343,7 @@
 .optionBottom p {
   max-width: 340px;
   margin: 6px 0 0;
-  color: #85857d;
+  color: var(--pluten-text-secondary);
   font-size: 10px;
   line-height: 1.5;
 }
@@ -361,7 +358,7 @@
     1px solid
     rgba(17, 17, 17, 0.1);
   border-radius: 50%;
-  color: #55554e;
+  color: var(--pluten-text-secondary);
 }
 
 @media (max-width: 800px) {
@@ -622,3 +619,8 @@
     font-size: 6.5px;
   }
 }
+
+/* PLUTEN V1 FROST OVERRIDES */
+.selector{padding:0!important;background:transparent!important;color:var(--pluten-text)!important}
+.header{gap:24px!important;margin-bottom:22px!important}.eyebrow,.count,.optionMeta{color:var(--pluten-text-secondary)!important;font-size:9px!important;font-weight:700!important;letter-spacing:.11em!important}.title{font-family:var(--font-space-grotesk),sans-serif!important;font-size:clamp(28px,3.5vw,40px)!important;line-height:1!important;letter-spacing:-.045em!important;font-weight:700!important}.description{color:var(--pluten-text-secondary)!important;font-size:13px!important;line-height:1.6!important}.options{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}.option{padding:16px!important;border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-lg)!important;background:var(--pluten-surface)!important;color:var(--pluten-text)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}.option:hover{transform:translateY(-3px)!important;box-shadow:var(--pluten-shadow-raised)!important}.optionSelected{border-color:var(--pluten-border-strong)!important;box-shadow:var(--pluten-shadow-pressed)!important}.selectedPill{border-radius:var(--pluten-radius-xs)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important}.visual{border-radius:var(--pluten-radius-md)!important;background:var(--pluten-surface-low)!important;box-shadow:var(--pluten-shadow-recessed)!important}.editorialVisual,.orbitVisual{border-radius:var(--pluten-radius-sm)!important}.editorialMark,.orbitCore{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-black)!important;color:var(--pluten-surface-high)!important}.orbitRing,.orbitRingSmall{border-color:rgba(16,19,19,.14)!important}.orbitCardLeft,.orbitCardRight{background:var(--pluten-surface-high)!important;border:1px solid var(--pluten-border)!important;border-radius:var(--pluten-radius-xs)!important;box-shadow:var(--pluten-shadow-raised-soft)!important}.optionBottom h3{font-family:var(--font-space-grotesk),sans-serif!important;font-size:20px!important;letter-spacing:-.035em!important}.optionBottom p{color:var(--pluten-text-secondary)!important;font-size:12px!important;line-height:1.5!important}.optionIcon{border-radius:var(--pluten-radius-sm)!important;background:var(--pluten-surface-low)!important;color:var(--pluten-black)!important;box-shadow:var(--pluten-shadow-recessed)!important}
+@media(max-width:720px){.header{align-items:flex-start!important;flex-direction:column!important}.options{grid-template-columns:1fr!important}}

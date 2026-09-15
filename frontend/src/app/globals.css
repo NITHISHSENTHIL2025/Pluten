@@ -1,15 +1,15 @@
 /* frontend/src/app/globals.css */
 
 :root {
-  --pluten-black: #0a0a0a;
-  --pluten-ink: #111111;
-  --pluten-white: #ffffff;
-  --pluten-paper: #f6f6f3;
-  --pluten-muted: #777773;
-  --pluten-line: #deded8;
-  --pluten-red: #d71920;
-  --pluten-red-dark: #9f1117;
-  --pluten-green: #23864f;
+  --pluten-black: var(--pluten-black);
+  --pluten-ink: var(--pluten-black);
+  --pluten-white: var(--pluten-surface-high);
+  --pluten-paper: var(--pluten-bg);
+  --pluten-muted: var(--pluten-text-secondary);
+  --pluten-line: var(--pluten-border);
+  --pluten-red: var(--pluten-text-secondary);
+  --pluten-red-dark: var(--pluten-danger);
+  --pluten-green: var(--pluten-success);
   --pluten-radius-sm: 10px;
   --pluten-radius-md: 16px;
   --pluten-radius-lg: 24px;
@@ -31,13 +31,7 @@ body {
   background: var(--pluten-paper);
   color: var(--pluten-ink);
 
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Display",
-    "SF Pro Text",
-    "Segoe UI",
-    sans-serif;
+  font-family:var(--font-inter),Inter,sans-serif;
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -65,8 +59,8 @@ button {
 }
 
 ::selection {
-  background: #111;
-  color: #fff;
+  background: var(--pluten-black);
+  color: var(--pluten-surface-high);
 }
 
 /* =========================================================
@@ -131,7 +125,7 @@ button {
 
   min-width: 0;
 
-  color: #111;
+  color: var(--pluten-black);
 
   text-decoration: none;
 
@@ -155,7 +149,7 @@ button {
 
   border-radius: 50%;
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
   box-shadow:
     0 3px 12px
@@ -172,7 +166,7 @@ button {
 }
 
 .pluten-brand-name {
-  color: #111;
+  color: var(--pluten-black);
 
   font-size: 12px;
 
@@ -222,7 +216,7 @@ button {
 
   border-radius: 999px;
 
-  color: #65635d;
+  color: var(--pluten-text-secondary);
 
   text-decoration: none;
 
@@ -239,7 +233,7 @@ button {
 }
 
 .pluten-nav-link:hover {
-  color: #111;
+  color: var(--pluten-black);
 
   background:
     rgba(255, 255, 255, 0.62);
@@ -250,7 +244,7 @@ button {
 
 .pluten-nav-link:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -269,7 +263,7 @@ button {
   background:
     rgba(255, 255, 255, 0.54);
 
-  color: #111;
+  color: var(--pluten-black);
 
   box-shadow:
     inset 0 1px 0
@@ -283,7 +277,7 @@ button {
 }
 
 .pluten-nav-portfolio:hover {
-  background: #fff;
+  background: var(--pluten-surface-high);
 
   border-color:
     rgba(17, 17, 17, 0.16);
@@ -306,9 +300,9 @@ button {
 
   border-radius: 999px;
 
-  background: #111;
+  background: var(--pluten-black);
 
-  color: #fff;
+  color: var(--pluten-surface-high);
 
   font-size: 6.5px;
 
@@ -354,7 +348,7 @@ button {
   background:
     rgba(255, 255, 255, 0.45);
 
-  color: #4d4c47;
+  color: var(--pluten-text-secondary);
 
   text-decoration: none;
 
@@ -369,12 +363,12 @@ button {
   transform:
     translateY(-1px);
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
   border-color:
     rgba(17, 17, 17, 0.13);
 
-  color: #111;
+  color: var(--pluten-black);
 }
 
 .pluten-nav-icon:active {
@@ -383,7 +377,7 @@ button {
 
 .pluten-nav-icon:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -391,7 +385,7 @@ button {
 .pluten-nav-login {
   margin-left: 4px;
 
-  color: #25241f;
+  color: var(--pluten-black);
 
   text-decoration: none;
 
@@ -411,7 +405,7 @@ button {
 
 .pluten-nav-login:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -438,9 +432,9 @@ button {
 
   border-radius: 50%;
 
-  background: #111;
+  background: var(--pluten-black);
 
-  color: #fff;
+  color: var(--pluten-surface-high);
 
   cursor: pointer;
 
@@ -451,7 +445,7 @@ button {
 
 .pluten-mobile-toggle:hover {
   transform: scale(1.04);
-  background: #202020;
+  background: var(--pluten-black);
 }
 
 .pluten-mobile-toggle:active {
@@ -460,7 +454,7 @@ button {
 
 .pluten-mobile-toggle:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -522,7 +516,7 @@ button {
 
   -webkit-overflow-scrolling: touch;
 
-  background: #f7f7f4;
+  background: var(--pluten-surface-high);
 
   border-left:
     1px solid
@@ -565,13 +559,13 @@ button {
 
   border:
     1px solid
-      #d9d9d4;
+      var(--pluten-surface-low);
 
   border-radius: 50%;
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
-  color: #111;
+  color: var(--pluten-black);
 
   cursor: pointer;
 
@@ -581,7 +575,7 @@ button {
 }
 
 .pluten-mobile-close:hover {
-  background: #f1f1ed;
+  background: var(--pluten-surface-high);
 }
 
 .pluten-mobile-close:active {
@@ -590,7 +584,7 @@ button {
 
 .pluten-mobile-close:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -624,7 +618,7 @@ button {
     1px solid
       rgba(17, 17, 17, 0.07);
 
-  color: #111;
+  color: var(--pluten-black);
 
   text-decoration: none;
 
@@ -639,7 +633,7 @@ button {
 
 .pluten-mobile-link:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -657,7 +651,7 @@ button {
 .pluten-mobile-number {
   width: 18px;
 
-  color: #a19e96;
+  color: var(--pluten-text-secondary);
 
   font-size: 8px;
 
@@ -693,7 +687,7 @@ button {
 }
 
 .pluten-mobile-portfolio-text small {
-  color: #77746d;
+  color: var(--pluten-text-secondary);
 
   font-size: 10px;
 
@@ -742,23 +736,23 @@ button {
 .pluten-mobile-login {
   border:
     1px solid
-      #d8d7d1;
+      var(--pluten-surface-low);
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
-  color: #111;
+  color: var(--pluten-black);
 }
 
 .pluten-mobile-portfolio-button {
-  background: #111;
+  background: var(--pluten-black);
 
-  color: #fff;
+  color: var(--pluten-surface-high);
 }
 
 .pluten-mobile-login:focus-visible,
 .pluten-mobile-portfolio-button:focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -766,7 +760,7 @@ button {
 .pluten-mobile-caption {
   margin-top: 14px;
 
-  color: #a19d96;
+  color: var(--pluten-text-secondary);
 
   font-size: 7px;
 
@@ -785,7 +779,7 @@ button {
 
 :focus-visible {
   outline:
-    2px solid #111;
+    2px solid var(--pluten-black);
 
   outline-offset: 3px;
 }
@@ -901,7 +895,7 @@ button {
     linear
     infinite;
 
-  color: #111;
+  color: var(--pluten-black);
 }
 
 @keyframes plutenSpin {
@@ -917,9 +911,9 @@ button {
 
   place-items: center;
 
-  background: #f6f6f3;
+  background: var(--pluten-bg);
 
-  color: #111;
+  color: var(--pluten-black);
 }
 
 /* =========================================================
@@ -929,9 +923,9 @@ button {
 .ps-page {
   min-height: 100dvh;
 
-  background: #0a0a0a;
+  background: var(--pluten-black);
 
-  color: #fff;
+  color: var(--pluten-surface-high);
 
   display: grid;
 
@@ -950,11 +944,11 @@ button {
   padding: 28px;
 
   border:
-    1px solid #252525;
+    1px solid var(--pluten-black);
 
   border-radius: 24px;
 
-  background: #101010;
+  background: var(--pluten-black);
 
   box-shadow:
     0 35px 100px
@@ -967,7 +961,7 @@ button {
 }
 
 .ps-kicker {
-  color: #6c6c66;
+  color: var(--pluten-text-secondary);
 
   font-size: 9px;
 
@@ -991,10 +985,7 @@ button {
 .ps-success h1 {
   margin: 20px 0 0;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family:var(--font-space-grotesk),"Space Grotesk",sans-serif;
 
   font-size: 36px;
 
@@ -1037,33 +1028,33 @@ button {
   place-items: center;
 
   border:
-    1px solid #303030;
+    1px solid var(--pluten-black);
 
   border-radius: 50%;
 }
 
 .ps-green {
-  color: #6bd28f;
+  color: var(--pluten-text-secondary);
 
-  background: #112118;
+  background: var(--pluten-black);
 
-  border-color: #254732;
+  border-color: var(--pluten-black);
 }
 
 .ps-red {
-  color: #ef7f83;
+  color: var(--pluten-text-secondary);
 
-  background: #241214;
+  background: var(--pluten-black);
 
-  border-color: #522327;
+  border-color: var(--pluten-black);
 }
 
 .ps-amber {
-  color: #e2bc6b;
+  color: var(--pluten-text-secondary);
 
-  background: #241f12;
+  background: var(--pluten-black);
 
-  border-color: #4b3d20;
+  border-color: var(--pluten-black);
 }
 
 .ps-note {
@@ -1071,7 +1062,7 @@ button {
 
   margin-top: 20px;
 
-  color: #62625d;
+  color: var(--pluten-text-secondary);
 
   font-size: 11px;
 }
@@ -1088,13 +1079,13 @@ button {
 
   border-radius: 12px;
 
-  background: #0b0b0b;
+  background: var(--pluten-black);
 }
 
 .ps-reference span {
   display: block;
 
-  color: #66665f;
+  color: var(--pluten-text-secondary);
 
   font-size: 9px;
 
@@ -1110,7 +1101,7 @@ button {
 
   margin-top: 6px;
 
-  color: #c7c7c1;
+  color: var(--pluten-text-secondary);
 
   font-size: 11px;
 
@@ -1154,20 +1145,20 @@ button {
 }
 
 .ps-primary {
-  background: #fff;
-  color: #111;
+  background: var(--pluten-surface-high);
+  color: var(--pluten-black);
 }
 
 .ps-light {
-  background: #fff;
-  color: #111;
+  background: var(--pluten-surface-high);
+  color: var(--pluten-black);
 }
 
 .ps-outline {
   background: transparent;
 
   border:
-    1px solid #303030;
+    1px solid var(--pluten-black);
 
   color: #bbb;
 }
@@ -1191,9 +1182,9 @@ button {
 
   padding: 24px;
 
-  background: #f6f6f3;
+  background: var(--pluten-bg);
 
-  color: #111;
+  color: var(--pluten-black);
 }
 
 .pluten-error-card {
@@ -1206,11 +1197,11 @@ button {
   padding: 34px;
 
   border:
-    1px solid #deded8;
+    1px solid var(--pluten-border);
 
   border-radius: 22px;
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
   text-align: center;
 
@@ -1237,16 +1228,16 @@ button {
 
   border-radius: 50%;
 
-  background: #fff4f4;
+  background: var(--pluten-surface-high);
 
   border:
-    1px solid #ecd2d2;
+    1px solid var(--pluten-surface-low);
 
-  color: #b54248;
+  color: var(--pluten-text-secondary);
 }
 
 .pluten-error-kicker {
-  color: #88867f;
+  color: var(--pluten-text-secondary);
 
   font-size: 9px;
 
@@ -1258,10 +1249,7 @@ button {
 .pluten-error-card h1 {
   margin: 16px 0 0;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family:var(--font-space-grotesk),"Space Grotesk",sans-serif;
 
   font-size: 36px;
 
@@ -1272,7 +1260,7 @@ button {
   margin:
     10px auto 0;
 
-  color: #77746e;
+  color: var(--pluten-text-secondary);
 
   font-size: 14px;
 
@@ -1309,15 +1297,15 @@ button {
 }
 
 .pluten-error-primary {
-  background: #111;
-  color: #fff;
+  background: var(--pluten-black);
+  color: var(--pluten-surface-high);
 }
 
 .pluten-error-secondary {
   border:
-    1px solid #d8d7d1;
+    1px solid var(--pluten-surface-low);
 
-  background: #fff;
+  background: var(--pluten-surface-high);
 
   color: #333;
 }
@@ -1339,7 +1327,7 @@ button {
 
   gap: 12px;
 
-  background: #f6f6f3;
+  background: var(--pluten-bg);
 
   color: #777;
 
@@ -1362,14 +1350,11 @@ button {
 
   border-radius: 50%;
 
-  background: #111;
+  background: var(--pluten-black);
 
-  color: #fff;
+  color: var(--pluten-surface-high);
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family:var(--font-space-grotesk),"Space Grotesk",sans-serif;
 
   font-size: 20px;
 }
@@ -1381,7 +1366,7 @@ button {
 .formField input:focus-visible,
 .formField button:focus-visible {
   outline:
-    2px solid #fff;
+    2px solid var(--pluten-surface-high);
 
   outline-offset: 2px;
 }
@@ -1487,7 +1472,6 @@ video {
 .pluten-nav-inner{min-height:70px}
 .pluten-nav-link{font-size:10px;letter-spacing:-.005em}
 .pluten-nav-actions{min-width:82px}
-.pluten-mobile-panel{background:rgba(247,247,244,.96);backdrop-filter:blur(28px) saturate(130%);-webkit-backdrop-filter:blur(28px) saturate(130%)}
+.pluten-mobile-panel{background:rgba(247,247,244,.96);backdrop-filter:none;-webkit-backdrop-filter:none}
 .pluten-mobile-link{font-size:17px;font-weight:720;letter-spacing:-.025em}
-@supports (font-variation-settings: normal){body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif}}
-@media (hover:hover){a,button{transition-property:opacity,transform,background-color,border-color,color,box-shadow;transition-duration:.22s;transition-timing-function:cubic-bezier(.16,1,.3,1)}}
+@supports (font-variation-settings: normal){body{font-family:var(--font-inter),Inter,sans-serif;transition-duration:.22s;transition-timing-function:cubic-bezier(.16,1,.3,1)}}

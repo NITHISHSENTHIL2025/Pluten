@@ -3,6 +3,7 @@ import { ArrowRight, BadgeCheck, Download, LockKeyhole, RefreshCw } from 'lucide
 import { InstagramIcon } from '@/components/InstagramIcon';
 import PlutenNav from '@/components/PlutenNav';
 import ProductCard from '@/components/ProductCard';
+import ProductsJumpLink from '@/components/ProductsJumpLink';
 import PortfolioShowcase from '@/components/PortfolioShowcase';
 import MotionReveal from '@/components/MotionReveal';
 import styles from './page.module.css';
@@ -97,9 +98,9 @@ export default async function StorefrontPage() {
               <Link href="/portfolio" className={styles.primaryCta}>
                 Create free portfolio <ArrowRight size={16} />
               </Link>
-              <Link href="#products" className={styles.secondaryLink}>
+              <ProductsJumpLink className={styles.secondaryLink}>
                 Explore products <ArrowRight size={15} />
-              </Link>
+              </ProductsJumpLink>
             </div>
 
             <div className={styles.heroTrust}>
@@ -189,7 +190,7 @@ export default async function StorefrontPage() {
               <span className={styles.cardNumber}>02</span>
               <h3>Own useful products</h3>
               <p>Checkout is verified server-side and each purchase stays attached to your Pluten account.</p>
-              <Link href="#products">Browse products <ArrowRight size={15} /></Link>
+              <ProductsJumpLink>Browse products <ArrowRight size={15} /></ProductsJumpLink>
             </MotionReveal>
 
             <MotionReveal className={styles.businessItem} delay={0.1}>

@@ -18,7 +18,7 @@ export default function ProfilePage(){
   const loadProfile=async()=>{
     setLoading(true); setError(null);
     try{
-      const response=await apiClient.get<UserProfile>("/user/profile");
+      const response=await apiClient.get<UserProfile>("/user/profile", { skipSessionExpiry: true, skipApiErrorLog: true });
       setProfile(response.data);
     }catch(err:any){
       if(err?.response?.status===401||err?.response?.status===403){

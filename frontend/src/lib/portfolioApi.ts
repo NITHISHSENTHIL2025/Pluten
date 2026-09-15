@@ -471,6 +471,7 @@ export async function getPortfolios(): Promise<PortfolioListResponse> {
   const response =
     await apiClient.get<PortfolioListResponse>(
       "/portfolio",
+      { skipSessionExpiry: true, skipApiErrorLog: true },
     );
 
   return response.data;

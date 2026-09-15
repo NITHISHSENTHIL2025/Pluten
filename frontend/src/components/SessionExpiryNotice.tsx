@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { LogIn, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SESSION_EXPIRED_EVENT } from "@/lib/apiClient";
 import styles from "./SessionExpiryNotice.module.css";
 
 export default function SessionExpiryNotice() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -14,17 +17,23 @@ export default function SessionExpiryNotice() {
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
   }, []);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (pathname.startsWith("/login")) setVisible(false);
+  }, [pathname]);
+
+  if (!visible || pathname.startsWith("/login")) return null;
+
+  const redirect = encodeURIComponent(`${pathname}${typeof window !== "undefined" ? window.location.search : ""}`);
 
   return (
-    <div role="alertdialog" aria-modal="false" aria-label="Session expired" className={styles.notice}>
-      <div className={styles.icon} aria-hidden="true">!</div>
+    <aside role="status" aria-live="polite" className={styles.notice}>
+      <div className={styles.icon} aria-hidden="true"><LogIn size={17} /></div>
       <div className={styles.copy}>
-        <strong>Your session needs attention.</strong>
-        <span>Your current changes remain in this browser. Sign in again to continue saving securely.</span>
-        <Link href="/login" className={styles.action}>Sign in again →</Link>
+        <strong>Sign in to continue</strong>
+        <span>Your local changes are safe. Reconnect your Pluten session to continue securely.</span>
       </div>
-      <button type="button" onClick={() => setVisible(false)} aria-label="Dismiss session notice" className={styles.close}>×</button>
-    </div>
+      <Link href={`/login?redirect=${redirect}`} className={styles.action}>Sign in</Link>
+      <button type="button" onClick={() => setVisible(false)} aria-label="Dismiss" className={styles.close}><X size={15} /></button>
+    </aside>
   );
 }

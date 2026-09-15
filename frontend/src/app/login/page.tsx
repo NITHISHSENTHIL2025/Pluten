@@ -1,30 +1,12 @@
 "use client";
 
-import {
-  Suspense,
-  useMemo,
-  useState,
-} from "react";
-
-import {
-  Check,
-  Copy,
-  ExternalLink,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
-
+import Link from "next/link";
+import { Suspense, useMemo, useState } from "react";
+import { Check, Copy, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-
 import apiClient from "@/lib/apiClient";
-
-import {
-  GoogleLogin,
-  GoogleOAuthProvider,
-} from "@react-oauth/google";
-
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import styles from "./login.module.css";
-
 
 const ADMIN_ROLES = new Set([
   "SUPER_ADMIN",
@@ -33,755 +15,217 @@ const ADMIN_ROLES = new Set([
   "CUSTOMER_SUPPORT",
 ]);
 
-
-/* =========================================================
-   USER AGENT
-========================================================= */
-
 function getUserAgent(): string {
-  if (typeof navigator === "undefined") {
-    return "";
-  }
-
-  return navigator.userAgent || "";
+  return typeof navigator === "undefined" ? "" : navigator.userAgent || "";
 }
-
-
-/* =========================================================
-   IN-APP BROWSER DETECTION
-========================================================= */
 
 function isInAppBrowser(): boolean {
-  const ua = getUserAgent();
-
-  return /Instagram|FBAN|FBAV|FB_IAB|Threads|Line\//i.test(
-    ua
-  );
+  return /Instagram|FBAN|FBAV|FB_IAB|Threads|Line\//i.test(getUserAgent());
 }
-
-
-/* =========================================================
-   PLATFORM DETECTION
-========================================================= */
 
 function isAndroid(): boolean {
   return /Android/i.test(getUserAgent());
 }
 
-
 function isIOS(): boolean {
   const ua = getUserAgent();
-
-  return (
-    /iPhone|iPad|iPod/i.test(ua) ||
-    (
-      /Macintosh/i.test(ua) &&
-      typeof navigator !== "undefined" &&
-      "ontouchend" in document
-    )
-  );
+  return /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && typeof navigator !== "undefined" && "ontouchend" in document);
 }
-
-
-/* =========================================================
-   CURRENT URL
-========================================================= */
 
 function buildCurrentUrl(): string {
-  if (typeof window === "undefined") {
-    return "";
-  }
-
-  return window.location.href;
+  return typeof window === "undefined" ? "" : window.location.href;
 }
 
-
-/* =========================================================
-   ANDROID CHROME INTENT
-========================================================= */
-
-/*
- * IMPORTANT:
- *
- * Do NOT build this using:
- *
- * [
- *   "intent://...",
- *   "#Intent",
- *   "scheme=https",
- *   ...
- * ].join(";")
- *
- * That creates:
- *
- * intent://pluten.site/profile;#Intent...
- *
- * and Android can interpret the ";" as part of
- * the requested path.
- *
- * Correct:
- *
- * intent://pluten.site/profile#Intent;scheme=https;...
- */
-function buildChromeIntentUrl(
-  currentUrl: string
-): string {
+function buildChromeIntentUrl(currentUrl: string): string {
   try {
     const url = new URL(currentUrl);
-
-    /*
-     * Keep the pathname exactly as it is.
-     *
-     * Example:
-     * /profile
-     *
-     * Never allow an accidental trailing semicolon.
-     */
-    const cleanPath =
-      `${url.pathname}${url.search}${url.hash}`
-        .replace(/;$/, "");
-
-    /*
-     * The actual HTTPS URL we want Chrome to open.
-     */
-    const targetUrl =
-      `https://${url.host}${cleanPath}`;
-
-    /*
-     * Android fallback if Chrome cannot be opened.
-     */
-    const fallbackUrl =
-      encodeURIComponent(targetUrl);
-
-    /*
-     * IMPORTANT:
-     *
-     * #Intent comes immediately after
-     * the URL/path.
-     *
-     * There is NO semicolon before #Intent.
-     */
-    return (
-      `intent://${url.host}${cleanPath}` +
-      `#Intent;` +
-      `scheme=https;` +
-      `package=com.android.chrome;` +
-      `S.browser_fallback_url=${fallbackUrl};` +
-      `end`
-    );
+    const cleanPath = `${url.pathname}${url.search}${url.hash}`.replace(/;$/, "");
+    const targetUrl = `https://${url.host}${cleanPath}`;
+    const fallbackUrl = encodeURIComponent(targetUrl);
+    return `intent://${url.host}${cleanPath}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallbackUrl};end`;
   } catch {
     return "";
   }
 }
 
-
-/* =========================================================
-   LOGIN ENGINE
-========================================================= */
-
 function LoginEngine() {
-  const searchParams =
-    useSearchParams();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
+  const expired = searchParams.get("expired");
 
-  const redirectUrl =
-    searchParams.get("redirect");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [browserInstructions, setBrowserInstructions] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const expired =
-    searchParams.get("expired");
+  const embedded = useMemo(() => isInAppBrowser(), []);
+  const android = useMemo(() => isAndroid(), []);
+  const ios = useMemo(() => isIOS(), []);
 
+  const safeRedirect = redirectUrl && redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")
+    ? redirectUrl
+    : null;
 
-  /* -------------------------------------------------------
-     STATE
-  ------------------------------------------------------- */
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [
-    browserInstructions,
-    setBrowserInstructions,
-  ] = useState(false);
-
-  const [
-    copied,
-    setCopied,
-  ] = useState(false);
-
-
-  /* -------------------------------------------------------
-     ENVIRONMENT
-  ------------------------------------------------------- */
-
-  const embedded = useMemo(
-    () => isInAppBrowser(),
-    []
-  );
-
-  const android = useMemo(
-    () => isAndroid(),
-    []
-  );
-
-  const ios = useMemo(
-    () => isIOS(),
-    []
-  );
-
-
-  /* -------------------------------------------------------
-     SAFE REDIRECT
-  ------------------------------------------------------- */
-
-  const safeRedirect =
-    redirectUrl &&
-    redirectUrl.startsWith("/") &&
-    !redirectUrl.startsWith("//")
-      ? redirectUrl
-      : null;
-
-
-  /* =======================================================
-     GOOGLE LOGIN
-  ======================================================= */
-
-  const handleGoogleSuccess = async (
-    credentialResponse: {
-      credential?: string;
-    }
-  ) => {
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
     try {
       setLoading(true);
       setError("");
 
-      /*
-       * Google must return an ID credential.
-       */
-      if (
-        !credentialResponse?.credential
-      ) {
-        throw new Error(
-          "Google did not return a credential."
-        );
+      if (!credentialResponse?.credential) {
+        throw new Error("Google did not return a credential.");
       }
 
+      const response = await apiClient.post("/auth/google-login", {
+        token: credentialResponse.credential,
+      });
 
-      /*
-       * Send Google credential to Pluten API.
-       */
-      const response =
-        await apiClient.post(
-          "/auth/google-login",
-          {
-            token:
-              credentialResponse.credential,
-          }
-        );
+      const user = response.data?.user;
+      if (!user) throw new Error("Account session was not returned by the server.");
 
-
-      /*
-       * Backend should return the
-       * authenticated user.
-       */
-      const user =
-        response.data?.user;
-
-
-      if (!user) {
-        throw new Error(
-          "Account session was not returned by the server."
-        );
-      }
-
-
-      /*
-       * Admin users go to admin.
-       *
-       * Normal users go to:
-       *
-       * redirect destination
-       * OR
-       * homepage
-       */
-      const destination =
-        ADMIN_ROLES.has(user.role)
-          ? "/admin"
-          : safeRedirect || "/";
-
-
-      /*
-       * Full navigation is intentional.
-       *
-       * This guarantees the new authenticated
-       * session is picked up by the application.
-       */
-      window.location.replace(
-        destination
-      );
+      const destination = ADMIN_ROLES.has(user.role) ? "/admin" : safeRedirect || "/";
+      window.location.replace(destination);
     } catch (err: any) {
-      console.error(
-        "[PLUTEN] Google login failed:",
-        err
-      );
-
+      console.error("[PLUTEN] Google login failed:", err);
       setError(
         err?.response?.data?.error ||
-        err?.message ||
-        "Google authentication failed. Please try again."
+          err?.message ||
+          "Google authentication failed. Please try again.",
       );
-
       setLoading(false);
     }
   };
 
-
-  /* =======================================================
-     OPEN EXTERNAL BROWSER
-  ======================================================= */
-
   const openExternalBrowser = () => {
-    const currentUrl =
-      buildCurrentUrl();
-
-
-    /*
-     * Safety fallback.
-     */
+    const currentUrl = buildCurrentUrl();
     if (!currentUrl) {
       setBrowserInstructions(true);
       return;
     }
 
-
-    /* =====================================================
-       ANDROID
-    ===================================================== */
-
     if (android) {
-      const intentUrl =
-        buildChromeIntentUrl(
-          currentUrl
-        );
-
-
+      const intentUrl = buildChromeIntentUrl(currentUrl);
       if (intentUrl) {
-        console.log(
-          "[PLUTEN] Opening Chrome:",
-          intentUrl
-        );
-
-
-        /*
-         * location.assign() asks the current
-         * browser to navigate to the Android
-         * external-app intent.
-         */
-        window.location.assign(
-          intentUrl
-        );
-
-
-        /*
-         * If Instagram refuses to launch Chrome,
-         * expose the manual instructions.
-         */
-        window.setTimeout(() => {
-          setBrowserInstructions(
-            true
-          );
-        }, 1500);
-
-
+        window.location.assign(intentUrl);
+        window.setTimeout(() => setBrowserInstructions(true), 1500);
         return;
       }
     }
 
-
-    /* =====================================================
-       IOS / OTHER IN-APP BROWSERS
-    ===================================================== */
-
-    /*
-     * Websites cannot reliably force Safari from
-     * Instagram's iOS WebView.
-     *
-     * Therefore show the correct manual instructions.
-     */
     setBrowserInstructions(true);
   };
 
-
-  /* =======================================================
-     COPY CURRENT URL
-  ======================================================= */
-
   const copyUrl = async () => {
-    const currentUrl =
-      buildCurrentUrl();
-
-
-    if (!currentUrl) {
-      return;
-    }
-
+    const currentUrl = buildCurrentUrl();
+    if (!currentUrl) return;
 
     try {
-      await navigator.clipboard.writeText(
-        currentUrl
-      );
-
-
+      await navigator.clipboard.writeText(currentUrl);
       setCopied(true);
-
-
-      window.setTimeout(() => {
-        setCopied(false);
-      }, 1800);
+      window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      /*
-       * Clipboard may be blocked by
-       * Instagram's WebView.
-       */
-      setBrowserInstructions(
-        true
-      );
+      setBrowserInstructions(true);
     }
   };
 
-
-  /* =======================================================
-     UI
-  ======================================================= */
-
   return (
-    <GoogleOAuthProvider
-      clientId={
-        process.env
-          .NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
-      }
-    >
-      <main
-        className={
-          styles.premiumContainer
-        }
-      >
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+      <main className={styles.premiumContainer}>
+        <section className={styles.authShell}>
+          <header className={styles.authHeader}>
+            <Link href="/" className={styles.brand} aria-label="Pluten home">
+              <img src="/favicon.ico" alt="" className={styles.brandLogo} />
+              <span className={styles.brandName}>PLUTEN</span>
+            </Link>
 
-        {/* Background */}
-
-        <div
-          className={
-            styles.backgroundGrid
-          }
-          aria-hidden="true"
-        />
-
-        <div
-          className={
-            styles.backgroundGlow
-          }
-          aria-hidden="true"
-        />
-
-
-        {/* Login card */}
-
-        <section
-          className={
-            styles.skeuomorphicCard
-          }
-        >
-
-          {/* Brand */}
-
-          <div
-            className={
-              styles.brand
-            }
-          >
-            <img
-              src="/favicon.ico"
-              alt="Pluten"
-              className={
-                styles.brandLogo
-              }
-            />
-
-            <span
-              className={
-                styles.brandName
-              }
-            >
-              PLUTEN
+            <span className={styles.secureBadge}>
+              <ShieldCheck size={14} /> Secure sign-in
             </span>
-          </div>
+          </header>
 
+          <div className={styles.authBody}>
+            <p className={styles.eyebrow}>ACCOUNT ACCESS</p>
+            <h1 className={styles.title}>Welcome back.</h1>
+            <p className={styles.description}>
+              {expired
+                ? "Your previous session ended. Sign in again to continue securely."
+                : "Sign in once to access your products, library and Pluten account."}
+            </p>
 
-          {/* Security icon */}
+            {error ? (
+              <div className={styles.statusMessage} role="alert">
+                {error}
+              </div>
+            ) : null}
 
-          <div
-            className={
-              styles.securityIcon
-            }
-            aria-hidden="true"
-          >
-            <ShieldCheck
-              size={21}
-            />
-          </div>
+            {embedded ? (
+              <div className={styles.embeddedNotice}>
+                <strong>Continue in your browser</strong>
+                <span>Google sign-in is restricted inside some in-app browsers.</span>
 
-
-          {/* Heading */}
-
-          <h1
-            className={
-              styles.title
-            }
-          >
-            Welcome back.
-          </h1>
-
-
-          <p
-            className={
-              styles.description
-            }
-          >
-            {expired
-              ? "Your previous session expired. Sign in again to continue."
-              : "One secure sign-in to your products, library and account."}
-          </p>
-
-
-          {/* Error */}
-
-          {error && (
-            <div
-              className={
-                styles.statusMessage
-              }
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
-
-
-          {/* =================================================
-              INSTAGRAM / IN-APP BROWSER
-          ================================================= */}
-
-          {embedded ? (
-            <div
-              className={
-                styles.embeddedNotice
-              }
-            >
-
-              <strong>
-                Open Pluten in your
-                browser.
-              </strong>
-
-
-              <span>
-                Google sign-in is
-                restricted inside
-                Instagram's built-in
-                browser.
-              </span>
-
-
-              {!browserInstructions ? (
-                <>
-                  <button
-                    type="button"
-                    className={
-                      styles.browserButton
-                    }
-                    onClick={
-                      openExternalBrowser
-                    }
-                  >
-                    Continue in browser
-
-                    <ExternalLink
-                      size={15}
+                {!browserInstructions ? (
+                  <div className={styles.embeddedActions}>
+                    <button type="button" className={styles.browserButton} onClick={openExternalBrowser}>
+                      Open browser <ExternalLink size={15} />
+                    </button>
+                    <button type="button" className={styles.browserSecondary} onClick={() => setBrowserInstructions(true)}>
+                      Show steps
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.browserInstructions}>
+                    <p>
+                      {android
+                        ? "Use the app menu and choose Open in browser if Chrome did not open automatically."
+                        : ios
+                          ? "Use the app menu and choose Open in browser, then continue in Safari."
+                          : "Open this page in your normal browser to continue."}
+                    </p>
+                    <ol>
+                      <li>Open the <strong>•••</strong> menu.</li>
+                      <li>Choose <strong>Open in browser</strong>.</li>
+                      <li>Complete Google sign-in.</li>
+                    </ol>
+                    <button type="button" className={styles.browserButton} onClick={copyUrl}>
+                      {copied ? <><Check size={15} /> Link copied</> : <><Copy size={15} /> Copy link</>}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={styles.googleArea}>
+                <span className={styles.googleLabel}>CONTINUE WITH GOOGLE</span>
+                <div className={styles.googleWrap} aria-busy={loading}>
+                  {loading ? (
+                    <div className={styles.loadingState}>
+                      <Loader2 className="pluten-login-spinner" size={22} />
+                      <span>Signing you in…</span>
+                    </div>
+                  ) : (
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => setError("Google authentication failed. Please try again.")}
+                      useOneTap={false}
+                      width="280"
                     />
-                  </button>
-
-
-                  <button
-                    type="button"
-                    className={
-                      styles.browserSecondary
-                    }
-                    onClick={() =>
-                      setBrowserInstructions(
-                        true
-                      )
-                    }
-                  >
-                    Show instructions
-                  </button>
-                </>
-              ) : (
-
-                /* ===========================================
-                   MANUAL INSTRUCTIONS
-                =========================================== */
-
-                <div
-                  className={
-                    styles.browserInstructions
-                  }
-                >
-
-                  <p>
-                    {android
-                      ? "If Instagram did not open Chrome, use Instagram's menu and choose Open in browser."
-                      : ios
-                      ? "Instagram does not always allow websites to force Safari open."
-                      : "Open this page in your normal browser to continue."}
-                  </p>
-
-
-                  <ol>
-
-                    <li>
-                      Tap the{" "}
-                      <strong>
-                        •••
-                      </strong>{" "}
-                      menu in
-                      Instagram.
-                    </li>
-
-
-                    <li>
-                      Choose{" "}
-                      <strong>
-                        Open in browser
-                      </strong>
-                      .
-                    </li>
-
-
-                    <li>
-                      Complete Google
-                      sign-in in Chrome
-                      or Safari.
-                    </li>
-
-                  </ol>
-
-
-                  {/* Copy URL */}
-
-                  <button
-                    type="button"
-                    className={
-                      styles.browserButton
-                    }
-                    onClick={
-                      copyUrl
-                    }
-                  >
-
-                    {copied ? (
-                      <>
-                        <Check
-                          size={15}
-                        />
-
-                        Link copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy
-                          size={15}
-                        />
-
-                        Copy link
-                      </>
-                    )}
-
-                  </button>
-
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-            </div>
-          ) : (
-
-            /* =================================================
-               NORMAL BROWSER GOOGLE LOGIN
-            ================================================= */
-
-            <div
-              className={
-                styles.googleWrap
-              }
-              aria-busy={loading}
-            >
-
-              {loading ? (
-                <Loader2
-                  className="pluten-login-spinner"
-                  size={28}
-                />
-              ) : (
-                <GoogleLogin
-                  onSuccess={
-                    handleGoogleSuccess
-                  }
-                  onError={() =>
-                    setError(
-                      "Google authentication failed. Please try again."
-                    )
-                  }
-                  useOneTap={false}
-                  width="320"
-                />
-              )}
-
-            </div>
-          )}
-
-
-          {/* Footer */}
-
-          <p
-            className={
-              styles.footerNote
-            }
-          >
-            Secure account access ·
-            Pluten
-          </p>
-
+            <p className={styles.footerNote}>Secure Google authentication · Pluten</p>
+          </div>
         </section>
-
       </main>
     </GoogleOAuthProvider>
   );
 }
-
-
-/* =========================================================
-   PAGE
-========================================================= */
 
 export default function LoginPage() {
   return (
     <Suspense
       fallback={
         <main className="pluten-auth-fallback">
-          <Loader2
-            className="pluten-login-spinner"
-            size={32}
-          />
+          <Loader2 className="pluten-login-spinner" size={28} />
         </main>
       }
     >

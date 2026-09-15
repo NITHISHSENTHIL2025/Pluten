@@ -52,6 +52,16 @@ export default function ProductCard({
         className={styles.productCardLink}
         aria-label={`View ${product.title}`}
       >
+        <div className={styles.productOfferRow} aria-hidden={!hasDiscount}>
+          {hasDiscount ? (
+            <span className={styles.offerBadge}>
+              {product.discountLabel || "OFFER"}
+            </span>
+          ) : (
+            <span className={styles.offerBadgePlaceholder}>NO OFFER</span>
+          )}
+        </div>
+
         <div className={styles.productVisual}>
           {product.thumbnail ? (
             <img
@@ -68,12 +78,6 @@ export default function ProductCard({
               PLUTEN
             </div>
           )}
-
-          {hasDiscount ? (
-            <span className={styles.offerBadge}>
-              {product.discountLabel || "OFFER"}
-            </span>
-          ) : null}
         </div>
 
         <div className={styles.productMeta}>

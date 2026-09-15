@@ -2,6 +2,13 @@ export const SESSION_EXPIRED_EVENT = "pluten:session-expired";
 
 import axios from "axios";
 
+declare module "axios" {
+  interface AxiosRequestConfig {
+    skipSessionExpiry?: boolean;
+    skipApiErrorLog?: boolean;
+  }
+}
+
 const baseURL = (
   process.env.NEXT_PUBLIC_API_URL || ""
 ).replace(/\/+$/, "");
@@ -30,8 +37,12 @@ apiClient.interceptors.response.use(
     const requestId =
       error?.response?.headers?.["x-request-id"];
 
-    const silentAuth = Boolean((error?.config as any)?.skipSessionExpiry);
-    if (error?.response?.status === 401 && typeof window !== "undefined" && !silentAuth) {
+    const status = error?.response?.status;
+    const silentAuth = Boolean(error?.config?.skipSessionExpiry);
+    const silentLog = Boolean(error?.config?.skipApiErrorLog) || (silentAuth && status === 401);
+    const onLoginPage = typeof window !== "undefined" && window.location.pathname.startsWith("/login");
+
+    if (status === 401 && typeof window !== "undefined" && !silentAuth && !onLoginPage) {
       window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
     }
 
@@ -39,7 +50,7 @@ apiClient.interceptors.response.use(
       error.requestId = requestId;
     }
 
-    if (!axios.isCancel(error)) console.error("[API ERROR]", {
+    if (!axios.isCancel(error) && !silentLog) console.error("[API ERROR]", {
       status: error?.response?.status,
       method: error?.config?.method,
       url: error?.config?.url,

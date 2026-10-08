@@ -237,12 +237,13 @@ export default async function StorefrontPage() {
             <Link href="/portfolio">Portfolio</Link>
             <Link href="/library">Library</Link>
             <Link href="/support">Support</Link>
+            <Link href="/contact">Contact</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/refund-policy">Refunds</Link>
             <a href="https://www.instagram.com/pluten.official/" target="_blank" rel="noreferrer">Instagram</a>
           </div>
-          <span className={styles.footerCopyright}>© {new Date().getFullYear()} PLUTEN</span>
+          <span className={styles.footerCopyright}>© {new Date().getFullYear()} PLUTEN · Owned and operated by S NITHISH</span>
         </div>
       </footer>
     </main>
